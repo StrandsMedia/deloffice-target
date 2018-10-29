@@ -1,0 +1,72 @@
+<div class="row">
+  <div class="col">
+    <div class="mdc-card mb-3" style="overflow: hidden;">
+      <!-- Header Section of Card -->
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+        <h3 class="m-0 text-white flex-fill align-items-center">
+          Purchase Report
+          <img *ngIf="loading" width="23px" src="/assets/icons/rolling_white.svg" alt="Rolling White">
+        </h3>
+        <div>
+          
+        </div>
+      </div>
+      <!-- Sub header -->
+      <!-- <div id="card-subheader" class="py-3 px-4">
+        
+      </div> -->
+    
+      <!-- Beginning of data table -->
+      <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+        <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+        <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+      
+        <ng-container cdkColumnDef="workflow_id">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">#</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 5%;">
+            {{row.workflow_id}}
+          </td>
+        </ng-container>
+    
+        <ng-container cdkColumnDef="date">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Date</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 10%;" class="text-center">
+            {{row.time | date:'dd-MM-yyyy'}}
+          </td>
+        </ng-container>
+    
+        <ng-container cdkColumnDef="time">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Time</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 10%;" class="text-center">
+            {{row.time | date:'HH:mm:ss'}}
+          </td>
+        </ng-container>
+      
+        <ng-container cdkColumnDef="company_name">
+          <th (click)="sort($event)" cdk-header-cell *cdkHeaderCellDef data-name="company_name" style="width: 24%;">
+            Customer Name
+            <i *ngIf="sortKey === 'company_name'" class="material-icons">{{clicked === 1 ? 'arrow_drop_up': 'arrow_drop_down'}}</i>
+          </th>
+          <td routerLink="/customers/{{row.cust_id}}" cdk-cell *cdkCellDef="let row" class="font-weight-bold py-2 point" style="width: 24%;">
+            {{row.company_name}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="invoice_no">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 17%;">Invoice No.</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 17%;" class="text-center">{{row.invoiceNo || '-' | uppercase}}</td>
+        </ng-container>
+        <ng-container cdkColumnDef="vehicle">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 17%;">Vehicle No.</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 17%;" class="text-center">{{row.vehicleNo || '-'}}</td>
+        </ng-container>
+        <ng-container cdkColumnDef="process">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 17%;">Process</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 17%;" class="text-center point"></td>
+        </ng-container>
+      
+      </table>
+    </div>
+
+  </div>
+</div>

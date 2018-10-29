@@ -1,0 +1,168 @@
+<div class="row">
+    <div class="col-12">
+        <div class="mdc-card py-3" style="padding: 25px;">
+            <div class="d-flex">
+                <div id="company" class="pr-4" style="border-right: 1px solid #eee;">
+                    <h4>{{customer?.company_name}}</h4>
+                    <p class="mb-2" style="font-size: 15px;"><strong>{{customer?.address || '-'}}</strong></p>
+                    <p class="mb-2"><strong>Sector: </strong>{{customer?.sector_name || '-'}}</p>
+                    <p class="mb-2"><strong>Subsector: </strong>{{customer?.subsector_name || '-'}}</p>
+                    <p class="mb-2">Last Updated on: {{customer?.updatedAt | date}}</p>
+                    <button class="tgt-button-full tgt-btn-green px-3 py-2 my-1 mr-3">
+                        Follow
+                    </button>
+                    <button class="tgt-button-full tgt-btn-white px-3 py-2 my-1 mr-3">
+                        Edit Profile
+                    </button>
+                    <button class="tgt-button-full tgt-btn-red px-3 py-2 my-1 mr-3">
+                        Delete
+                    </button>
+                </div>
+                <div class="px-4 flex-fill d-flex">
+                    <div id="contact" class="carousel slide align-self-center w-100" data-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <p class="mb-2">
+                                    <i class="material-icons">person</i><strong>Contact Person Name: </strong>{{customer?.contact_person || 'N/A'}}
+                                </p>
+                                <p class="mb-2">
+                                    <i class="material-icons">phone</i><strong>Tel: </strong>{{customer?.tel || 'N/A'}}
+                                </p>
+                                <p class="mb-2">
+                                    <i class="material-icons">print</i><strong>Fax: </strong>{{customer?.fax || 'N/A'}}
+                                </p>
+                                <p class="mb-2">
+                                    <i class="material-icons">smartphone</i><strong>Mob: </strong>{{customer?.mob || 'N/A'}}
+                                </p>
+                                <p class="mb-0">
+                                    <i class="material-icons">mail</i><strong>Email: </strong>{{customer?.email || 'N/A'}}
+                                </p>
+                            </div>
+                            <div class="carousel-item">
+                                <p class="mb-2">
+                                    <i class="material-icons">person</i><strong>Contact Person: </strong>{{customer?.contact_person2 || 'N/A'}}
+                                </p>
+                                <p class="mb-2">
+                                    <i class="material-icons">phone</i><strong>Tel: </strong>{{customer?.tel2 || 'N/A'}}
+                                </p>
+                                <p class="mb-2">
+                                    <i class="material-icons">print</i><strong>Fax: </strong>{{customer?.fax2 || 'N/A'}}
+                                </p>
+                                <p class="mb-2">
+                                    <i class="material-icons">smartphone</i><strong>Mob: </strong>{{customer?.mob2 || 'N/A'}}
+                                </p>
+                                <p class="mb-0">
+                                    <i class="material-icons">mail</i><strong>Email: </strong>{{customer?.email2 || 'N/A'}}
+                                </p>
+                            </div>
+                        </div>
+                        <a class="carousel-control-next w-auto" href="#contact" role="button" data-slide="next">
+                            <i id="next" class="material-icons text-white" aria-hidden="true">keyboard_arrow_right</i>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- <div class="px-3 flex-fill" style="border-right: 1px solid #eee;">
+                    <p class="mb-2">
+                        <i class="material-icons">person</i><strong>Contact Person Name: </strong>{{customer?.contact_person2 || 'N/A'}}
+                    </p>
+                    <p class="mb-2">
+                        <i class="material-icons">phone</i><strong>Tel: </strong>{{customer?.tel2 || 'N/A'}}
+                    </p>
+                    <p class="mb-2">
+                        <i class="material-icons">print</i><strong>Fax: </strong>{{customer?.fax2 || 'N/A'}}
+                    </p>
+                    <p class="mb-2">
+                        <i class="material-icons">smartphone</i><strong>Mob: </strong>{{customer?.mob2 || 'N/A'}}
+                    </p>
+                    <p class="mb-2">
+                        <i class="material-icons">mail</i><strong>Email: </strong>{{customer?.email2 || 'N/A'}}
+                    </p>
+                </div>
+                <div class="px-3 flex-fill">
+                    <p class="mb-2">
+                        <i class="material-icons">person</i><strong>Contact Person Name: </strong>{{customer?.contact_person3 || 'N/A'}}
+                    </p>
+                    <p class="mb-2">
+                        <i class="material-icons">phone</i><strong>Tel: </strong>{{customer?.tel3 || 'N/A'}}
+                    </p>
+                    <p class="mb-2">
+                        <i class="material-icons">print</i><strong>Fax: </strong>{{customer?.fax3 || 'N/A'}}
+                    </p>
+                    <p class="mb-2">
+                        <i class="material-icons">smartphone</i><strong>Mob: </strong>{{customer?.mob3 || 'N/A'}}
+                    </p>
+                    <p class="mb-2">
+                        <i class="material-icons">mail</i><strong>Email: </strong>{{customer?.email3 || 'N/A'}}
+                    </p>
+                </div> -->
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="mdc-tab-bar my-3" role="tablist" aria-label="Navigation">
+            <div class="mdc-tab-scroller">
+                <div class="mdc-tab-scroller__scroll-area">
+                    <div class="mdc-tab-scroller__scroll-content">
+                        <button (click)="tabstatus = 'jobs'" class="mdc-tab mdc-tab--active" role="tab" aria-selected="true" tabindex="0">
+                            <span class="mdc-tab__content">
+                                <span class="mdc-tab__text-label">Jobs</span>
+                            </span>
+                            <span class="mdc-tab-indicator mdc-tab-indicator--active">
+                                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                            </span>
+                            <span class="mdc-tab__ripple"></span>
+                        </button>
+                        <button (click)="tabstatus = 'comments'" class="mdc-tab" role="tab" aria-selected="false" tabindex="-1">
+                            <span class="mdc-tab__content">
+                                <span class="mdc-tab__text-label">Comments</span>
+                            </span>
+                            <span class="mdc-tab-indicator">
+                                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                            </span>
+                            <span class="mdc-tab__ripple"></span>
+                        </button>
+                        <button (click)="tabstatus = 'pricing'" class="mdc-tab" role="tab" aria-selected="false" tabindex="-1">
+                            <span class="mdc-tab__content">
+                                <span class="mdc-tab__text-label">Pricing</span>
+                            </span>
+                            <span class="mdc-tab-indicator">
+                                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                            </span>
+                            <span class="mdc-tab__ripple"></span>
+                        </button>
+                        <button (click)="tabstatus = 'details'" class="mdc-tab" role="tab" aria-selected="false" tabindex="-1">
+                            <span class="mdc-tab__content">
+                                <span class="mdc-tab__text-label">Details</span>
+                            </span>
+                            <span class="mdc-tab-indicator">
+                                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                            </span>
+                            <span class="mdc-tab__ripple"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div [ngSwitch]="tabstatus" class="row">
+    <div class="col-8">
+        <ng-container *ngSwitchCase="'jobs'">
+            <div class="mdc-card">
+                <div class="p-3">
+                    <h4 class="card-heading">Age Analysis</h4>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+    <div class="col-4">
+        <div class="mdc-card">
+            <div class="p-3">
+                <h4 class="card-heading">Age Analysis</h4>
+                <table class="table table-hover table-bordered tgt-table"></table>
+            </div>
+        </div>
+    </div>
+</div>

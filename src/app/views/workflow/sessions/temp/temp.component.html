@@ -1,0 +1,68 @@
+<div class="mdc-card mb-3" style="overflow:hidden;">
+    <!-- Header Section of Card -->
+    <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+        <h3 class="m-0 text-white flex-fill align-items-center">
+            Unprocessed Sessions
+            <img *ngIf="loading" width="23px" src="/assets/icons/rolling_white.svg" alt="Rolling White">
+        </h3>
+        <div>
+            <button (click)="get()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3">
+                Refresh List
+            </button>
+            <!-- <form (ngSubmit)="update()" [formGroup]="searchDate" class="form-inline float-right m-1">
+                <input formControlName="date" class="form-control p-3 mr-2" type="date" name="datesearch" id="datesearch">
+                <button type="submit" class="tgt-button-full tgt-btn-white">
+                    <i class="material-icons" style="line-height: 24px;margin-top: 3px;">search</i>
+                </button>
+            </form> -->
+        </div>
+    </div>
+    <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+        <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+        <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+    
+        <ng-container cdkColumnDef="jobid">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 16.6%">Job ID</th>
+            <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 16.6%">
+                #{{row.sessionID}}
+            </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="date">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 16.6%">Date</th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 16.6%">
+                {{row.sessionDate | date:'dd-MM-yyyy'}}
+            </td>
+        </ng-container>
+        <ng-container cdkColumnDef="type" >
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 16.6%">Session Type</th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 16.6%">
+                {{row.status}}
+            </td>
+        </ng-container>
+        <ng-container cdkColumnDef="vehicle" >
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 16.6%">Vehicle</th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 16.6%" vehicle>
+                {{row.vehicle || '-'}}
+            </td>
+        </ng-container>
+        <ng-container cdkColumnDef="invoices" >
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 16.6%">No. of Invoices</th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 16.6%">
+                {{row.invAmt || '-'}}
+            </td>
+        </ng-container>
+        <ng-container cdkColumnDef="close">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 17%"></th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 17%">
+
+            </td>
+        </ng-container>
+    
+    </table>
+</div>
+
+
+
+
+

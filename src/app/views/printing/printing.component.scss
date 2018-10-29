@@ -1,0 +1,16 @@
+:host {
+    display: block;
+}
+
+th[data-name] {
+    cursor: pointer;
+}
+
+th {
+    vertical-align: middle !important;
+}
+
+th i.material-icons {
+    position: relative;
+    top: 7px;
+}

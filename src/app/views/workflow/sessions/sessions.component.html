@@ -1,0 +1,52 @@
+<div class="row">
+    <div class="col-12">
+        <div class="mdc-tab-bar mb-3" role="tablist" aria-label="Navigation">
+            <div class="mdc-tab-scroller">
+                <div class="mdc-tab-scroller__scroll-area">
+                    <div class="mdc-tab-scroller__scroll-content">
+                        <button (click)="tabstatus = 'create'" class="mdc-tab" [class.mdc-tab--active]="tabstatus === 'create'" role="tab" aria-selected="true" tabindex="0">
+                            <span class="mdc-tab__content">
+                                <span class="mdc-tab__text-label">Push</span>
+                            </span>
+                            <span class="mdc-tab-indicator" [class.mdc-tab-indicator--active]="tabstatus === 'create'">
+                                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                            </span>
+                            <span class="mdc-tab__ripple"></span>
+                        </button>
+                        <button (click)="tabstatus = 'provisional'" class="mdc-tab" [class.mdc-tab--active]="tabstatus === 'provisional'"  role="tab" aria-selected="false" tabindex="-1">
+                            <span class="mdc-tab__content">
+                                <span class="mdc-tab__text-label">Provisional</span>
+                            </span>
+                            <span class="mdc-tab-indicator" [class.mdc-tab-indicator--active]="tabstatus === 'provisional'">
+                                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                            </span>
+                            <span class="mdc-tab__ripple"></span>
+                        </button>
+                        <button (click)="tabstatus = 'inprogress'" class="mdc-tab" [class.mdc-tab--active]="tabstatus === 'inprogress'"  role="tab" aria-selected="false" tabindex="-1">
+                            <span class="mdc-tab__content">
+                                <span class="mdc-tab__text-label">In Progress</span>
+                            </span>
+                            <span class="mdc-tab-indicator" [class.mdc-tab-indicator--active]="tabstatus === 'inprogress'">
+                                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                            </span>
+                            <span class="mdc-tab__ripple"></span>
+                        </button>
+                        <button (click)="tabstatus = 'archived'" class="mdc-tab" [class.mdc-tab--active]="tabstatus === 'archived'"  role="tab" aria-selected="false" tabindex="-1">
+                            <span class="mdc-tab__content">
+                                <span class="mdc-tab__text-label">Archived</span>
+                            </span>
+                            <span class="mdc-tab-indicator" [class.mdc-tab-indicator--active]="tabstatus === 'archived'">
+                                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                            </span>
+                            <span class="mdc-tab__ripple"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div [dynamic]="tabstatus"></div>
+    </div>
+</div>
+

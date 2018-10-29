@@ -1,0 +1,23 @@
+<div id="{{dialogID}}"
+    class="mdc-dialog"
+    role="alertdialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="dialogID + '-title'"
+    [attr.aria-describedby]="dialogID + '-content'">
+  <div class="mdc-dialog__container">
+    <div class="mdc-dialog__surface">
+      <!-- Title cannot contain leading whitespace due to mdc-typography-baseline-top() -->
+      <h2 class="mdc-dialog__title" id="{{dialogID}}-title"><!--
+     -->{{title}}<!--
+   --></h2>
+      <div class="mdc-dialog__content" id="{{dialogID}}-content">
+        <ng-content></ng-content>
+      </div>
+      <footer class="mdc-dialog__actions">
+        <button (click)="cancelClicked($event)" type="button" class="mdc-button mdc-dialog__button" [class.d-none]="!cancel" [attr.data-mdc-dialog-action]="cancel">{{cancel}}</button>
+        <button (click)="acceptClicked($event)" type="button" class="mdc-button mdc-dialog__button" [class.d-none]="!accept" [attr.data-mdc-dialog-action]="accept">{{accept}}</button>
+      </footer>
+    </div>
+  </div>
+  <div class="mdc-dialog__scrim"></div>
+</div>

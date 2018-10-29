@@ -1,0 +1,68 @@
+<div id="dropp" class="d-flex" style="height: 600px;">
+    <div class="mdc-card mb-3 mr-3 w-50" style="overflow:hidden;">
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+        <h3 class="m-0 text-white flex-fill align-items-center">
+          Goods Ready
+          <img *ngIf="loading" width="23px" src="/assets/icons/rolling_white.svg" alt="Rolling White">
+        </h3>
+        <div>
+          <button (click)="get()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3">
+            Refresh List
+          </button>
+          <form (ngSubmit)="filter()" (keydown)="filter()" [formGroup]="searchForm" class="form-inline float-right m-1">
+            <input formControlName="searchInput" class="form-control p-3 mr-2" type="search" name="customersearch" id="customersearch" placeholder="Search for customers...">
+            <button type="submit" class="tgt-button-full tgt-btn-white">
+              <i class="material-icons" style="line-height: 24px;margin-top: 3px;">search</i>
+            </button>
+          </form>
+        </div>
+      </div>
+      <div *ngIf="dataSource$ | async as data;" class="p-3" style="height: 500px; overflow-y:scroll;">
+        <ul id="source" dragula="delivery" class="list">
+          <li *ngFor="let item of data; index as i; trackBy: trackByFn" class="d-flex" [attr.data-workflow]="item.workflow_id">
+            <p class="bg-danger text-white mb-0 py-2 font-weight-bold text-center" style="width: 10%;">{{item.workflow_id | uppercase}}</p>
+            <p class="p-2 mb-0 flex-fill">
+              {{item.company_name}}
+            </p>
+            <p class="bg-danger text-white mb-0 px-3 py-2 w-25 font-weight-bold text-center">{{item.invoiceNo | uppercase}}</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  
+    <div class="mdc-card mb-3 flex-grow-1" style="overflow:hidden;">
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+        <h3 class="m-0 text-white flex-fill align-items-center">
+          Vehicle Session
+          <img *ngIf="loading" width="23px" src="/assets/icons/rolling_white.svg" alt="Rolling White">
+        </h3>
+        <form (ngSubmit)="submit()" [formGroup]="sessionForm" class="form-inline float-right m-1">
+          <select formControlName="vehicle" name="vehicle" id="vehiclepick" class="form-control p-3 mr-2" style="height: 37px;">
+            <option value="" selected disabled>Select Vehicle</option>
+            <option *ngFor="let van of [1,2,3,4,5,6]" value="Vehicle #{{van}}">Vehicle #{{van}}</option>
+            <option value="Pickup">Pickup</option>
+          </select>
+          <input formControlName="driver" style="width: 200px;" class="form-control p-3 mr-2" type="text" name="driver" id="driver" placeholder="Driver/Helper Name">
+          <button type="submit" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1" [disabled]="!sessionForm.valid">
+            Submit
+          </button>
+        </form>
+      </div>
+      <div class="p-3" style="overflow-y:scroll;">
+        <div class="contain mb-2 py-3" style="background-color: #eee;">
+          <div class="container-header d-flex">
+            <h4 class="px-3 flex-fill">
+              <img width="60px" src="/assets/icons/delivery.svg" alt="Delivery Icon">
+              Vehicle
+            </h4>
+          </div>
+          <p *ngIf="array" class="px-3 mb-0">{{array?.length}} item(s) in list.</p>
+          <ul id="target" dragula="delivery" class="list p-3" [attr.data-vehicle]="'Vehicle'">
+      
+          </ul>
+        </div>
+      </div>
+    </div>
+  
+</div>
+

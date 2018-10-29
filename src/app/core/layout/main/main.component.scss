@@ -1,0 +1,31 @@
+:host {
+    display: block;
+    height: 100%;
+}
+
+.mdc-list-divider {
+    border-color: #ffffff;
+    opacity: 0.3;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: transparent; 
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: rgba(212, 6, 6, 0.8); 
+    border-radius: 10px;
+    opacity: 0.4;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(212, 6, 6, 0.8); 
+}

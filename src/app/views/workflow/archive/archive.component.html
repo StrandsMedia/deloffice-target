@@ -1,0 +1,88 @@
+<div class="row">
+  <div class="col">
+    <div class="mdc-card mb-3" style="overflow: hidden;">
+      <!-- Header Section of Card -->
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+        <h3 class="m-0 text-white flex-fill align-items-center">
+          Delivery Archive
+          <img *ngIf="loading" width="23px" src="/assets/icons/rolling_white.svg" alt="Rolling White">
+        </h3>
+        <div>
+          
+        </div>
+      </div>
+      <!-- Sub header -->
+      <div id="card-subheader" class="py-3 px-4">
+        <div class="form-group form-inline float-left mr-2 mb-0">
+          <label for="choice" class="mr-2">Search by:</label>
+          <select (change)="choice = $event.target.value" name="choice" id="choice" class="form-control" style="height: 37px;">
+            <option value="date" selected>Date</option>
+            <option value="customer" >Company Name</option>
+            <option value="invoice" >Invoice Number</option>
+          </select>
+        </div>
+        <form (ngSubmit)="get()" [ngSwitch]="choice" [formGroup]="searchForm" class="form-inline float-left">
+          <input *ngSwitchCase="'date'" formControlName="date1" class="form-control p-3 mr-2" type="date" name="date1" id="date1" placeholder="From: " style="height: 37px;">
+          <input *ngSwitchCase="'date'" formControlName="date2" class="form-control p-3 mr-2" type="date" name="date2" id="date2" placeholder="To: " style="height: 37px;">
+          <input *ngSwitchCase="'customer'" formControlName="company_name" class="form-control p-3 mr-2" type="search" name="company_name" id="company_name" placeholder="Enter Customer Name" style="width: 200px; height: 37px;">
+          <input *ngSwitchCase="'invoice'" formControlName="invoice_no" class="form-control p-3 mr-2" type="search" name="invoice_no" id="invoice_no" placeholder="Enter Invoice Number" style="width: 200px; height: 37px;">
+          <button type="submit" class="tgt-button-full tgt-btn-white">
+            <i class="material-icons" style="line-height: 24px;margin-top: 3px;">search</i>
+          </button>
+        </form>
+      </div>
+    
+      <!-- Beginning of data table -->
+      <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+        <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+        <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+      
+        <ng-container cdkColumnDef="workflow_id">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">#</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 5%;">
+            {{row.workflow_id}}
+          </td>
+        </ng-container>
+    
+        <ng-container cdkColumnDef="date">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Date</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 10%;" class="text-center">
+            {{row.time | date:'dd-MM-yyyy'}}
+          </td>
+        </ng-container>
+    
+        <ng-container cdkColumnDef="time">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Time</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 10%;" class="text-center">
+            {{row.time | date:'HH:mm:ss'}}
+          </td>
+        </ng-container>
+      
+        <ng-container cdkColumnDef="company_name">
+          <th (click)="sort($event)" cdk-header-cell *cdkHeaderCellDef data-name="company_name" style="width: 24%;">
+            Customer Name
+            <i *ngIf="sortKey === 'company_name'" class="material-icons">{{clicked === 1 ? 'arrow_drop_up': 'arrow_drop_down'}}</i>
+          </th>
+          <td routerLink="/customers/{{row.cust_id}}" cdk-cell *cdkCellDef="let row" class="font-weight-bold py-2 point" style="width: 24%;">
+            {{row.company_name}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="invoice_no">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 17%;">Invoice No.</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 17%;" class="text-center">{{(row.invoice_no | uppercase) || '-'}}</td>
+        </ng-container>
+        <ng-container cdkColumnDef="credit_no">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 17%;">Credit Note No.</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 17%;" class="text-center">{{row.credit_no || '-'}}</td>
+        </ng-container>
+        <ng-container cdkColumnDef="vehicle">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 17%;">Vehicle No.</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 17%;" class="text-center" vehicle>{{(row.vehicle | uppercase) || '-'}}</td>
+        </ng-container>
+      
+      </table>
+    </div>
+
+  </div>
+</div>

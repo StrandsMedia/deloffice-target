@@ -1,0 +1,85 @@
+<div class="row">
+  <div class="col">
+    <div class="mdc-card mb-3" style="overflow: hidden;">
+      <!-- Header Section of Card -->
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+        <h3 class="m-0 text-white flex-fill align-items-center">
+          User Report
+          <img *ngIf="loading" width="23px" src="/assets/icons/rolling_white.svg" alt="Rolling White">
+        </h3>
+        <div>
+          
+        </div>
+      </div>
+      <!-- Sub header -->
+      <div id="card-subheader" class="py-3 px-4">
+        <form (ngSubmit)="get()" [formGroup]="searchForm" class="form-inline float-left">
+          <input formControlName="date1" class="form-control p-3 mr-2" type="date" name="date1" id="date1" placeholder="From: " style="height: 37px;">
+          <input formControlName="date2" class="form-control p-3 mr-2" type="date" name="date2" id="date2" placeholder="To: " style="height: 37px;">
+          <button type="submit" class="tgt-button-full tgt-btn-white">
+            <i class="material-icons" style="line-height: 24px;margin-top: 3px;">search</i>
+          </button>
+        </form>
+      </div>
+    
+      <!-- Beginning of data table -->
+      <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+        <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+        <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+      
+        <ng-container cdkColumnDef="user">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 12.5%;">User</th>
+          <td cdk-cell *cdkCellDef="let row; index as i;" class="font-weight-bold" style="width: 12.5%;">
+            {{row.sales_rep}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="inquiry">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 12.5%;">Inquiry</th>
+          <td cdk-cell *cdkCellDef="let row; index as i;" class="text-center" style="width: 12.5%;">
+            {{row.inquiry || '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="quotesend">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 12.5%;">Quote Send</th>
+          <td cdk-cell *cdkCellDef="let row; index as i;" class="text-center" style="width: 12.5%;">
+            {{row.quote || '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="orderconfirm">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 12.5%;">Order Confirm</th>
+          <td cdk-cell *cdkCellDef="let row; index as i;" class="text-center"  style="width: 12.5%;">
+            {{row.order || '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="purchase">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 12.5%;">Purchase</th>
+          <td cdk-cell *cdkCellDef="let row; index as i;" class="text-center"  style="width: 12.5%;">
+            {{row.purchase || '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="invoicing">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 12.5%;">Invoicing</th>
+          <td cdk-cell *cdkCellDef="let row; index as i;" class="text-center"  style="width: 12.5%;">
+            {{row.invoicing || '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="invoiced">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 12.5%;">Invoiced</th>
+          <td cdk-cell *cdkCellDef="let row; index as i;" class="text-center"  style="width: 12.5%;">
+            {{row.invoiced || '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="comments">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 12.5%;">Comments</th>
+          <td cdk-cell *cdkCellDef="let row; index as i;" class="text-center" style="width: 12.5%;">
+            {{row.comment || '-'}}
+          </td>
+        </ng-container>
+    
+        
+      
+      </table>
+    </div>
+
+  </div>
+</div>

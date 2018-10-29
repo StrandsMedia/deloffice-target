@@ -1,0 +1,181 @@
+<div class="row">
+  <div class="col">
+    <div class="mdc-card mb-3" style="overflow: hidden;">
+      <!-- Header Section of Card -->
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+        <h3 class="m-0 text-white flex-fill align-items-center">Customer List</h3>
+        <div>
+          <button dialogTrigger="dialog" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3">Add Customer</button>
+          <button (click)="get()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3">
+            Refresh List
+          </button>
+          <form (ngSubmit)="search()" [formGroup]="searchForm" class="form-inline float-right m-1">
+            <input formControlName="search" class="form-control p-3 mr-2" type="search" name="customersearch" id="customersearch" placeholder="Search for customers...">
+            <button type="submit" class="tgt-button-full tgt-btn-white">
+              <i class="material-icons" style="line-height: 24px;margin-top: 3px;">search</i>
+            </button>
+          </form>
+        </div>
+      </div>
+      <!-- Beginning of data table -->
+      <table cdk-table [dataSource]="dataSource$" class="table table-hover table-bordered tgt-table tgt-scroll">
+        <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+        <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+      
+        <ng-container cdkColumnDef="cust_id">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">#</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 5%;">
+            {{row.cust_id}}
+          </td>
+        </ng-container>
+      
+        <ng-container cdkColumnDef="company_name">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Customer Name</th>
+          <td [routerLink]="['/customers/' + row.cust_id]" routerLinkActive="router-link-active"  cdk-cell *cdkCellDef="let row" class="font-weight-bold point" style="width: 25%;">
+            {{row.company_name}}
+          </td>
+        </ng-container>
+      
+        <ng-container cdkColumnDef="contact_person">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;">Contact Person</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 15%;">
+            {{row.contact_person || '-'}}
+          </td>
+        </ng-container>
+      
+        <ng-container cdkColumnDef="contact_number">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Contact Number</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 10%;">
+            {{row.tel || '-'}}
+          </td>
+        </ng-container>
+      
+        <ng-container cdkColumnDef="notes">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Notes</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 20%;">
+            {{row.notes || '-'}}
+          </td>
+        </ng-container>
+    
+        <ng-container cdkColumnDef="updated">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Last Updated</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 10%;">
+            {{row?.updatedAt | date}}
+          </td>
+        </ng-container>
+        
+        <!-- Operations -->
+        <ng-container cdkColumnDef="operations">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;"></th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 15%;">
+            <button [routerLink]="['/customers/' + row.cust_id ]" class="tgt-button-full d-flex h-100 px-3 py-2 m-1 float-left">View</button>
+            <app-btn (click)="delete(row.cust_id)" (clickEd)="clickHandler($event)" [data]="response">Delete</app-btn>
+          </td>
+        </ng-container>
+      </table>
+    </div>
+  </div>
+</div>
+
+<app-dialog dialogID="dialog" title="Add New Customer" accept="Submit" cancel="Cancel" (onAccept)="create()" (onCancel)="cancel()">
+  <form [formGroup]="addForm">
+    <div class="row">
+      <div class="col-12">
+        <p>Fill in the form to and click on Submit to create a new Customer Profile. Make sure the customer profile does not already exist before you fill out this form:</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-5">
+        <div class="form-group">
+          <label for="customerCode">Customer Code</label>
+          <input formControlName="customerCode" type="text" class="form-control" name="customerCode" id="customerCode">
+          <small id="codeHelp" class="form-text text-muted">This code has to match the ref. number on Pastel</small>
+        </div>
+      </div>
+      <div class="col-7">
+        <div class="form-group">
+          <label for="company_name">Customer Name</label>
+          <input formControlName="company_name" type="text" class="form-control" name="company_name" id="company_name">
+          <small id="nameHelp" class="form-text text-muted">Fill in this field with the customer's name in proper form.</small>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-4">
+        <div class="form-group">
+          <label for="company_name">Category</label>
+          <select formControlName="category" name="category" id="category" class="form-control">
+            <option value="" selected disabled>Select a category</option>
+            <option *ngFor="let cat of categories | async" value="{{cat.cat_id}}">{{cat.abre}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="form-group">
+          <label for="sector">Sector</label>
+          <select formControlName="sector" name="sector" id="sector" class="form-control">
+            <option value="" selected disabled>Select a sector</option>
+            <option *ngFor="let cat of sectors | async" value="{{cat.cat_id}}">{{cat.category_name}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="form-group">
+          <label for="subsector">Subsector</label>
+          <select formControlName="subsector" name="subsector" id="subsector" class="form-control">
+            <option value="" selected disabled>Select a subsector</option>
+            <ng-container *ngIf="subsectors | async as sub">
+              <ng-container *ngFor="let sub of sub">
+                <option *ngIf="sub.upcat === addForm.value.sector" value="{{sub.cat_id}}">{{sub.category_name}}</option>
+              </ng-container>
+            </ng-container>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="form-group">
+          <label for="address">Address</label>
+          <textarea formControlName="address" name="address" id="address" class="form-control"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-4">
+        <div class="form-group">
+          <label for="contact_person">Contact Person Name</label>
+          <input formControlName="contact_person" type="text" class="form-control" name="contact_person" id="contact_person">
+        </div>
+      </div>
+      <div class="col-8">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input formControlName="email" type="email" class="form-control" name="email" id="email">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-4">
+        <div class="form-group">
+          <label for="tel">Tel</label>
+          <input formControlName="tel" type="text" class="form-control" name="tel" id="tel">
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="form-group">
+          <label for="fax">Fax</label>
+          <input formControlName="fax" type="text" class="form-control" name="fax" id="fax">
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="form-group">
+          <label for="mob">Mob</label>
+          <input formControlName="mob" type="text" class="form-control" name="mob" id="mob">
+        </div>
+      </div>
+    </div>
+  </form>
+</app-dialog>
+
+<app-snackbar></app-snackbar>

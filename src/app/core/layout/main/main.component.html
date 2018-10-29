@@ -1,0 +1,36 @@
+<div id="wrapper" class="container-fluid h-100">
+  <aside id="drawer" class="mdc-drawer mdc-drawer--dismissible">
+    <div class="mdc-drawer__content">
+      <nav class="mdc-list" style="padding-bottom: 100px;">
+        <ng-container *ngFor="let nav of nav; index as i">
+          <ng-container *ngIf="!nav?.children; else nochild">
+            <a [routerLink]="!nav.children ? nav.path : null" [routerLinkActive]="!nav?.children ? 'mdc-list-item--activated': 'drop'" [routerLinkActiveOptions]="{exact: true}" class="mdc-list-item" aria-selected="true">
+              <i *ngIf="nav.icon" class="material-icons mdc-list-item__graphic" aria-hidden="true">{{nav.icon}}</i>
+              <span class="mdc-list-item__text">{{nav.name}}</span>
+            </a>
+          </ng-container>
+          <ng-template #nochild>
+            <a class="mdc-list-item mdc-list-item__disabled">
+              <i *ngIf="nav.icon" class="material-icons mdc-list-item__graphic" aria-hidden="true">{{nav.icon}}</i>
+              <span class="mdc-list-item__text">{{nav.name}}</span>
+            </a>
+            <ul class="p-0" style="list-style: none;">
+              <li *ngFor="let subnav of nav.children">
+                <a [routerLink]="nav.path + subnav.path" [routerLinkActive]="'mdc-list-item--activated'"  class="mdc-list-item pl-5">{{subnav.name}}</a>
+              </li>
+            </ul>
+          </ng-template>
+          <hr class="mdc-list-divider">
+        </ng-container>
+      </nav>
+    </div>
+  </aside>
+  <div id="body" class="mdc-drawer-app-content h-100">
+    <app-header></app-header>
+    <main id="main-content" [@fadeAnimation]="getState(o)" class="position-relative">
+      <router-outlet #o="outlet"></router-outlet>
+    </main>
+    <app-footer></app-footer>
+  </div>
+</div>
+

@@ -1,0 +1,133 @@
+<div class="row">
+  <div class="col">
+    <div class="mdc-card mb-3" style="overflow: hidden;">
+      <!-- Header Section of Card -->
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+        <h3 class="m-0 text-white flex-fill align-items-center">
+          Printing Overview
+          <img *ngIf="loading" width="23px" src="/assets/icons/rolling_white.svg" alt="Rolling White">
+        </h3>
+        <div>
+          
+        </div>
+      </div>
+      <!-- Sub header -->
+      <div id="card-subheader" class="py-3 px-4">
+        <div class="form-group form-inline float-left mr-2 mb-0">
+          <label for="choice" class="mr-2">Search by:</label>
+          <select (change)="choice = $event.target.value" name="choice" id="choice" class="form-control" style="height: 37px;">
+            <option value="status" selected>Status</option>
+            <option value="customer" >Company Name</option>
+            <option value="product" >Product Type</option>
+          </select>
+        </div>
+        <form (ngSubmit)="get()" [ngSwitch]="choice" [formGroup]="searchForm" class="form-inline float-left">
+          <select *ngSwitchCase="'status'" formControlName="status" name="status" id="status" class="form-control mr-2" style="width: 150px;height: 37px;">
+            <option [ngValue]="0" selected>Active</option>
+            <option [ngValue]="1">Archive</option>
+          </select>
+          <input *ngSwitchCase="'customer'" formControlName="company_name" class="form-control p-3 mr-2" type="search" name="company_name" id="company_name" placeholder="Enter Customer Name" style="width: 200px; height: 37px;">
+          <select *ngSwitchCase="'product'" formControlName="product" name="product" id="product" class="form-control mr-2" style="width: 180px;height: 37px;">
+            <option value="" selected disabled>Select a product type</option>
+            <option *ngFor="let prod of prodtype" value="{{prod.id}}">{{prod.name}}</option>
+          </select>
+          <button type="submit" class="tgt-button-full tgt-btn-white">
+            <i class="material-icons" style="line-height: 24px;margin-top: 3px;">search</i>
+          </button>
+        </form>
+      </div>
+    
+      <!-- Beginning of data table -->
+      <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+        <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+        <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+      
+        <ng-container cdkColumnDef="jobid">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 6%;">Job No.</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 6%;">
+            {{row.job_id}}
+          </td>
+        </ng-container>
+      
+        <ng-container cdkColumnDef="company_name">
+          <th (click)="sort($event)" cdk-header-cell *cdkHeaderCellDef data-name="company_name" style="width: 18%;">
+            Customer Name
+            <i *ngIf="sortKey === 'company_name'" class="material-icons">{{clicked === 1 ? 'arrow_drop_up': 'arrow_drop_down'}}</i>
+          </th>
+          <td routerLink="/customers/{{row.custid}}" cdk-cell *cdkCellDef="let row" class="font-weight-bold py-2 point" style="width: 18%;">
+            {{row.company_name}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="product">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;">Product</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 7%;">
+            {{row.product || '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="paperspecs">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Paper Type</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 10%;">
+            {{row.paperspecs || '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="ppunit">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">Price/Unit</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 8%;">
+            {{(row.ppunit | number:'1.2-2') || '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="qtyordered">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 6%;">Qty Order</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 6%;">
+            {{row.qtyorder || '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="qtyconsumed">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 6%;">Qty Consumed</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 6%;">
+            {{row.qtyconsumed || '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="qtyleft">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 6%;">Qty Left</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 6%;">
+            {{remainingAmt(row)}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="qtyrejected">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 6%;">Qty Rejected</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 6%;">
+            {{remainingAmtAlt(row)}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="percentwaste">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 6%;">% Waste</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 6%;">
+            {{(getPercentage(row) | percent: '1.1-2') || '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="startdate">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">Start Date</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 8%;">
+            {{(row.startdate | date) || '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="enddate">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">End Date</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 8%;">
+            {{row.enddate !== '0000-00-00' ? (row.enddate | date) : '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="edit">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;"></th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 5%;"></td>
+        </ng-container>
+
+      
+      </table>
+    </div>
+
+  </div>
+</div>
+
