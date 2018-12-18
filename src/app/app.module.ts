@@ -39,6 +39,15 @@ import { UserComponent } from './views/workflow/user/user.component';
 import { DialogModule } from './common/utils/dialog/dialog.module';
 import { SnackbarModule } from './common/utils/snackbar/snackbar.module';
 import { VehicleDirective } from './common/utils/vehicle.directive';
+import { NewsComponent } from './views/customers/customer/news/news.component';
+import { PricingComponent } from './views/customers/customer/pricing/pricing.component';
+import { DetailsComponent } from './views/customers/customer/details/details.component';
+import { CommsComponent } from './views/customers/customer/comments/comments.component';
+import { ReversePipe } from './common/pipes/reverse.pipe';
+import { NewDatePipe } from './common/pipes/date.pipe';
+import { DatePipe } from '@angular/common';
+import { AllocsComponent } from './views/customers/customer/allocs/allocs.component';
+import { AgePipe } from './common/pipes/age.pipe';
 
 @NgModule({
   declarations: [
@@ -69,12 +78,25 @@ import { VehicleDirective } from './common/utils/vehicle.directive';
     CancelComponent,
     UserComponent,
     VehicleDirective,
+    NewsComponent,
+    PricingComponent,
+    DetailsComponent,
+    CommsComponent,
+    ReversePipe,
+    NewDatePipe,
+    AllocsComponent,
+    AgePipe
   ],
   entryComponents: [
     PushComponent,
     TempComponent,
     InprogressComponent,
-    ArchivedComponent
+    ArchivedComponent,
+    NewsComponent,
+    PricingComponent,
+    DetailsComponent,
+    CommsComponent,
+    AllocsComponent
   ],
   imports: [
     BrowserModule,
@@ -89,7 +111,9 @@ import { VehicleDirective } from './common/utils/vehicle.directive';
     DialogModule,
     SnackbarModule
   ],
-  providers: [],
+  providers: [
+    DatePipe
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

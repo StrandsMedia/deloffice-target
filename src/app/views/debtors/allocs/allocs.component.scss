@@ -1,0 +1,31 @@
+$mdc-theme-primary: #0c127e;
+$mdc-theme-secondary: #d20c1d;
+
+.search-dialog {
+    border-radius: 5px;
+    background-color: white;
+    width: 100%;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    top: 40px;
+    z-index: 2;
+}
+
+.search-dialog ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.search-dialog ul li {
+    padding: 10px 15px;
+}
+
+.search-dialog ul li:hover {
+    background-color: $mdc-theme-primary;
+    color: white; 
+    cursor: pointer;
+}
+
+table tbody tr td {
+    font-size: 12px;
+}

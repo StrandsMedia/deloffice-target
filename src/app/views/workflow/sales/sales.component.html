@@ -71,7 +71,7 @@
         </ng-container>
         <ng-container cdkColumnDef="orderconfirm">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Order Confirm</th>
-          <td cdk-cell *cdkCellDef="let row" [ngClass]="{'bg-primary': row.status == 3}" style="width: 10%;">
+          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 3}" style="width: 10%;">
             {{row.orderNo | uppercase}}
           </td>
         </ng-container>

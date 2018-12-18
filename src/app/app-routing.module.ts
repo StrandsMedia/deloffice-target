@@ -95,6 +95,10 @@ const routes: Routes = [
         path: 'tenders',
         component: TendersComponent
       },
+      {
+        path: 'debtors',
+        loadChildren: './core/modules/debtors/debtors.module#DebtorsModule',
+      }
     ],
     canActivate: [AuthGuard]
   },

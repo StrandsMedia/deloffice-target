@@ -1,4 +1,4 @@
-<button (click)="buttonFunction()" class="tgt-button-full d-flex h-100 px-3 py-2 m-1 float-left" [ngClass]="{'tgt-error': error, 'tgt-success': success}">
+<button (click)="buttonFunction()" class="tgt-button-full d-flex h-100 px-3 py-2 float-left" [ngClass]="{'tgt-error': error, 'tgt-success': success}">
   <ng-content></ng-content>
   <img *ngIf="loading" width="20px" class="ml-2" src="/assets/icons/rolling.svg" alt="Rolling">
   <i *ngIf="error" class="material-icons ml-2" style="font-size: 21px;">error</i>

@@ -37,8 +37,10 @@ export class MainComponent implements OnInit {
       this.drawer.drawer.open = !this.drawer.drawer.open;
     });
 
-    fromEvent(this.drawer.body, 'click').subscribe(() => {
-      this.drawer.drawer.open ? this.drawer.drawer.open = false : this.drawer.drawer.open = false;
+    fromEvent(this.drawer.body, 'click').subscribe((e: any) => {
+      if (e.target !== this.drawer.button) {
+        this.drawer.drawer.open ? this.drawer.drawer.open = false : this.drawer.drawer.open = false;
+      }
     });
   }
 

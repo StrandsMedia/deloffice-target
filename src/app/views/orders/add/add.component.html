@@ -1,12 +1,16 @@
 <div class="row">
   <div class="col-12">
     <div class="mdc-card mb-3" style="overflow: hidden;">
+      <!-- Card Header -->
       <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
         <h3 class="m-0 text-white flex-fill align-items-center">
           New Entry
           <img *ngIf="loading" width="23px" src="/assets/icons/rolling_white.svg" alt="Rolling White">
         </h3>
         <div>
+          <button (click)="toggleView()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3">
+            {{ view ? 'Master View' : 'Normal View' }}
+          </button>
           <button class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3">
             Preview Doc
           </button>
@@ -18,7 +22,148 @@
           </button>
         </div>
       </div>
-      <table class="table table-hover table-bordered tgt-table tgt-scroll"></table>
+
+      <!-- Card Subheader -->
+      <div id="card-subheader" class="py-3 px-4 d-flex justify-content-between">
+        <div *ngIf="!postData?.customer" id="searchform" class="position-relative" style="width: 350px;">
+          <form (keydown)="search()" [formGroup]="searchForm" class="float-left w-100">
+            <input formControlName="company_name" class="form-control p-3 mr-2 w-100" type="search" name="company_name" id="compsearch" placeholder="Enter Customer Name" style="height: 37px;">
+          </form>
+          <div *ngIf="searchForm.value.company_name !== ''" class="position-absolute search-drop">
+            <ng-container *ngIf="filteredResults | async as data">
+              <ul *ngIf="data?.length > 0">
+                <li (click)="assign(res)" *ngFor="let res of data; index as i;">{{res.company_name}}</li>
+              </ul>
+            </ng-container>
+          </div>
+        </div>
+        <div *ngIf="postData?.customer" class="alert alert-info position-relative mb-0" style="width: 500px;">
+          {{postData?.customer?.customerCode}} - {{postData?.customer?.company_name}}
+          <button (click)="unassign()" type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <i class="material-icons" style="pointer-events:none" aria-hidden="true">close</i>
+          </button>
+        </div>
+        <button class="tgt-button-full tgt-btn-white h-100 px-3 py-2">
+          Add Product
+        </button>
+      </div>
+
+      <!-- Data Table -->
+      <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+        <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+        <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+        <tr cdk-footer-row *cdkFooterRowDef="columns"></tr>
+
+        <ng-container cdkColumnDef="p_id">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Item Code</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center " style="width: 10%;">
+            {{row}}
+          </td>
+          <td cdk-footer-cell *cdkFooterCellDef style="width: 10%;"></td>
+        </ng-container>
+        <ng-container cdkColumnDef="des">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Description</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-left" style="width: 25%;">
+          </td>
+          <td cdk-footer-cell *cdkFooterCellDef style="width: 25%;"></td>
+        </ng-container>
+        <ng-container cdkColumnDef="brand">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Brand</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-left" style="width: 9%;">
+          </td>
+          <td cdk-footer-cell *cdkFooterCellDef style="width: 9%;"></td>
+        </ng-container>
+        <ng-container cdkColumnDef="stock">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Available</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-right" style="width: 9%;">
+          </td>
+          <td cdk-footer-cell *cdkFooterCellDef style="width: 9%;"></td>
+        </ng-container>
+        <ng-container cdkColumnDef="qty">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">Qty</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-right" style="width: 5%;">
+          </td>
+          <td cdk-footer-cell *cdkFooterCellDef style="width: 5%;"></td>
+        </ng-container>
+        <ng-container cdkColumnDef="defprice">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;" [hidden]="!view">Default Price<br>Rs.</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-right" [hidden]="!view" style="width: 10%;">
+          </td>
+          <td cdk-footer-cell *cdkFooterCellDef class="text-right" style="width: 10%;" [hidden]="!view">{{total}}</td>
+        </ng-container>
+        <ng-container cdkColumnDef="pricecat">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 4%;" [hidden]="!view"></th>
+          <td cdk-cell *cdkCellDef="let row" class="text-left" style="width: 4%;" [hidden]="!view">
+              
+          </td>
+          <td cdk-footer-cell *cdkFooterCellDef style="width: 4%;" [hidden]="!view"></td>
+        </ng-container>
+        <ng-container cdkColumnDef="invprice">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;" [hidden]="!view">Invoice Price<br>Rs.</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-right" style="width: 10%;" [hidden]="!view">
+          </td>
+          <td cdk-footer-cell *cdkFooterCellDef class="text-right" style="width: 10%;" [hidden]="!view"></td>
+        </ng-container>
+        <ng-container cdkColumnDef="totalexcl">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;" [hidden]="!view">Total Excl<br>Rs.</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-right" style="width: 10%;" [hidden]="!view">
+          </td>
+          <td cdk-footer-cell *cdkFooterCellDef class="text-right" style="width: 10%;" [hidden]="!view"></td>
+        </ng-container>
+        <ng-container cdkColumnDef="vat">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;" [hidden]="!view">VAT<br>Rs.</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-right" style="width: 10%;" [hidden]="!view">
+          </td>
+          <td cdk-footer-cell *cdkFooterCellDef style="width: 10%;" class="text-right" [hidden]="!view"></td>
+        </ng-container>
+        <ng-container cdkColumnDef="totalincl">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;" [hidden]="!view">Total Incl<br>Rs.</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-right" style="width: 10%;" [hidden]="!view">
+          </td>
+          <td cdk-footer-cell *cdkFooterCellDef style="width: 10%;" class="text-right" [hidden]="!view"></td>
+        </ng-container>
+        <ng-container cdkColumnDef="edit">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 4%;" [hidden]="!view"></th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 4%;" [hidden]="!view" class="p-0">
+              <button type="button" class="tgt-button-full tgt-btn-white" style="margin: 5px;">
+                <i class="material-icons" style="line-height: 24px;margin-top: 3px;">delete_forever</i>
+              </button>
+          </td>
+          <td cdk-footer-cell *cdkFooterCellDef style="width: 4%;" [hidden]="!view"></td>
+        </ng-container>
+
+
+        <ng-container cdkColumnDef="sprice">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;" [hidden]="view">Selling Price<br>Rs.</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-right" style="width: 10%;" [hidden]="view">
+          </td>
+          <td cdk-footer-cell *cdkFooterCellDef class="text-right" style="width: 10%;" [hidden]="view"></td>
+        </ng-container>
+        <ng-container cdkColumnDef="cprice">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;" [hidden]="view">Cost Price<br>Rs.</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-right" style="width: 10%;" [hidden]="view">
+          </td>
+          <td cdk-footer-cell *cdkFooterCellDef class="text-right" style="width: 10%;" [hidden]="view"></td>
+        </ng-container>
+        <ng-container cdkColumnDef="uprofit">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;" [hidden]="view">Profit Per Unit<br>Rs.</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-right" style="width: 10%;" [hidden]="view">
+          </td>
+          <td cdk-footer-cell *cdkFooterCellDef class="text-right" style="width: 10%;" [hidden]="view"></td>
+        </ng-container>
+        <ng-container cdkColumnDef="tprofit">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;" [hidden]="view">Total Profit<br>Rs.</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-right" style="width: 10%;" [hidden]="view">
+          </td>
+          <td cdk-footer-cell *cdkFooterCellDef class="text-right" style="width: 10%;" [hidden]="view"></td>
+        </ng-container>
+        <ng-container cdkColumnDef="pprofit">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;" [hidden]="view">% Profit</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-right" style="width: 10%;" [hidden]="view">
+          </td>
+          <td cdk-footer-cell *cdkFooterCellDef class="text-right" style="width: 10%;" [hidden]="view"></td>
+        </ng-container>
+      </table>
     </div>
   </div>
 </div>

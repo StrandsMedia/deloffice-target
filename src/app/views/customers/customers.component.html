@@ -68,7 +68,7 @@
         <ng-container cdkColumnDef="operations">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;"></th>
           <td cdk-cell *cdkCellDef="let row" style="width: 15%;">
-            <button [routerLink]="['/customers/' + row.cust_id ]" class="tgt-button-full d-flex h-100 px-3 py-2 m-1 float-left">View</button>
+            <button [routerLink]="['/customers/' + row.cust_id ]" class="tgt-button-full d-flex h-100 px-3 py-2 mr-2 float-left">View</button>
             <app-btn (click)="delete(row.cust_id)" (clickEd)="clickHandler($event)" [data]="response">Delete</app-btn>
           </td>
         </ng-container>

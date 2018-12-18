@@ -4,7 +4,7 @@
       <div class="card login-card d-block">
         <form (ngSubmit)="loginUser()" [formGroup]="loginForm" id="loginForm" class="card-body" autocomplete="off">
           <span [routerLink]="['/']" routerLinkActive="router-link-active"  id="logo" class="d-block p-2 form-group" style="cursor: pointer;">
-            <img src="assets/icons/target-logo.svg" alt="Roll n Sheet Logo" class="img-fluid">
+            <img src="assets/icons/target-logo.svg" alt="Target Logo" class="img-fluid">
           </span>
           <div *ngIf="error" class="alert alert-danger" style="font-size: 13px;" [innerHTML]="error">
           </div>

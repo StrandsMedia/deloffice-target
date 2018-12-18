@@ -99,6 +99,10 @@ export class WorkflowService {
     return this.http.post(this.url + 'workflow/deliveryArchive.php', info);
   }
 
+  readByCust(id: number): Observable<any> {
+    return this.http.get(this.url + 'workflow/readByCust.php?s=' + id);
+  }
+
   readByStatus(status: number): Observable<any>  {
     return this.http.get(this.url + 'workflow/readByStatus.php?s=' + status);
   }

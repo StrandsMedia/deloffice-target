@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
 import { Observable, of } from 'rxjs';
-import { debounceTime, delay, switchMap } from 'rxjs/operators';
+import { debounceTime, delay, switchMap, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +33,22 @@ export class CustomerService {
     return this.http.get(this.url + 'customers/read_one.php' + `?id=${id}`);
   }
 
+  getBalance(id): Observable<any> {
+    return this.http.get(this.url + 'customers/pastel/balance.php' + `?id=${id}`);
+  }
+
+  getAllocs(id): Observable<any> {
+    return this.http.get(this.url + 'customers/pastel/allocations.php' + `?id=${id}`);
+  }
+
+  getReverseAllocs(id): Observable<any> {
+    return this.http.get(this.url + 'customers/pastel/reverse_allocations.php' + `?id=${id}`);
+  }
+
+  getStatement(id): Observable<any> {
+    return this.http.get(this.url + 'customers/pastel/statement.php' + `?id=${id}`);
+  }
+
   search(keywords): Observable<any> {
     return of(true).pipe(
       delay(500),
@@ -42,7 +58,17 @@ export class CustomerService {
     );
   }
 
+  searchCust(keywords): Observable<any> {
+    return this.http.get(this.url + 'customers/search_cust.php' + `?s=${keywords}`).pipe(
+      map((res: any) => res.records)
+    );
+  }
+
   // Update
+
+  updateDetails(info): Observable<any> {
+    return this.http.post(this.url + 'customers/update_details.php', info);
+  }
 
   // Delete
 

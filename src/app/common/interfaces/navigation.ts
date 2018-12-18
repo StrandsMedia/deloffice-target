@@ -1,4 +1,13 @@
-export const Navigation = [
+type Nav = Path[];
+
+interface Path {
+    name: string;
+    path: string;
+    icon?: string;
+    children?: Path[];
+}
+
+export const Navigation: Nav = [
     {
         name: 'Dashboard',
         path: '/',
@@ -77,12 +86,16 @@ export const Navigation = [
         icon: 'local_atm',
         children: [
             {
+                name: 'Allocations',
+                path: '/allocations'
+            },
+            {
                 name: 'Debtors Control',
-                path: '/debtors-control'
+                path: '/control'
             },
             {
                 name: 'Debt Collection',
-                path: '/debt-collection'
+                path: '/collect'
             }
         ]
     },

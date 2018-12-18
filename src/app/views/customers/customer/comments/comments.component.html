@@ -1,0 +1,49 @@
+<div class="mdc-card mb-4 h-100" style="max-height: 370px;overflow:hidden;">
+  <div id="card-header" class="d-flex tgt-bg px-4 pt-3 align-items-center">
+    <ul id="target-tabs" class="nav nav-tabs" style="border-bottom: 0px solid transparent;">
+      <li class="nav-item">
+        <a (click)="toggleState(1)" [class.active]="status === 1" class="nav-link point">Sales Comments</a>
+      </li>
+      <li class="nav-item">
+        <a (click)="toggleState(2)" [class.active]="status === 2" class="nav-link point">Debtors Comments</a>
+      </li>
+    </ul>
+  </div>
+  <ul class="list-group list-group-flush" #scrollMe [scrollTop]="scrollMe.scrollHeight" style="height: 300px; overflow-y: scroll;">
+    <ng-container *ngIf="(comments | async)?.length > 0; else nocomment;">
+      <li *ngFor="let cmt of comments | async | reverse; index as i;trackBy:trackByFn" class="list-group-item py-3">
+        <div class="media">
+          <span class="align-self-start mr-3 round-image" [ngClass]="{
+            'bg-admin': cmt.dept === 'Admin',
+            'bg-normal': cmt.dept !== 'Admin'
+          }" style="width: 45px; height: 45px; overflow: hidden;">
+            <h2 class="text-white text-center w-100 h-100" style="font-weight:400; font-size: 1.2rem; vertical-align: middle; line-height: 45px;">{{getInitials(cmt.sales_rep) | uppercase}}</h2>
+          </span>
+          <div class="media-body">
+            <div class="span float-left">
+                <h5 class="mt-0" style="font-size: 1rem;">{{cmt.sales_rep}}</h5>
+                <p class="mb-0" style="font-weight: 14px;">{{cmt.comment}}</p>
+            </div>
+            <small class="d-block float-right font-italic" style="font-weight: 13px;">{{cmt.date2 | date:'medium'}}</small>
+          </div>
+        </div>
+      </li>
+    </ng-container>
+    <ng-template #nocomment>
+      <li class="list-group-item py-3">
+        <div class="media">
+          <div class="media-body">
+            <p class="mb-0 text-italic" style="font-weight: 14px;">Sorry, there are no comments to display.</p>
+          </div>
+        </div>
+      </li>
+    </ng-template>
+  </ul>
+  <div id="card-footer" class="p-2">
+    <form class="form-inline d-flex">
+      <textarea class="form-control w-75 mr-2" placeholder="Enter your comment here..."></textarea>
+      <button class="flex-fill h-100 tgt-button-full tgt-btn-white py-3" type="submit">Submit</button>
+    </form>
+  </div>
+</div>
+

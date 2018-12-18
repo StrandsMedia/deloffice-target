@@ -72,11 +72,16 @@ export class CommentsService {
     }
 
     if (user) {
-      if (number === 1) {
-        url = url + '&u=' + user;
+      if (user !== 0) {
+        if (number === 1) {
+          url = url + '&u=' + user;
+        } else {
+          url = url + '?u=' + user;
+        }
       } else {
-        url = url + '?u=' + user;
+        url = url;
       }
+
     }
     if (cust) {
       if (number === 1) {

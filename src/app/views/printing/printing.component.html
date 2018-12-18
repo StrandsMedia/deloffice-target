@@ -110,13 +110,13 @@
         <ng-container cdkColumnDef="startdate">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">Start Date</th>
           <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 8%;">
-            {{(row.startdate | date) || '-'}}
+            {{(row.startdate | newdate)}}
           </td>
         </ng-container>
         <ng-container cdkColumnDef="enddate">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">End Date</th>
           <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 8%;">
-            {{row.enddate !== '0000-00-00' ? (row.enddate | date) : '-'}}
+            {{(row.enddate | newdate)}}
           </td>
         </ng-container>
         <ng-container cdkColumnDef="edit">

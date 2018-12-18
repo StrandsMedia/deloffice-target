@@ -9,6 +9,7 @@ import { CdkTableModule } from '@angular/cdk/table';
 import { AddComponent } from '../../../views/orders/add/add.component';
 import { EditComponent } from '../../../views/orders/edit/edit.component';
 import { ViewComponent } from '../../../views/orders/view/view.component';
+import { DialogModule } from 'src/app/common/utils/dialog/dialog.module';
 
 const orderroutes: Routes = [
   {
@@ -26,6 +27,9 @@ const orderroutes: Routes = [
     CommonModule,
     CdkTableModule,
     RouterModule.forChild(orderroutes),
+    FormsModule,
+    ReactiveFormsModule,
+    DialogModule
   ],
   declarations: [
     AddComponent,

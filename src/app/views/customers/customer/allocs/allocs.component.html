@@ -1,0 +1,103 @@
+<div *ngIf="allocs | async as allocs" class="mdc-card mb-4" style="min-height:370px;max-height: 370px;overflow:hidden;">
+
+  <!--  Null -->
+  <ng-container *ngIf="allocs?.records?.length === 0">
+      <div class="alert alert-info m-3 p-3 d-flex align-items-center">
+          <i class="material-icons mr-2">error</i>
+          <p class="mb-0">
+              {{allocs?.message}}
+          </p>
+      </div>
+  </ng-container>
+  <ng-container *ngIf="allocs?.records?.length > 0">
+    <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center" style="height: 10%;">
+        <h4 class="m-0 text-white flex-fill align-items-center">Allocations View</h4>
+    </div>
+    <table class="table table-hover table-bordered tgt-table tgt-scroll">
+      <thead>
+        <tr>
+          <th *ngFor="let col of columns" [ngStyle]="{'width': col.width}">
+            {{col.name}}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let alloc of allocs?.records;index as i;trackBy:trackByFn;">
+          <tr>
+            <td style="width: 12%" class="font-weight-bold">{{alloc.Code}}</td>
+            <td style="width: 13%">{{alloc.TxDate | date}}</td>
+            <td style="width: 20%" class="font-weight-bold">{{alloc.Reference | uppercase}}</td>
+            <td style="width: 25%">{{alloc.Description}}</td>
+            <td style="width: 10%" class="table-primary">{{alloc.Debit | number:'1.2'}}</td>
+            <td style="width: 10%" class="table-success">{{alloc.Credit | number:'1.2'}}</td>
+            <td style="width: 10%" class="table-danger font-weight-bold">{{alloc.Outstanding | number:'1.2'}}</td>
+          </tr>
+          <tr *ngFor="let paired of alloc?.allocR;index as j;trackBy:trackByFn;" class="table-active font-italic">
+              <td style="width: 12%" class="font-weight-bold">
+                  <i style="color: red;font-size: 17px;" class="material-icons">
+                    subdirectory_arrow_right
+                  </i>
+                {{paired.Code}}
+              </td>
+              <td style="width: 13%">{{paired.TxDate | date}}</td>
+              <td style="width: 20%">{{paired.Reference}}</td>
+              <td style="width: 25%">{{paired.Description}}</td>
+              <td style="width: 10%" class="table-primary">{{paired.Debit | number:'1.2'}}</td>
+              <td style="width: 10%" class="table-success">{{paired.Credit | number:'1.2'}}</td>
+              <td style="width: 10%" class="table-danger">{{paired.Outstanding | number:'1.2'}}</td>
+          </tr>
+        </ng-container>
+      </tbody>
+
+        <!-- <ng-container cdkColumnDef="code">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;">Code</th>
+          <td cdk-cell *cdkCellDef="let row" [ngClass]="{'table-active': row.idx === 1}" class="font-weight-bold" style="width: 7%;">
+            {{row.Code}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="date">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 13%;">Date</th>
+          <td cdk-cell *cdkCellDef="let row" [ngClass]="{'table-active': row.idx === 1}" style="width: 13%;">
+            {{row.TxDate | date}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="age">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Age</th>
+          <td cdk-cell *cdkCellDef="let row" [ngClass]="{'table-active': row.idx === 1}" style="width: 10%;">
+            {{row.TxDate | age}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="ref">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;">Ref.</th>
+          <td cdk-cell *cdkCellDef="let row" [ngClass]="{'table-active': row.idx === 1}" style="width: 15%;">
+            {{row.Reference}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="des">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Descrip.</th>
+          <td cdk-cell *cdkCellDef="let row" [ngClass]="{'table-active': row.idx === 1}" style="width: 25%;">
+            {{row.Description}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="debit">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">DR</th>
+          <td cdk-cell *cdkCellDef="let row"  style="width: 10%;" class="table-primary">
+            {{row.Debit | number:'1.2'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="credit">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">CR</th>
+          <td cdk-cell *cdkCellDef="let row"  style="width: 10%;" class="table-success">
+            {{row.Credit | number:'1.2'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="out">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Outstd</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold table-danger" style="width: 10%;">
+            {{row.Outstanding | number:'1.2'}}
+          </td>
+        </ng-container> -->
+    </table>
+  </ng-container>
+</div>

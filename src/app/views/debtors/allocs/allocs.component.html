@@ -1,0 +1,178 @@
+<div class="row">
+  <div class="col-12">
+    <div class="mdc-card mb-3">
+      <!-- Header Section of Card -->
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center" style="border-radius: 4px;">
+        <h3 class="m-0 text-white flex-fill align-items-center">
+          Allocations View
+          <span *ngIf="who"> - {{who}}</span>
+          <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
+        </h3>
+        <button *ngIf="custinfo" (click)="loadInfo()" class="tgt-button-full tgt-btn-white d-flex py-1 px-2 mr-2 float-right" style="height: 37px;" dialogTrigger="save">Save Statement</button>
+        <div class="search-bar position-relative" style="width: 300px;z-index:2;">
+          <form (keyup)="search()" [formGroup]="searchForm" style="width: 300px;" class="form-inline float-right form-search" >
+            <input formControlName="search"  class="form-control p-3" style="width: 300px;" type="search" name="customersearch" id="customersearch" placeholder="Search for customer...">
+          </form>
+          <div *ngIf="(customerResults | async)?.length > 0 && searchForm.value.search !== ''" class="search-dialog position-absolute">
+            <ul class="py-2">
+              <li (click)="loadAlloc(res)" *ngFor="let res of customerResults | async; index as i; trackBy:trackByFn">
+                {{res.company_name}}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-6 pr-1">
+    <div class="mdc-card mb-3" style="overflow:hidden;">
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center" style="height: 10%;">
+        <h4 class="m-0 text-white flex-fill align-items-center">Debit View</h4>
+      </div>
+      <table class="table table-hover table-bordered tgt-table tgt-scroll" style="overflow-x: hidden;">
+        <thead>
+          <tr>
+            <th *ngFor="let col of columns" [ngStyle]="{'width': col.width}">
+              {{col.name}}
+            </th>
+          </tr>
+        </thead>
+        <tbody style="overflow-x: hidden;">
+          <ng-container *ngFor="let alloc of allocs | async;index as i;trackBy:trackByFn;">
+            <tr>
+              <td style="width: 12%" class="font-weight-bold">{{alloc.Code}}</td>
+              <td style="width: 13%">{{alloc.TxDate | date:'dd-MM-yy'}}</td>
+              <td style="width: 20%" class="font-weight-bold">{{alloc.Reference | uppercase}}</td>
+              <td style="width: 25%">{{alloc.Description}}</td>
+              <td style="width: 10%" class="table-primary">{{alloc.Debit | number:'1.2'}}</td>
+              <td style="width: 10%" class="table-success">{{alloc.Credit | number:'1.2'}}</td>
+              <td style="width: 10%" class="table-danger font-weight-bold">{{alloc.Outstanding | number:'1.2'}}</td>
+            </tr>
+            <tr *ngFor="let paired of alloc?.allocR;index as j;trackBy:trackByFn;" class="table-active font-italic">
+                <td style="width: 12%" class="font-weight-bold">
+                    <i style="color: red;font-size: 17px;" class="material-icons">
+                      subdirectory_arrow_right
+                    </i>
+                  {{paired.Code}}
+                </td>
+                <td style="width: 13%">{{paired.TxDate | date:'dd-MM-yy'}}</td>
+                <td style="width: 20%">{{paired.Reference}}</td>
+                <td style="width: 25%">{{paired.Description}}</td>
+                <td style="width: 10%" class="table-primary">{{paired.Debit | number:'1.2'}}</td>
+                <td style="width: 10%" class="table-success">{{paired.Credit | number:'1.2'}}</td>
+                <td style="width: 10%" class="table-danger">{{paired.Outstanding | number:'1.2'}}</td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div  class="col-6 pl-1">
+    <div class="mdc-card mb-3" style="overflow:hidden;">
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center" style="height: 10%;">
+        <h4 class="m-0 text-white flex-fill align-items-center">Credit View</h4>
+      </div>
+      <table class="table table-hover table-bordered tgt-table tgt-scroll" style="overflow-x: hidden;">
+        <thead>
+          <tr>
+            <th *ngFor="let col of columns" [ngStyle]="{'width': col.width}">
+              {{col.name}}
+            </th>
+          </tr>
+        </thead>
+        <tbody style="overflow-x: hidden;">
+          <ng-container *ngFor="let alloc of reverseallocs | async;index as i;trackBy:trackByFn;">
+            <tr>
+              <td style="width: 12%" class="font-weight-bold">{{alloc.Code}}</td>
+              <td style="width: 13%">{{alloc.TxDate | date:'dd-MM-yy'}}</td>
+              <td style="width: 20%" class="font-weight-bold">{{alloc.Reference | uppercase}}</td>
+              <td style="width: 25%">{{alloc.Description}}</td>
+              <td style="width: 10%" class="table-primary">{{alloc.Debit | number:'1.2'}}</td>
+              <td style="width: 10%" class="table-success">{{alloc.Credit | number:'1.2'}}</td>
+              <td style="width: 10%" class="table-danger font-weight-bold">{{alloc.Outstanding | number:'1.2'}}</td>
+            </tr>
+            <tr *ngFor="let paired of alloc?.allocR;index as j;trackBy:trackByFn;" class="table-active font-italic">
+                <td style="width: 12%" class="font-weight-bold">
+                    <i style="color: red;font-size: 17px;" class="material-icons">
+                      subdirectory_arrow_right
+                    </i>
+                  {{paired.Code}}
+                </td>
+                <td style="width: 13%">{{paired.TxDate | date:'dd-MM-yy'}}</td>
+                <td style="width: 20%">{{paired.Reference}}</td>
+                <td style="width: 25%">{{paired.Description}}</td>
+                <td style="width: 10%" class="table-primary">{{paired.Debit | number:'1.2'}}</td>
+                <td style="width: 10%" class="table-success">{{paired.Credit | number:'1.2'}}</td>
+                <td style="width: 10%" class="table-danger">{{paired.Outstanding | number:'1.2'}}</td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<ng-container *ngIf="statement | async as statement">
+  <table id="statementtable" class="d-none">
+    <thead>
+      <tr>
+        <th>Inv Date</th>
+        <th>Doc</th>
+        <th>Ref No.</th>
+        <th>Description</th>
+        <th>Debit<br>(Rs)</th>
+        <th>Credit<br>(Rs)</th>
+        <th>Balance<br>(Rs)</th>
+        <th>Cum - Bal<br>(Rs)</th>
+      </tr>
+    </thead>
+    <tbody>
+        <ng-container *ngFor="let item of statement?.records; index as i; trackBy: trackByFn;">
+          <tr>
+            <td>{{item.TxDate | date:'dd-MM-yy'}}</td>
+            <td>{{item.Code}}</td>
+            <td>{{item.Reference}}</td>
+            <td>{{item.Description}}</td>
+            <td>{{item.Debit | number:'1.2'}}</td>
+            <td>{{item.Credit !== '0.0' ? (item.Credit | number:'1.2') : '-'}}</td>
+            <td>{{item.Debit | number:'1.2'}}</td>
+            <td>{{item.allocated ? ((item.cum - item.allocated) | number:'1.2') : (item.cum | number: '1.2')}}</td>
+          </tr>
+          <ng-container *ngIf="item?.allocR">
+            <tr *ngFor="let it of item?.allocR; index as j; trackBy: trackByFn;">
+              <td>{{it.TxDate | date:'dd-MM-yy'}}</td>
+              <td>{{it.Code}}</td>
+              <td>{{it.Reference}}</td>
+              <td>{{it.Description}}</td>
+              <td>{{it.Debit !== '0.0' ? (it.Debit | number:'1.2') : '-'}}</td>
+              <td>{{it.Credit !== '0.0' ? (it.Credit | number:'1.2') : '-'}}</td>
+              <td>{{it.Debit !== '0.0' ? (it.Debit | number:'1.2') : '-'}}</td>
+              <td>{{item.cum | number:'1.2'}}</td>
+            </tr>
+          </ng-container>
+        </ng-container>
+    </tbody>
+  </table>
+
+  <table id="baltable" class="d-none">
+    <thead>
+      <tr>
+        <th>Amount Due (Rs)</th>
+        <th *ngFor="let item of statement?.balance; index as i; trackBy:trackByFn;">{{item.Name}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{baltotal | number:'1.2-2'}}</td>
+        <td *ngFor="let item of statement?.balance; index as i; trackBy:trackByFn;">{{item.Outstanding | number:'1.2-2'}}</td>
+      </tr>
+    </tbody>
+  </table>
+</ng-container>
+
+<app-dialog dialogID="save" title="Save Statement As PDF" accept="Ok" cancel="Cancel" (onAccept)="renderPDF()">
+  <p>Status: {{status}}</p>
+</app-dialog>

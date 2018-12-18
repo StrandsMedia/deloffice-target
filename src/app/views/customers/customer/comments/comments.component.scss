@@ -1,0 +1,40 @@
+$mdc-theme-primary: #0c127e;
+$mdc-theme-secondary: #d20c1d;
+
+:host {
+    display: block;
+}
+
+.round-image {
+    border-radius: 50%;
+}
+
+.bg-normal {
+    background-color: $mdc-theme-primary;
+}
+
+.bg-admin {
+    background-color: $mdc-theme-secondary;
+}
+
+ul#target-tabs {
+    position: relative;
+    top: 1px;
+}
+
+ul#target-tabs li a {
+    background-color: rgba(255,255,255,0.5);
+    font-weight: bold;
+}
+
+ul#target-tabs li:hover {
+    margin-bottom: 0px !important;
+}
+ul#target-tabs li a:hover {
+    border: none !important;
+    outline: none;
+}
+
+ul#target-tabs li a.active {
+    background-color: rgba(255,255,255,1);
+}

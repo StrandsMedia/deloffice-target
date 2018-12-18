@@ -16,6 +16,11 @@ import { InprogressComponent } from '../../views/workflow/sessions/inprogress/in
 import { ArchivedComponent } from '../../views/workflow/sessions/archived/archived.component';
 
 import { Subscription } from 'rxjs';
+import { NewsComponent } from 'src/app/views/customers/customer/news/news.component';
+import { CommsComponent } from 'src/app/views/customers/customer/comments/comments.component';
+import { PricingComponent } from 'src/app/views/customers/customer/pricing/pricing.component';
+import { DetailsComponent } from 'src/app/views/customers/customer/details/details.component';
+import { AllocsComponent } from 'src/app/views/customers/customer/allocs/allocs.component';
 
 @Directive({
   // tslint:disable-next-line:directive-selector
@@ -23,17 +28,23 @@ import { Subscription } from 'rxjs';
 })
 export class DynamicComponentDirective implements OnInit, OnDestroy, DoCheck {
   @Input() dynamic: string;
+  @Input() id?: string;
 
   tempString: string;
 
   data: Subscription;
-  private elRef;
+  private elRef: ViewContainerRef;
 
   readonly templateMapper = {
     create: PushComponent,
     provisional: TempComponent,
     inprogress: InprogressComponent,
-    archived: ArchivedComponent
+    archived: ArchivedComponent,
+    jobs: NewsComponent,
+    comments: CommsComponent,
+    pricing: PricingComponent,
+    details: DetailsComponent,
+    allocations: AllocsComponent
   };
 
   constructor(
@@ -65,6 +76,7 @@ export class DynamicComponentDirective implements OnInit, OnDestroy, DoCheck {
     const componentFactory = this.factory.resolveComponentFactory(this.getComponentByAlias(name));
     this.elRef.clear();
     const componentRef = this.elRef.createComponent(componentFactory);
+    (<any>componentRef.instance).data = this.id;
   }
 
   private getComponentByAlias(alias: string) {

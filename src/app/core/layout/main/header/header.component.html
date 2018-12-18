@@ -2,7 +2,7 @@
   <div class="col d-flex flex-md-row flex-sm-column flex-column">
     <div class="mx-auto ml-lg-0 mr-lg-3 h-100">
       <button id="menu" class="tgt-button mdc-button d-flex h-100 px-3">
-        <i class="material-icons">menu</i>
+        <i style="pointer-events:none" class="material-icons">menu</i>
       </button>
     </div>
     <div class="mx-auto ml-lg-0 mr-lg-3 h-100">
@@ -13,7 +13,7 @@
     
     <div class="mx-auto mx-lg-0 h-100 position-relative">
       <form id="search" class="w-100 h-100 d-flex" style="align-items: center;" autocomplete="off">
-        <input (keydown)="searchAuto($event)" type="search" name="search" id="searchfield" class="form-control h-100" placeholder="Search for customers..." #search>
+        <input (keyup)="searchAuto($event)" type="search" name="search" id="searchfield" class="form-control h-100" placeholder="Search for customers..." #search>
         <label for="search"></label>
       </form>
       <div *ngIf="search.value !== '' && searchResults?.records?.length > 0" id="search-dropdown" class="position-absolute">

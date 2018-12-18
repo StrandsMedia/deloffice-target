@@ -1,15 +1,18 @@
 <div class="row">
-    <div class="col-12">
+    <div *ngIf="customer | async as customer" class="col-12">
         <div class="mdc-card py-3" style="padding: 25px;">
             <div class="d-flex">
                 <div id="company" class="pr-4" style="border-right: 1px solid #eee;">
-                    <h4>{{customer?.company_name}}</h4>
+                    <h4>{{customer?.customerCode ? customer?.customerCode + ' - ' : null}}{{customer?.company_name}}</h4>
                     <p class="mb-2" style="font-size: 15px;"><strong>{{customer?.address || '-'}}</strong></p>
                     <p class="mb-2"><strong>Sector: </strong>{{customer?.sector_name || '-'}}</p>
                     <p class="mb-2"><strong>Subsector: </strong>{{customer?.subsector_name || '-'}}</p>
                     <p class="mb-2">Last Updated on: {{customer?.updatedAt | date}}</p>
                     <button class="tgt-button-full tgt-btn-green px-3 py-2 my-1 mr-3">
                         Follow
+                    </button>
+                    <button class="tgt-button-full tgt-btn-white px-3 py-2 my-1 mr-3" dialogTrigger="statement">
+                        Generate Statement
                     </button>
                     <button class="tgt-button-full tgt-btn-white px-3 py-2 my-1 mr-3">
                         Edit Profile
@@ -21,39 +24,20 @@
                 <div class="px-4 flex-fill d-flex">
                     <div id="contact" class="carousel slide align-self-center w-100" data-ride="carousel">
                         <div class="carousel-inner">
-                            <div class="carousel-item active">
+                            <div *ngFor="let person of customer?.contact_details; index as i;" [class.active]="i === 0" class="carousel-item">
                                 <p class="mb-2">
-                                    <i class="material-icons">person</i><strong>Contact Person Name: </strong>{{customer?.contact_person || 'N/A'}}
-                                </p>
-                                <p class="mb-2">
-                                    <i class="material-icons">phone</i><strong>Tel: </strong>{{customer?.tel || 'N/A'}}
+                                    <i class="material-icons">person</i><strong>Contact Person Name: </strong>{{person?.contact_person || 'N/A'}}
                                 </p>
                                 <p class="mb-2">
-                                    <i class="material-icons">print</i><strong>Fax: </strong>{{customer?.fax || 'N/A'}}
+                                    <i class="material-icons">phone</i><strong>Tel: </strong>{{person?.tel || 'N/A'}} - <strong>Fax: </strong>{{person?.fax || 'N/A'}}
                                 </p>
                                 <p class="mb-2">
-                                    <i class="material-icons">smartphone</i><strong>Mob: </strong>{{customer?.mob || 'N/A'}}
-                                </p>
-                                <p class="mb-0">
-                                    <i class="material-icons">mail</i><strong>Email: </strong>{{customer?.email || 'N/A'}}
-                                </p>
-                            </div>
-                            <div class="carousel-item">
-                                <p class="mb-2">
-                                    <i class="material-icons">person</i><strong>Contact Person: </strong>{{customer?.contact_person2 || 'N/A'}}
+                                    <i class="material-icons">smartphone</i><strong>Mob: </strong>{{person?.mob || 'N/A'}}
                                 </p>
                                 <p class="mb-2">
-                                    <i class="material-icons">phone</i><strong>Tel: </strong>{{customer?.tel2 || 'N/A'}}
+                                    <i class="material-icons">mail</i><strong>Email: </strong>{{person?.email || 'N/A'}}
                                 </p>
-                                <p class="mb-2">
-                                    <i class="material-icons">print</i><strong>Fax: </strong>{{customer?.fax2 || 'N/A'}}
-                                </p>
-                                <p class="mb-2">
-                                    <i class="material-icons">smartphone</i><strong>Mob: </strong>{{customer?.mob2 || 'N/A'}}
-                                </p>
-                                <p class="mb-0">
-                                    <i class="material-icons">mail</i><strong>Email: </strong>{{customer?.email2 || 'N/A'}}
-                                </p>
+                                <button (click)="switchData(person, customer?.cust_id)" dialogTrigger="contactDet" class="tgt-button-full d-flex h-100 px-3 py-2 mr-2 float-left">Edit Contact Person</button>
                             </div>
                         </div>
                         <a class="carousel-control-next w-auto" href="#contact" role="button" data-slide="next">
@@ -62,43 +46,56 @@
                         </a>
                     </div>
                 </div>
-                <!-- <div class="px-3 flex-fill" style="border-right: 1px solid #eee;">
-                    <p class="mb-2">
-                        <i class="material-icons">person</i><strong>Contact Person Name: </strong>{{customer?.contact_person2 || 'N/A'}}
-                    </p>
-                    <p class="mb-2">
-                        <i class="material-icons">phone</i><strong>Tel: </strong>{{customer?.tel2 || 'N/A'}}
-                    </p>
-                    <p class="mb-2">
-                        <i class="material-icons">print</i><strong>Fax: </strong>{{customer?.fax2 || 'N/A'}}
-                    </p>
-                    <p class="mb-2">
-                        <i class="material-icons">smartphone</i><strong>Mob: </strong>{{customer?.mob2 || 'N/A'}}
-                    </p>
-                    <p class="mb-2">
-                        <i class="material-icons">mail</i><strong>Email: </strong>{{customer?.email2 || 'N/A'}}
-                    </p>
-                </div>
-                <div class="px-3 flex-fill">
-                    <p class="mb-2">
-                        <i class="material-icons">person</i><strong>Contact Person Name: </strong>{{customer?.contact_person3 || 'N/A'}}
-                    </p>
-                    <p class="mb-2">
-                        <i class="material-icons">phone</i><strong>Tel: </strong>{{customer?.tel3 || 'N/A'}}
-                    </p>
-                    <p class="mb-2">
-                        <i class="material-icons">print</i><strong>Fax: </strong>{{customer?.fax3 || 'N/A'}}
-                    </p>
-                    <p class="mb-2">
-                        <i class="material-icons">smartphone</i><strong>Mob: </strong>{{customer?.mob3 || 'N/A'}}
-                    </p>
-                    <p class="mb-2">
-                        <i class="material-icons">mail</i><strong>Email: </strong>{{customer?.email3 || 'N/A'}}
-                    </p>
-                </div> -->
             </div>
         </div>
+
+        <app-dialog dialogID="contactDet" title="Edit Contact Details" accept="Submit" cancel="Cancel" (onAccept)="submit()">
+            <form [formGroup]="editContactForm">
+                <div class="row">
+                    <div class="col-12">
+                        <p>Edit the information below to modify the customer profile:</p>
+                    </div>
+                </div>
+        
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="contact_person">Contact Person Name</label>
+                            <input formControlName="contact_person" type="text" class="form-control" name="contact_person" id="contact_person">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                        <label for="email">Email</label>
+                        <input formControlName="email" type="email" class="form-control" name="email" id="email">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label for="tel">Tel</label>
+                            <input formControlName="tel" type="text" class="form-control" name="tel" id="tel">
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label for="fax">Fax</label>
+                            <input formControlName="fax" type="text" class="form-control" name="fax" id="fax">
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label for="mob">Mob</label>
+                            <input formControlName="mob" type="text" class="form-control" name="mob" id="mob">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </app-dialog>  
     </div>
+
+
     <div class="col-12">
         <div class="mdc-tab-bar my-3" role="tablist" aria-label="Navigation">
             <div class="mdc-tab-scroller">
@@ -131,6 +128,15 @@
                             </span>
                             <span class="mdc-tab__ripple"></span>
                         </button>
+                        <button (click)="tabstatus = 'allocations'" class="mdc-tab" role="tab" aria-selected="false" tabindex="-1">
+                            <span class="mdc-tab__content">
+                                <span class="mdc-tab__text-label">Allocations</span>
+                            </span>
+                            <span class="mdc-tab-indicator">
+                                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                            </span>
+                            <span class="mdc-tab__ripple"></span>
+                        </button>
                         <button (click)="tabstatus = 'details'" class="mdc-tab" role="tab" aria-selected="false" tabindex="-1">
                             <span class="mdc-tab__content">
                                 <span class="mdc-tab__text-label">Details</span>
@@ -147,22 +153,67 @@
     </div>
 </div>
 
-<div [ngSwitch]="tabstatus" class="row">
+
+<div class="row">
     <div class="col-8">
-        <ng-container *ngSwitchCase="'jobs'">
-            <div class="mdc-card">
-                <div class="p-3">
-                    <h4 class="card-heading">Age Analysis</h4>
-                </div>
-            </div>
-        </ng-container>
+        <div [dynamic]="tabstatus" [id]="(customer | async)?.customerCode"></div>
     </div>
     <div class="col-4">
-        <div class="mdc-card">
+        <div *ngIf="balance | async as balance" class="mdc-card" style="min-height:370px;max-height: 370px;overflow-y:scroll;">
             <div class="p-3">
                 <h4 class="card-heading">Age Analysis</h4>
-                <table class="table table-hover table-bordered tgt-table"></table>
+                <table cdk-table [dataSource]="balance?.records" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table m-0" style="font-size: 13px;" >
+                    <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+                    <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+                    <tr cdk-footer-row *cdkFooterRowDef="columns"></tr>
+
+                    <ng-container cdkColumnDef="terms">
+                        <th cdk-header-cell *cdkHeaderCellDef style="width: 50%;"></th>
+                        <td cdk-cell *cdkCellDef="let row; index as i;" class="font-weight-bold" style="width: 50%;">
+                            {{row.Name}}
+                            <span *ngIf="row.id == balance.terms" class="ml-2 badge badge-pill badge-success badge-round">&nbsp;</span>
+                        </td>
+                        <td cdk-footer-cell *cdkFooterCellDef class="font-weight-bold" style="width: 50%;">TOTAL</td>
+                    </ng-container>
+                    <ng-container cdkColumnDef="balance">
+                        <th cdk-header-cell *cdkHeaderCellDef style="width: 50%;">Balance</th>
+                        <td cdk-cell *cdkCellDef="let row" class="text-left" style="width: 50%;">
+                            {{row.Outstanding !== 0 ? ('Rs. '+ (getAmt(row.Outstanding) | number:'1.2')) : '-'}}
+                        </td>
+                        <td cdk-footer-cell *cdkFooterCellDef class="font-weight-bold text-left" style="width: 50%;">{{('Rs. ' + (total | number:'1.2')) || '-'}}</td>
+                    </ng-container>
+                </table>
             </div>
         </div>
     </div>
 </div>
+
+<app-dialog dialogID="statement" title="Save Statement of Account" accept="OK" cancel="Cancel"></app-dialog>
+
+<app-snackbar></app-snackbar>
+
+<table *ngIf="statement | async as statement" class="d-none">
+    <thead>
+        <tr>
+            <th>Invoice<br>Date</th>
+            <th>Doc</th>
+            <th>Ref No.</th>
+            <th>Description</th>
+            <th>Debit<br>(Rs)</th>
+            <th>Credit<br>(Rs)</th>
+            <th>Balance<br>(Rs)</th>
+            <th>Cum - Bal<br>(Rs)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let st of statement; index as i;">
+            <td>{{st.TxDate | date}}</td>
+            <td>{{st.Reference}}</td>
+            <td>{{st.Description}}</td>
+            <td>{{st.Debit}}</td>
+            <td>{{st.Credit}}</td>
+            <td>{{st.Outstanding}}</td>
+            <td>{{st.Debit}}</td>
+        </tr>
+    </tbody>
+</table>

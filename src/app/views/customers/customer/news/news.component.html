@@ -1,0 +1,132 @@
+<div *ngIf="entries | async as entries" class="mdc-card mb-4" style="min-height:370px;max-height: 370px;overflow-y:scroll;">
+    <!--  Null -->
+    <ng-container *ngIf="entries?.workflow?.length === 0 && entries?.printing?.length === 0 && entries?.tenders?.length === 0">
+        <div class="alert alert-info m-3 p-3 d-flex align-items-center">
+            <i class="material-icons mr-2">error</i>
+            <p class="mb-0">
+                There are no entries for this customer.
+            </p>
+        </div>
+    </ng-container>
+  <!-- Latest Workflow Entries -->
+  <ng-container *ngIf="entries?.workflow?.length > 0">
+    <div class="p-3">
+        <h4 class="card-heading mb-0">Latest Workflow Entries</h4>
+    </div>
+    <div class="px-3">
+        <table cdk-table [dataSource]="entries.workflow" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table">
+            <tr cdk-header-row *cdkHeaderRowDef="wf_columns"></tr>
+            <tr cdk-row *cdkRowDef="let row; columns: wf_columns"></tr>
+  
+            <ng-container cdkColumnDef="workflow_id">
+                <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">WF ID</th>
+                <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 10%;">
+                    {{row.workflow_id}}
+                </td>
+            </ng-container>
+            <ng-container cdkColumnDef="time">
+                <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;">Date</th>
+                <td cdk-cell *cdkCellDef="let row" style="width: 15%;">
+                    {{row.time | date}}
+                </td>
+            </ng-container>
+            <ng-container cdkColumnDef="company_name">
+                <th cdk-header-cell *cdkHeaderCellDef style="width: 30%;">Company</th>
+                <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 30%;">
+                    {{row.company_name}}
+                </td>
+            </ng-container>
+            <ng-container cdkColumnDef="step">
+                <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;">Status</th>
+                <td cdk-cell *cdkCellDef="let row" style="width: 15%;">
+                    {{row.step || '-'}}
+                </td>
+            </ng-container>
+            <ng-container cdkColumnDef="product">
+                <th cdk-header-cell *cdkHeaderCellDef style="width: 30%;">Products</th>
+                <td cdk-cell *cdkCellDef="let row" style="width: 30%;">
+                    {{row.product || '-'}}
+                </td>
+            </ng-container>
+        </table>
+    </div>
+  </ng-container>
+
+  <!-- Latest Printing Jobs -->
+  <ng-container *ngIf="entries?.printing?.length > 0">
+    <div class="p-3">
+        <h4 class="card-heading mb-0">Latest Printing Jobs</h4>
+    </div>
+    <div class="px-3">
+        <table cdk-table [dataSource]="entries?.printing" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table">
+            <tr cdk-header-row *cdkHeaderRowDef="pr_columns"></tr>
+            <tr cdk-row *cdkRowDef="let row; columns: pr_columns"></tr>
+  
+            <ng-container cdkColumnDef="job_id">
+                <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Job No.</th>
+                <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 25%;">
+                    {{row.job_id}}
+                </td>
+            </ng-container>
+            <ng-container cdkColumnDef="product">
+                <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Product</th>
+                <td cdk-cell *cdkCellDef="let row"  style="width: 25%;">
+                    {{row.product}}
+                </td>
+            </ng-container>
+            <ng-container cdkColumnDef="paperspecs">
+                <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Paper Specifications</th>
+                <td cdk-cell *cdkCellDef="let row" style="width: 25%;">
+                    {{row.paperspecs}}
+                </td>
+            </ng-container>
+            <ng-container cdkColumnDef="qtyorder">
+                <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Qty Ordered</th>
+                <td cdk-cell *cdkCellDef="let row" style="width: 25%;">
+                    {{row.qtyorder}}
+                </td>
+            </ng-container>
+  
+        </table>
+    </div>
+  </ng-container>
+
+  <!-- Latest Tender Jobs -->
+  <ng-container *ngIf="entries?.tenders?.length > 0">
+    <div class="p-3">
+        <h4 class="card-heading mb-0">Latest Tender Jobs</h4>
+    </div>
+    <div class="px-3">
+        <table cdk-table [dataSource]="entries?.tenders" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table">
+            <tr cdk-header-row *cdkHeaderRowDef="td_columns"></tr>
+            <tr cdk-row *cdkRowDef="let row; columns: td_columns"></tr>
+  
+            <ng-container cdkColumnDef="tid">
+                <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Tender ID</th>
+                <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 10%;">
+                    {{row.tid}}
+                </td>
+            </ng-container>
+            <ng-container cdkColumnDef="product">
+                <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Product</th>
+                <td cdk-cell *cdkCellDef="let row" style="width: 10%;">
+                    {{row.product}}
+                </td>
+            </ng-container>
+            <ng-container cdkColumnDef="estimated_quantity">
+                <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Estimated Quantity</th>
+                <td cdk-cell *cdkCellDef="let row" style="width: 10%;">
+                    {{row.estimated_quantity}}
+                </td>
+            </ng-container>
+            <ng-container cdkColumnDef="schedule">
+                <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Scheduled Date</th>
+                <td cdk-cell *cdkCellDef="let row" style="width: 10%;">
+                    {{row.schedule === '0000-00-00 00:00:00' ? '-': (row.schedule | date)}}
+                </td>
+            </ng-container>
+  
+        </table>
+    </div>
+  </ng-container>
+</div>

@@ -83,50 +83,136 @@
 
             <ng-container cdkColumnDef="tempid">
               <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">TID</th>
-              <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 5%;"></td>
+              <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center" style="width: 5%;">{{row.invoice_id}}</td>
             </ng-container>
             <ng-container cdkColumnDef="wfid">
               <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">WF ID</th>
-              <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 5%;"></td>
+              <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 5%;">{{row.workflow_id || '-'}}</td>
             </ng-container>
             <ng-container cdkColumnDef="date">
-              <th cdk-header-cell *cdkHeaderCellDef style="width: 6%;">Date</th>
-              <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 6%;"></td>
+              <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Date</th>
+              <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 9%;">{{row.InvDate | date}}</td>
             </ng-container>
             <ng-container cdkColumnDef="customer">
-              <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;">Customer</th>
-              <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 15%;"></td>
+              <th cdk-header-cell *cdkHeaderCellDef style="width: 16%;">Customer</th>
+              <td routerLink="/customers/{{row.cust_id}}" cdk-cell *cdkCellDef="let row" class="font-weight-bold point" style="width: 16%;">{{row.company_name || '-'}}</td>
             </ng-container>
             <ng-container cdkColumnDef="itemcount">
               <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">No. of items</th>
-              <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 9%;"></td>
+              <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 9%;">{{row.invAmt || '-'}}</td>
             </ng-container>
             <ng-container cdkColumnDef="poref">
               <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">P.O. Ref.</th>
-              <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 8%;"></td>
+              <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 8%;">{{row.poNumber || '-'}}</td>
             </ng-container>
             <ng-container cdkColumnDef="invno">
               <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">Inv No.</th>
-              <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 8%;"></td>
+              <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 8%;">{{row.invNumber || '-'}}</td>
             </ng-container>
             <ng-container cdkColumnDef="total">
-              <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Total (VAT incl)</th>
-              <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 9%;"></td>
+              <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Total<br> (VAT incl)</th>
+              <td cdk-cell *cdkCellDef="let row" class="text-right" style="width: 9%;">{{row.TotalIncl}}</td>
             </ng-container>
             <ng-container cdkColumnDef="notes">
               <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;">Notes</th>
-              <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 15%;"></td>
+              <td cdk-cell *cdkCellDef="let row" class="text-left" style="width: 15%;">{{row.notes || '-'}}</td>
             </ng-container>
             <ng-container cdkColumnDef="user">
               <th cdk-header-cell *cdkHeaderCellDef style="width: 6%;">Agent</th>
-              <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 6%;"></td>
+              <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 6%;">{{row.sales_rep || '-'}}</td>
             </ng-container>
             <ng-container cdkColumnDef="edit">
-              <th cdk-header-cell *cdkHeaderCellDef style="width: 14%;"></th>
-              <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 14%;"></td>
+                <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;"></th>
+                <td cdk-cell *cdkCellDef="let row" class="" style="width: 10%;">
+                    <button (click)="loadInfo(row)" class="tgt-button-full d-flex h-100 py-1 px-2 mr-2 float-left" dialogTrigger="save">
+                        <i class="material-icons" style="line-height: 30px;">save</i>
+                    </button>
+                </td>
             </ng-container>
 
         </table>
     </div>
   </div>
 </div>
+
+<app-dialog dialogID="save" title="Save Document as PDF" accept="Ok" cancel="Cancel" (onAccept)="renderPDF(info)">
+
+</app-dialog>
+
+<table id="maintable" class="d-none">
+    <thead>
+        <tr>
+            <th>Code</th>
+            <th>Description</th>
+            <th>Qty</th>
+            <th>Unit Price<br>MUR</th>
+            <th>Price Ex VAT<br>MUR</th>
+            <th>VAT Rate<br>%</th>
+            <th>VAT Amount<br>MUR</th>
+            <th>Total Amount<br>MUR</th>
+        </tr>
+    </thead>
+    <tbody>
+        <ng-container *ngFor="let prod of info?.lines; index as i; trackBy: trackByFn">
+            <tr>
+                <td>{{prod?.p_id}}</td>
+                <td>{{prod?.Description_1}}<br>{{prod?.Description_2}}<br>{{prod?.Description_3}}</td>
+                <td>{{prod?.qty}}</td>
+                <td>{{prod?.fExclPrice | number:'1.2-2'}}</td>
+                <td>{{prod?.fExclPrice * prod?.qty | number:'1.2-2'}}</td>
+                <td>{{prod?.TaxRate | number:'1.0-0'}} %</td>
+                <td>{{(prod?.TaxRate / 100) * (prod?.fExclPrice * prod?.qty) | number:'1.2-2'}}</td>
+                <td>{{(prod?.fExclPrice * prod?.qty) + ((prod?.TaxRate / 100) * (prod?.fExclPrice * prod?.qty)) | number:'1.2-2'}}</td>
+            </tr>
+        </ng-container>
+    </tbody>
+</table>
+
+<table id="totaltable" style="display: none;">
+    <tbody>
+        <tr class="last">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="bolder">
+                {{info?.TotalExcl | number:'1.2-2'}}
+            </td>
+            <td></td>
+            <td class="bolder">
+                {{info?.TotalTax | number:'1.2-2'}}
+            </td>
+            <td class="bolder">
+                {{info?.TotalIncl | number:'1.2-2'}}
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<table id="signtable" style="display: none;">
+    <thead>
+        <tr>
+            <th class="clear"></th>
+            <th>Prepared by</th>
+            <th>Delivered by</th>
+            <th>Received by</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Date</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Name</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="lilmore">Signature<br><br></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>

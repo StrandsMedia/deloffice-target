@@ -6,7 +6,7 @@ import { CustomerService } from '../../../../common/services/customer.service';
 import { PlatformService } from '../../../../common/services/platform.service';
 
 import { fromEvent, of, BehaviorSubject, Observable } from 'rxjs';
-import { delay, switchMap } from 'rxjs/operators';
+import { delay, switchMap, debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-header',
@@ -35,7 +35,7 @@ export class HeaderComponent implements OnInit {
 
   searchField() {
     if (this.platform.platformCheck) {
-      const searchField = <HTMLInputElement>document.querySelector('input[type="search"]');
+      const searchField = <HTMLInputElement>document.querySelector('input[type="search"]#searchfield');
       fromEvent(searchField, 'blur').subscribe(() => {
         searchField.placeholder = 'Search for customers...';
         if (searchField.value.trim().length > 0) {
@@ -60,6 +60,7 @@ export class HeaderComponent implements OnInit {
       this.keyword.next(q);
 
       this.keywordObs.pipe(
+        debounceTime(2000),
         switchMap((value) => {
           return this.cust.search(value);
         })
