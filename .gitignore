@@ -10,6 +10,7 @@
 
 # Others
 /src/environments/*
+/src/environments
 
 # IDEs and editors
 /.idea
