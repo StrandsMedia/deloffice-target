@@ -11,6 +11,7 @@
 # Others
 /src/environments/*
 /src/environments
+/src/environments/environment.ts
 
 # IDEs and editors
 /.idea
