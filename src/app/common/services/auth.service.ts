@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+
+import { AuthorizationService } from '../utils/auth/authorization.service';
+import { LocalStorage } from '../classes/localstorage';
 
 import { environment } from '../../../environments/environment';
 
-import { Observable, of } from 'rxjs';
-import { debounceTime, delay, map } from 'rxjs/operators';
+import { Observable, of, timer, from } from 'rxjs';
+import { debounceTime, delay, map, switchMap, filter, tap } from 'rxjs/operators';
 
 interface User {
   status: string;
@@ -20,11 +24,22 @@ interface User {
 export class AuthService {
 
   private url = environment.apiUrl;
+  private _localStorage = new LocalStorage<User>();
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private _auth: AuthorizationService,
+    private _http: HttpClient,
+    private _route: ActivatedRoute,
+    private _router: Router
+  ) { }
 
+  /**
+   * Function retrieves the current logged in user, stored in localStorage.
+   * Current user is retrieved as an observable.
+   * Is somewhat useless to use an observable. Should have been a promise based getter.
+   */
   get currentUser(): Observable<User> {
-    return of(JSON.parse(localStorage.getItem('currentUser'))).pipe(
+    return this._localStorage.select('currentUser').pipe(
       map((data) => {
         if (data) {
           return data;
@@ -35,12 +50,18 @@ export class AuthService {
     );
   }
 
-  login(info) {
-    return this.http.post(this.url + 'user/login.php', info).pipe(
+  /** Function sends a request to the database for the credentials input and returns a status.
+   * The status will determine if login was successful or not.
+   * @param info
+   * Should contain username and password as valid information for successful login.
+   * On success, the current user data is stored inside the localStorage item.
+   */
+  login(info): Observable<User> {
+    return this._http.post<User>(this.url + 'user/login.php', info).pipe(
       delay(1000),
       map((res: User) => {
         if (res.status === 'loggedin') {
-          localStorage.setItem('currentUser', JSON.stringify(res));
+          this._localStorage.set('currentUser', res);
           return res;
         } else {
           return res;
@@ -49,8 +70,8 @@ export class AuthService {
     );
   }
 
-  logout() {
-    return of(localStorage.removeItem('currentUser'));
+  logout(): Observable<void> {
+    return of(this._localStorage.remove('currentUser'));
   }
 
   canRead(user: User): boolean {
@@ -79,11 +100,68 @@ export class AuthService {
     return false;
   }
 
-  private updateToken(user) {
-    //
+  public getPermissions(): Observable<any> {
+    return this._http.get(this.url + 'permission/read.php');
   }
 
-  public getUsers() {
-    return this.http.get(this.url + 'user/read.php');
+  public changePermission(info): Observable<any> {
+    return this._http.post(this.url + 'permission/change.php', info);
+  }
+
+  public loadPermissions(): Observable<any> {
+    return this._router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      map(data => this._route.snapshot),
+      map(snapshot => {
+        if (snapshot) {
+          let data = ({...snapshot.data, ...snapshot.firstChild.data, ...snapshot.firstChild.firstChild.data});
+          if (snapshot.firstChild.firstChild.firstChild) {
+            data = ({...snapshot.data, ...snapshot.firstChild.data, ...snapshot.firstChild.firstChild.data, ...snapshot.firstChild.firstChild.firstChild.data});
+          }
+          return data;
+        } else {
+          return {};
+        }
+      }),
+      switchMap(data => {
+        if (data && data.id) {
+          return this.getPermissionByModule(data.id);
+        } else {
+          return of({});
+        }
+      })
+    );
+  }
+
+  private getPermissionByModule(id): Observable<any> {
+    return this._http.get(this.url + 'permission/read_module.php?id=' + id);
+  }
+
+  public createUser(info): Observable<any> {
+    return this._http.post(this.url + 'user/create.php', info);
+  }
+
+  public getUsers(): Observable<any> {
+    return this._http.get(this.url + 'user/read.php');
+  }
+
+  public updateUser(info): Observable<any> {
+    return this._http.post(this.url + 'user/update.php', info);
+  }
+
+  public getPastelSessions(): Observable<any> {
+    return timer(0, 10000).pipe(
+      switchMap((v) => {
+        return this._http.get(this.url + 'user/pastel/read.php');
+      }),
+      map((data) => {
+        data['updatedAt'] = new Date();
+        return data;
+      })
+    );
+  }
+
+  public killSession(id): Observable<any> {
+    return this._http.get(this.url + 'user/pastel/kill.php?id=' + id);
   }
 }

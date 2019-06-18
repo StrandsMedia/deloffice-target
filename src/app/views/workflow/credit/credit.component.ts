@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
+import { AuthService } from 'src/app/common/services/auth.service';
 import { WorkflowService } from '../../../common/services/workflow.service';
 
 import { Observable } from 'rxjs';
 import { map, tap, delay } from 'rxjs/operators';
+import { MaterialService } from 'src/app/common/services/material.service';
 
 @Component({
   selector: 'app-credit',
@@ -24,8 +26,26 @@ export class CreditComponent implements OnInit {
     'vehicle',
     'process'
   ];
+  selected: any = null;
+  user: any;
 
-  constructor(private fb: FormBuilder, private wf: WorkflowService) { }
+  public creditForm: FormGroup = this.fb.group({
+    status: [null, Validators.required],
+    note: null,
+    comment: null,
+    user: null,
+    step: 9,
+    workflow_id: null
+  });
+
+  constructor(
+    private auth: AuthService,
+    private fb: FormBuilder,
+    private mdc: MaterialService,
+    private wf: WorkflowService
+  ) {
+    auth.currentUser.subscribe(data => this.user = data);
+  }
 
   ngOnInit() {
     this.get();
@@ -44,6 +64,28 @@ export class CreditComponent implements OnInit {
 
   trackByFn(index, item) {
     return index;
+  }
+
+  assign(row) {
+    this.creditForm.controls['step'].setValue(7);
+    this.creditForm.controls['user'].setValue(+this.user.user_id);
+    this.creditForm.controls['workflow_id'].setValue(+row.workflow_id);
+    this.selected = row;
+  }
+
+  processNote() {
+    this.wf.changeStatus(this.creditForm.value).subscribe(
+      (data) => {
+        this.mdc.materialSnackBar(data);
+      },
+      (err) => {
+        this.mdc.materialSnackBar(err.error);
+      },
+      () => {
+        this.get();
+        this.creditForm.reset();
+      }
+    );
   }
 
 }

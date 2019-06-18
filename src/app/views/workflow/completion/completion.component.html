@@ -1,0 +1,82 @@
+<div class="row">
+  <div class="col">
+      <div class="mdc-card mb-3" style="overflow: hidden;">
+        <!-- Header Section of Card -->
+        <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+          <h3 class="m-0 text-white flex-fill align-items-center">
+            Completion Report
+            <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
+          </h3>
+          <div>
+            <form>
+              <select (change)="get()" [(ngModel)]="status" name="filter" id="filter" class="form-control w-100">
+                <option [value]="0">All</option>
+                <option [value]="1">Not on Target</option>
+              </select>
+            </form>
+          </div>
+        </div>
+
+        <!-- Beginning of data table -->
+        <table cdk-table respHeight [dataSource]="data$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+          <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+          <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+
+          <ng-container cdkColumnDef="date">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">Date</th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 8%;">
+              {{row.OrderDate | date:'dd-MM-yyyy'}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="customerCode">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">Code</th>
+            <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center" style="width: 8%;">
+              {{row.Account}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="company_name">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Company Name</th>
+            <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 25%;">
+              {{row.Name}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="invNumber">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;">Invoice No.</th>
+            <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center" style="width: 15%;">
+              {{row.InvNumber}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="status">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;">Status</th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center font-italic" style="width: 15%;">
+              {{row.status || '-'}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="workflow_id">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">WF ID</th>
+            <td [routerLink]="row.workflow_id ? '/workflow/event/' + row.workflow_id : null" cdk-cell *cdkCellDef="let row" [class.pointer]="row.workflow_id" class="font-weight-bold text-center" style="width: 8%;">
+              {{row.workflow_id || '-'}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="sessionID">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">Session ID</th>
+            <td [routerLink]="row.sessionID ? '/workflow/job/' + row.sessionID : null" cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center" style="width: 8%;" [class.pointer]="row.sessionID">
+              {{row.sessionID || '-'}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="edit">
+            <th cdk-header-cell *cdkHeaderCellDef class="flex-fill"></th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center flex-fill">
+              <button class="tgt-button-full bg-primary d-flex h-100 py-1 px-2 float-left">
+                <i class="material-icons" style="line-height: 30px;">close</i>
+              </button>
+            </td>
+          </ng-container>
+
+          
+        </table>
+
+
+      </div>
+  </div>
+</div>

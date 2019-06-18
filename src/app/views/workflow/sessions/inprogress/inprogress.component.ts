@@ -42,12 +42,22 @@ export class InprogressComponent implements OnInit {
 
   get() {
     return this.dataSource$ = this.wf.sessionRead(2).pipe(
-      map((data: any) => {
-        if (data.records) {
-          return data.records;
-        } else {
-          return data.message;
-        }
+      map((data) => {
+        const newrecs = data['records'].filter(sesh => {
+          if (sesh['vehicle'] === 'pickup') {
+            const today = new Date();
+            const daydiff = Math.ceil((Math.abs(today.getTime() - new Date(sesh.sessionDate).getTime())) / (1000 * 3600 * 24));
+            if (daydiff >= 0 && daydiff <= 2) {
+              return sesh;
+            } else {
+
+            }
+          } else {
+            return sesh;
+          }
+        });
+        data.records = newrecs;
+        return data;
       }),
       tap((data) => {
         this.loading = false;

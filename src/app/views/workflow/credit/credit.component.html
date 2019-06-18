@@ -5,7 +5,7 @@
       <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
         <h3 class="m-0 text-white flex-fill align-items-center">
           Credit Note Report
-          <img *ngIf="loading" width="23px" src="/assets/icons/rolling_white.svg" alt="Rolling White">
+          <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
         </h3>
         <div>
           
@@ -17,7 +17,7 @@
       </div> -->
     
       <!-- Beginning of data table -->
-      <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+      <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll" respHeight>
         <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
         <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
       
@@ -62,7 +62,7 @@
         </ng-container>
         <ng-container cdkColumnDef="process">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 17%;">Process</th>
-          <td cdk-cell *cdkCellDef="let row" style="width: 17%;" class="text-center point"></td>
+          <td (click)="assign(row)" cdk-cell *cdkCellDef="let row" style="width: 17%;" class="text-center point" dialogTrigger="crednote"></td>
         </ng-container>
       
       </table>
@@ -70,3 +70,43 @@
 
   </div>
 </div>
+
+<ng-container *ngIf="selected">
+  <app-dialog dialogID="crednote" [title]="'Process Credit Note: ' + selected.company_name" accept="Submit" cancel="Cancel" (onAccept)="processNote()" [disabled]="creditForm.valid">
+    <form [formGroup]="creditForm">
+      <table class="table table-borderless mb-0">
+        <tbody>
+          <tr>
+            <td class="align-middle">
+              <div class="custom-control custom-radio custom-control-inline">
+                <input formControlName="status" name="status" id="status" type="radio" class="custom-control-input" [value]="17">
+                <label for="status" class="custom-control-label"></label>
+              </div>
+            </td>
+            <td class="align-middle">
+              Credit Note
+            </td>
+            <td class="align-middle">
+              <input formControlName="note" type="text" name="note" id="note" class="form-control w-100">
+            </td>
+          </tr>
+          <tr>
+            <td class="align-middle">
+              <div class="custom-control custom-radio custom-control-inline">
+                <input formControlName="status" name="status" id="status" type="radio" class="custom-control-input" [value]="0">
+                <label for="status" class="custom-control-label"></label>
+              </div>
+            </td>
+            <td class="align-middle">
+              Cancel
+            </td>
+            <td class="align-middle">
+              <input formControlName="comment" type="text" name="comment" id="comment" class="form-control w-100">
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+
+  </app-dialog>
+</ng-container>

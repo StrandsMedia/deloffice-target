@@ -9,9 +9,13 @@
           <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
         </h3>
         <button *ngIf="custinfo" (click)="loadInfo()" class="tgt-button-full tgt-btn-white d-flex py-1 px-2 mr-2 float-right" style="height: 37px;" dialogTrigger="save">Save Statement</button>
-        <div class="search-bar position-relative" style="width: 300px;z-index:2;">
-          <form (keyup)="search()" [formGroup]="searchForm" style="width: 300px;" class="form-inline float-right form-search" >
-            <input formControlName="search"  class="form-control p-3" style="width: 300px;" type="search" name="customersearch" id="customersearch" placeholder="Search for customer...">
+        <button *ngIf="custinfo" (click)="loadInfo()" class="tgt-button-full tgt-btn-white d-flex py-1 px-2 mr-2 float-right" style="height: 37px;" dialogTrigger="mailsave">
+          Mail to Client
+        </button>
+        <div class="search-bar position-relative mr-2" style="width: 300px;z-index:2;">
+          <form (keyup)="search()" [formGroup]="searchForm" style="width: 300px;" class="form-inline float-right form-search" autocomplete="off">
+            <input autocomplete="false" type="text" class="d-none">
+            <input formControlName="search" autocomplete="off" class="form-control p-3" style="width: 300px;" type="search" name="customersearch" id="customersearch" placeholder="Search for customer..." [disableIfUnauth]="'read'">
           </form>
           <div *ngIf="(customerResults | async)?.length > 0 && searchForm.value.search !== ''" class="search-dialog position-absolute">
             <ul class="py-2">
@@ -21,18 +25,26 @@
             </ul>
           </div>
         </div>
+
+        <div [formGroup]="searchForm" class="form-group mb-0">
+          <select formControlName="data" name="data" id="data" class="form-control w-100" style="height: 37px;" [disableIfUnauth]="'read'">
+            <option value="1">DelOffice Ltd</option>
+            <option value="2">Roll n Sheet Ltd</option>
+            <option value="3">Print n Pack Ltd</option>
+          </select>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<div class="row">
+<div *ngIf="allocs | async as allocs" class="row">
   <div class="col-6 pr-1">
     <div class="mdc-card mb-3" style="overflow:hidden;">
       <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center" style="height: 10%;">
         <h4 class="m-0 text-white flex-fill align-items-center">Debit View</h4>
       </div>
-      <table class="table table-hover table-bordered tgt-table tgt-scroll" style="overflow-x: hidden;">
+      <table class="table table-hover table-bordered tgt-table tgt-scroll" style="overflow-x: hidden;" respHeight>
         <thead>
           <tr>
             <th *ngFor="let col of columns" [ngStyle]="{'width': col.width}">
@@ -41,7 +53,7 @@
           </tr>
         </thead>
         <tbody style="overflow-x: hidden;">
-          <ng-container *ngFor="let alloc of allocs | async;index as i;trackBy:trackByFn;">
+          <ng-container *ngFor="let alloc of allocs.positive;index as i;trackBy:trackByFn;">
             <tr>
               <td style="width: 12%" class="font-weight-bold">{{alloc.Code}}</td>
               <td style="width: 13%">{{alloc.TxDate | date:'dd-MM-yy'}}</td>
@@ -75,7 +87,7 @@
       <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center" style="height: 10%;">
         <h4 class="m-0 text-white flex-fill align-items-center">Credit View</h4>
       </div>
-      <table class="table table-hover table-bordered tgt-table tgt-scroll" style="overflow-x: hidden;">
+      <table class="table table-hover table-bordered tgt-table tgt-scroll" style="overflow-x: hidden;" respHeight>
         <thead>
           <tr>
             <th *ngFor="let col of columns" [ngStyle]="{'width': col.width}">
@@ -84,7 +96,7 @@
           </tr>
         </thead>
         <tbody style="overflow-x: hidden;">
-          <ng-container *ngFor="let alloc of reverseallocs | async;index as i;trackBy:trackByFn;">
+          <ng-container *ngFor="let alloc of allocs.negative;index as i;trackBy:trackByFn;">
             <tr>
               <td style="width: 12%" class="font-weight-bold">{{alloc.Code}}</td>
               <td style="width: 13%">{{alloc.TxDate | date:'dd-MM-yy'}}</td>
@@ -125,7 +137,7 @@
         <th>Description</th>
         <th>Debit<br>(Rs)</th>
         <th>Credit<br>(Rs)</th>
-        <th>Balance<br>(Rs)</th>
+        <th>Bal<br>(Rs)</th>
         <th>Cum - Bal<br>(Rs)</th>
       </tr>
     </thead>
@@ -173,6 +185,21 @@
   </table>
 </ng-container>
 
-<app-dialog dialogID="save" title="Save Statement As PDF" accept="Ok" cancel="Cancel" (onAccept)="renderPDF()">
+<app-dialog dialogID="save" title="Save Statement As PDF" accept="Ok" cancel="Cancel" (onAccept)="savePDF()" [disabled]="status !== 'Not Ready'">
   <p>Status: {{status}}</p>
+</app-dialog>
+
+<app-dialog dialogID="mailsave" title="Mail Statement As PDF" size="medium" accept="Ok" cancel="Cancel" (onAccept)="sendPDF()" [disabled]="status !== 'Not Ready'">
+  <p>Attachment status: {{status}}</p>
+  <form [formGroup]="sendMail">
+    <div class="form-group">
+      <input formControlName="email" type="email" name="email" id="email" class="form-control w-100" placeholder="Type sender's e-mail address">
+    </div>
+    <div class="form-group">
+      <input formControlName="subject" type="text" name="subject" id="subject" class="form-control w-100" placeholder="Type your mail subject">
+    </div>
+    <div class="form-group">
+      <textarea formControlName="message" name="message" id="message" rows="3" class="form-control w-100" placeholder="Type your message here"></textarea>
+    </div>
+  </form>
 </app-dialog>

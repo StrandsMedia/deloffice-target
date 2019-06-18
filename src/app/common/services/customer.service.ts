@@ -12,6 +12,7 @@ import { debounceTime, delay, switchMap, map } from 'rxjs/operators';
 export class CustomerService {
 
   private url = environment.apiUrl;
+  private fbURL = environment.remoteURL;
 
   constructor(private http: HttpClient) { }
 
@@ -19,6 +20,10 @@ export class CustomerService {
 
   addCustomer(info): Observable<any> {
     return this.http.post(this.url + 'customers/create.php', info);
+  }
+
+  insertTarget(info): Observable<any> {
+    return this.http.post(this.url + 'products/insertTarget.php', info);
   }
 
   // Read
@@ -33,20 +38,66 @@ export class CustomerService {
     return this.http.get(this.url + 'customers/read_one.php' + `?id=${id}`);
   }
 
-  getBalance(id): Observable<any> {
-    return this.http.get(this.url + 'customers/pastel/balance.php' + `?id=${id}`);
+  getStatus(id): Observable<any> {
+    return this.http.get(this.url + 'products/fetchStatus.php?id=' + id);
   }
 
-  getAllocs(id): Observable<any> {
-    return this.http.get(this.url + 'customers/pastel/allocations.php' + `?id=${id}`);
+  getTarget(id): Observable<any> {
+    return this.http.get(this.url + 'products/fetchTarget.php?id=' + id);
+  }
+
+  getEmailInfo(id, data?): Observable<any> {
+    let url = this.url + `customers/pastel/fetchEmail.php?id=${id}`;
+
+    if (data) {
+      url = url + `&d=${data}`;
+    }
+
+    return this.http.get(url);
+  }
+
+  getBalance(id, data?): Observable<any> {
+    let url = this.url + `customers/pastel/balance.php?id=${id}`;
+
+    if (data) {
+      url = url + `&d=${data}`;
+    }
+
+    return this.http.get(url);
+  }
+
+  getAllocs(id, data?): Observable<any> {
+    let url = this.url + `customers/pastel/allocations.php?id=${id}`;
+
+    if (data) {
+      url = url + `&d=${data}`;
+    }
+
+    return this.http.get(url);
   }
 
   getReverseAllocs(id): Observable<any> {
     return this.http.get(this.url + 'customers/pastel/reverse_allocations.php' + `?id=${id}`);
   }
 
-  getStatement(id): Observable<any> {
-    return this.http.get(this.url + 'customers/pastel/statement.php' + `?id=${id}`);
+  getStatement(id, data?): Observable<any> {
+    let url = this.url + `customers/pastel/statement.php?id=${id}`;
+
+    if (data) {
+      url = url + `&d=${data}`;
+    }
+
+    return this.http.get(url);
+  }
+
+  getBalanceTotal(id, data?): Observable<any> {
+    let url = this.url + `customers/pastel/balance_total.php?id=${id}`;
+
+    if (data) {
+      url = url + `&d=${data}`;
+    }
+
+    return this.http.get(url);
   }
 
   search(keywords): Observable<any> {
@@ -58,22 +109,44 @@ export class CustomerService {
     );
   }
 
-  searchCust(keywords): Observable<any> {
-    return this.http.get(this.url + 'customers/search_cust.php' + `?s=${keywords}`).pipe(
+  searchCust(keywords, data?): Observable<any> {
+    let url = this.url + 'customers/search_cust.php' + `?s=${keywords}`;
+    if (data) {
+      url = url + '&d=' + data;
+    }
+    return this.http.get(url).pipe(
       map((res: any) => res.records)
     );
   }
 
   // Update
 
+  updateProfile(info): Observable<any> {
+    return this.http.post(this.url + 'customers/update_profile.php', info);
+  }
+
   updateDetails(info): Observable<any> {
     return this.http.post(this.url + 'customers/update_details.php', info);
+  }
+
+  updateStatus(info): Observable<any> {
+    return this.http.post(this.url + 'products/updateStatus.php', info);
+  }
+
+  updateTerm(info): Observable<any> {
+    return this.http.post(this.url + 'customers/pastel/update_term.php', info);
   }
 
   // Delete
 
   deleteCustomer(info): Observable<any>  {
     return this.http.post(this.url + 'customers/delete.php', info);
+  }
+
+  // Send Mail
+
+  sendStatement(info): Observable<any> {
+    return this.http.post(`${this.fbURL}sendStatement`, info);
   }
 }
 

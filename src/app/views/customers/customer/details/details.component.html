@@ -1,3 +1,29 @@
-<p>
-  details works!
-</p>
+<div class="mdc-card h-100" style="overflow:hidden;">
+  <table *ngIf="dataSource$ | async as dat" class="table table-hover table-bordered tgt-table">
+    <thead>
+      <tr>
+        <th>Product Family</th>
+        <th class="text-center" style="width:12%">Potential</th>
+        <th class="text-center" style="width:12%">Target</th>
+        <th class="text-center" style="width:12%">Regular</th>
+        <th class="text-center" style="width:12%">Erratic</th>
+        <th class="text-center" style="width:12%">Tender</th>
+        <th class="text-center" style="width:12%">Bin</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let recs of dat?.records; index as i;">
+        <td>{{recs.pf_name}}</td>
+        <ng-container *ngFor="let stat of status; index as j;">
+          <td class="text-center">
+            <div class="custom-control custom-radio">
+              <input (click)="changeStatus(recs.pf_id, $event)" type="radio" id="customRadio{{i}}{{j}}" name="{{recs.pf_name | lowercase}}" class="custom-control-input" [value]="j" [checked]="recs.status == j" readonly [disableIfUnauth]="'update'">
+              <label class="custom-control-label" for="customRadio{{i}}{{j}}"></label>
+            </div>
+          </td>
+        </ng-container>
+
+      </tr>
+    </tbody>
+  </table>
+</div>

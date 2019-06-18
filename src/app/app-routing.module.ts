@@ -3,25 +3,26 @@ import { Routes, RouterModule } from '@angular/router';
 import { MainComponent } from './core/layout/main/main.component';
 import { DashboardComponent } from './views/dashboard/dashboard.component';
 import { CustomersComponent } from './views/customers/customers.component';
-import { SalesComponent } from './views/workflow/sales/sales.component';
-import { DeliveryComponent } from './views/workflow/delivery/delivery.component';
+
 import { CustomerComponent } from './views/customers/customer/customer.component';
-import { SessionsComponent } from './views/workflow/sessions/sessions.component';
+
 import { AuthGuard } from './common/guards/auth.guard';
 import { CommentsComponent } from './views/comments/comments.component';
-import { ArchiveComponent } from './views/workflow/archive/archive.component';
-import { CreditComponent } from './views/workflow/credit/credit.component';
-import { CancelComponent } from './views/workflow/cancel/cancel.component';
-import { UserComponent } from './views/workflow/user/user.component';
-import { PurchaseComponent } from './views/workflow/purchase/purchase.component';
+
 import { PrintingComponent } from './views/printing/printing.component';
-import { ProductsComponent } from './views/products/products.component';
 import { TendersComponent } from './views/tenders/tenders.component';
+
+import { PastelComponent } from './views/user/pastel/pastel.component';
+import { UsersComponent } from './views/user/users/users.component';
+import { StepComponent } from './views/user/step/step.component';
+import { RoleGuard } from './common/guards/role.guard';
+import { SectorComponent } from './views/sector/sector.component';
+import { UserPermissionsComponent } from './views/user/user-permissions/user-permissions.component';
 
 const routes: Routes = [
   {
     path: 'login',
-    loadChildren: './core/modules/login/login.module#LoginModule',
+    loadChildren: () => import('./core/modules/login/login.module').then(m => m.LoginModule),
   },
   {
     path: '',
@@ -29,75 +30,109 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: DashboardComponent
+        component: DashboardComponent,
+        data: {
+          title: 'Dashboard',
+          id: 1
+        }
       },
       {
         path: 'customers',
         children: [
-          { path: '', component: CustomersComponent, pathMatch: 'full' },
-          { path: ':id', component: CustomerComponent }
+          { path: '', component: CustomersComponent, pathMatch: 'full', data: { title: 'Customers', id: 2 } },
+          { path: ':id', component: CustomerComponent, data: { id: 2 } }
         ]
       },
       {
         path: 'order-entry',
-        loadChildren: './core/modules/order/order.module#OrderModule',
+        loadChildren: () => import('./core/modules/order/order.module').then(m => m.OrderModule),
+        canActivateChild: [RoleGuard]
       },
       {
         path: 'workflow',
-        children: [
-          {
-            path: 'sales',
-            component: SalesComponent
-          },
-          {
-            path: 'delivery',
-            component: DeliveryComponent
-          },
-          {
-            path: 'sessions',
-            component: SessionsComponent
-          },
-          {
-            path: 'delivery-archive',
-            component: ArchiveComponent
-          },
-          {
-            path: 'purchase-report',
-            component: PurchaseComponent
-          },
-          {
-            path: 'credit-note-report',
-            component: CreditComponent
-          },
-          {
-            path: 'cancel-report',
-            component: CancelComponent
-          },
-          {
-            path: 'user-report',
-            component: UserComponent
-          },
-        ]
+        loadChildren: () => import('./core/modules/workflow/workflow.module').then(m => m.WorkflowModule),
       },
       {
         path: 'comments',
-        component: CommentsComponent
+        component: CommentsComponent,
+        data: {
+          title: 'Comments',
+          id: 5
+        }
       },
       {
         path: 'printing',
-        component: PrintingComponent
+        component: PrintingComponent,
+        data: {
+          title: 'Printing',
+          id: 6
+        }
       },
       {
         path: 'products',
-        component: ProductsComponent
+        loadChildren: () => import('./core/modules/product/product.module').then(m => m.ProductModule)
       },
       {
         path: 'tenders',
-        component: TendersComponent
+        component: TendersComponent,
+        data: {
+          title: 'Tender',
+          id: 8
+        }
       },
       {
         path: 'debtors',
-        loadChildren: './core/modules/debtors/debtors.module#DebtorsModule',
+        loadChildren: () => import('./core/modules/debtors/debtors.module').then(m => m.DebtorsModule),
+        canActivateChild: [RoleGuard]
+      },
+      {
+        path: 'sector',
+        component: SectorComponent,
+        data: {
+          title: 'Sector',
+          id: 9
+        }
+      },
+      {
+        path: 'users',
+        children: [
+          {
+            path: 'pastel',
+            component: PastelComponent,
+            data: {
+              title: 'Current Pastel Users',
+              id: 10
+            }
+          },
+          {
+            path: 'userlist',
+            component: UsersComponent,
+            data: {
+              title: 'Manage Users',
+              expectedRole: ['Admin'],
+              id: 11
+            }
+          },
+          {
+            path: 'step',
+            component: StepComponent,
+            data: {
+              title: 'Cheat Steps',
+              expectedRole: ['Admin'],
+              id: 12
+            },
+          },
+          {
+            path: 'permissions',
+            component: UserPermissionsComponent,
+            data: {
+              title: 'User Permissions',
+              expectedRole: ['Admin'],
+              id: 15
+            },
+          },
+        ],
+        canActivateChild: [RoleGuard]
       }
     ],
     canActivate: [AuthGuard]

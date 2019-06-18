@@ -20,7 +20,6 @@ import { NewsComponent } from 'src/app/views/customers/customer/news/news.compon
 import { CommsComponent } from 'src/app/views/customers/customer/comments/comments.component';
 import { PricingComponent } from 'src/app/views/customers/customer/pricing/pricing.component';
 import { DetailsComponent } from 'src/app/views/customers/customer/details/details.component';
-import { AllocsComponent } from 'src/app/views/customers/customer/allocs/allocs.component';
 
 @Directive({
   // tslint:disable-next-line:directive-selector
@@ -43,8 +42,7 @@ export class DynamicComponentDirective implements OnInit, OnDestroy, DoCheck {
     jobs: NewsComponent,
     comments: CommsComponent,
     pricing: PricingComponent,
-    details: DetailsComponent,
-    allocations: AllocsComponent
+    details: DetailsComponent
   };
 
   constructor(

@@ -1,0 +1,28 @@
+small {
+    font-size: 12px;
+}
+
+#search-ddown {
+    border-radius: 5px;
+    background-color: white;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+    overflow: hidden;
+    z-index: 4;
+}
+
+#search-ddown ul {
+    list-style: none;
+}
+
+#search-ddown ul li a {
+    display: block;
+    width: 100%;
+    padding: 5px 10px;
+}
+
+#search-ddown ul li a:hover {
+    cursor: pointer;
+    background-color: blue;
+    color: white;
+}
+

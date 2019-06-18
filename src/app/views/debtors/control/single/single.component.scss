@@ -1,0 +1,26 @@
+$mdc-theme-primary: #0c127e;
+$mdc-theme-secondary: #d20c1d;
+
+:host {
+    display: block;
+}
+
+.round-image {
+    border-radius: 50%;
+}
+
+.bg-normal {
+    background-color: $mdc-theme-primary;
+}
+
+.bg-admin {
+    background-color: $mdc-theme-secondary;
+}
+
+.disabled-btn {
+    background-color: rgb(37, 37, 37) !important;
+}
+
+.disabled-btn:hover {
+    background-color: rgb(37, 37, 37) !important;
+}

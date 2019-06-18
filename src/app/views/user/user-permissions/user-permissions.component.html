@@ -1,0 +1,101 @@
+<div class="row">
+  <div class="col-12">
+    <div class="mdc-card mb-3" style="overflow: hidden;">
+      <!-- Header Section of Card -->
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+          <div class="text-white flex-fill align-items-center">
+            <h3 class="mb-1">User Permissions Module</h3>
+          </div>
+          <div>
+
+          </div>
+      </div>
+
+      <ng-container *ngIf="module$ | async as modules">
+        <!-- Beginning of data table -->
+        <table cdk-table [dataSource]="modules?.records" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll" respHeight>
+          <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+          <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+
+          <ng-container cdkColumnDef="moduleId">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 10%">Module Id</th>
+            <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center" style="width: 10%">
+              {{row.moduleId}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="moduleName">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 40%">Module Name</th>
+            <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 40%">
+              {{row.moduleName}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="create">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 12.5%">Create</th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 12.5%">
+              <button (click)="bindPermission(0, row)" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2" dialogTrigger="userperm">
+                <i class="material-icons" style="line-height: 30px;">mode_edit</i>
+              </button>
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="read">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 12.5%">Read</th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 12.5%">
+                <button (click)="bindPermission(1, row)" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2" dialogTrigger="userperm">
+                  <i class="material-icons" style="line-height: 30px;">mode_edit</i>
+                </button>
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="update">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 12.5%">Update</th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 12.5%">
+                <button (click)="bindPermission(2, row)" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2" dialogTrigger="userperm">
+                  <i class="material-icons" style="line-height: 30px;">mode_edit</i>
+                </button>
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="delete">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 12.5%">Delete</th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 12.5%">
+                <button (click)="bindPermission(3, row)" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2" dialogTrigger="userperm">
+                  <i class="material-icons" style="line-height: 30px;">mode_edit</i>
+                </button>
+            </td>
+          </ng-container>
+        </table>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<app-dialog dialogID="userperm" size="medium" title="User Permissions: {{permData}}" cancel="Close">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>User Name</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngIf="user$ | async as users">
+        <tr>
+          <td class="font-weight-bold">Mark All</td>
+          <td>
+              <div class="custom-control custom-switch">
+                  <input (change)="changePermAll($event, users[0])" type="checkbox" class="custom-control-input" id="permSwitch0" [checked]="allInArr(users[1], users[0])">
+                  <label class="custom-control-label" for="permSwitch0"></label>
+                </div>
+          </td>
+        </tr>
+        <tr *ngFor="let user of users[0];trackBy:user?.sales_id">
+          <td>{{user.sales_rep}}</td>
+          <td>
+            <div class="custom-control custom-switch">
+              <input (change)="changePerm($event, users[1])" type="checkbox" class="custom-control-input" id="permSwitch{{user.sales_id}}" [checked]="isInArr(users[1], +user.sales_id)" value="{{user.sales_id}}">
+              <label class="custom-control-label" for="permSwitch{{user.sales_id}}"></label>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</app-dialog>

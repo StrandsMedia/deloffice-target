@@ -36,7 +36,7 @@ export class CustomersComponent implements OnInit {
 
   public addForm = this.fb.group({
     customerCode: [''],
-    company_name: [''],
+    company_name: ['', Validators.required],
     address: [''],
     category: [''],
     sector: [''],
@@ -55,7 +55,7 @@ export class CustomersComponent implements OnInit {
     private mdc: MaterialService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.get();
     this.categories = this.cat.getCategory();
     this.sectors = this.cat.getSector();

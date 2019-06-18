@@ -16,38 +16,29 @@ import { FooterComponent } from './core/layout/main/footer/footer.component';
 import { DashboardComponent } from './views/dashboard/dashboard.component';
 import { CustomersComponent } from './views/customers/customers.component';
 import { BtnModule } from './common/utils/btn/btn.module';
-import { SalesComponent } from './views/workflow/sales/sales.component';
-import { DeliveryComponent } from './views/workflow/delivery/delivery.component';
-import { DaydiffPipe } from './common/pipes/daydiff.pipe';
-import { FilterPipe } from './common/pipes/filter.pipe';
+
 import { CustomerComponent } from './views/customers/customer/customer.component';
-import { SessionsComponent } from './views/workflow/sessions/sessions.component';
-import { DynamicComponentDirective } from './common/utils/dynamic.component.directive';
-import { PushComponent } from './views/workflow/sessions/push/push.component';
-import { TempComponent } from './views/workflow/sessions/temp/temp.component';
-import { InprogressComponent } from './views/workflow/sessions/inprogress/inprogress.component';
-import { ArchivedComponent } from './views/workflow/sessions/archived/archived.component';
+
 import { CommentsComponent } from './views/comments/comments.component';
 import { PrintingComponent } from './views/printing/printing.component';
 import { ProductsComponent } from './views/products/products.component';
 import { TendersComponent } from './views/tenders/tenders.component';
-import { ArchiveComponent } from './views/workflow/archive/archive.component';
-import { PurchaseComponent } from './views/workflow/purchase/purchase.component';
-import { CreditComponent } from './views/workflow/credit/credit.component';
-import { CancelComponent } from './views/workflow/cancel/cancel.component';
-import { UserComponent } from './views/workflow/user/user.component';
+
 import { DialogModule } from './common/utils/dialog/dialog.module';
 import { SnackbarModule } from './common/utils/snackbar/snackbar.module';
-import { VehicleDirective } from './common/utils/vehicle.directive';
+
 import { NewsComponent } from './views/customers/customer/news/news.component';
 import { PricingComponent } from './views/customers/customer/pricing/pricing.component';
 import { DetailsComponent } from './views/customers/customer/details/details.component';
 import { CommsComponent } from './views/customers/customer/comments/comments.component';
-import { ReversePipe } from './common/pipes/reverse.pipe';
-import { NewDatePipe } from './common/pipes/date.pipe';
-import { DatePipe } from '@angular/common';
-import { AllocsComponent } from './views/customers/customer/allocs/allocs.component';
-import { AgePipe } from './common/pipes/age.pipe';
+
+import { UtilsModule } from './core/modules/utils.module';
+import { PastelComponent } from './views/user/pastel/pastel.component';
+
+import { UsersComponent } from './views/user/users/users.component';
+import { StepComponent } from './views/user/step/step.component';
+import { SectorComponent } from './views/sector/sector.component';
+import { UserPermissionsComponent } from './views/user/user-permissions/user-permissions.component';
 
 @NgModule({
   declarations: [
@@ -57,46 +48,25 @@ import { AgePipe } from './common/pipes/age.pipe';
     FooterComponent,
     DashboardComponent,
     CustomersComponent,
-    SalesComponent,
-    DeliveryComponent,
-    DaydiffPipe,
-    FilterPipe,
     CustomerComponent,
-    SessionsComponent,
-    DynamicComponentDirective,
-    PushComponent,
-    TempComponent,
-    InprogressComponent,
-    ArchivedComponent,
     CommentsComponent,
     PrintingComponent,
-    ProductsComponent,
     TendersComponent,
-    ArchiveComponent,
-    PurchaseComponent,
-    CreditComponent,
-    CancelComponent,
-    UserComponent,
-    VehicleDirective,
     NewsComponent,
     PricingComponent,
     DetailsComponent,
     CommsComponent,
-    ReversePipe,
-    NewDatePipe,
-    AllocsComponent,
-    AgePipe
+    PastelComponent,
+    UsersComponent,
+    StepComponent,
+    SectorComponent,
+    UserPermissionsComponent
   ],
   entryComponents: [
-    PushComponent,
-    TempComponent,
-    InprogressComponent,
-    ArchivedComponent,
     NewsComponent,
     PricingComponent,
     DetailsComponent,
-    CommsComponent,
-    AllocsComponent
+    CommsComponent
   ],
   imports: [
     BrowserModule,
@@ -109,10 +79,8 @@ import { AgePipe } from './common/pipes/age.pipe';
     BtnModule,
     DragulaModule.forRoot(),
     DialogModule,
-    SnackbarModule
-  ],
-  providers: [
-    DatePipe
+    SnackbarModule,
+    UtilsModule
   ],
   bootstrap: [AppComponent]
 })

@@ -1,0 +1,8 @@
+<div *ngIf="errors" class="alert alert-danger">
+  <i class="material-icons">warning</i>
+  {{errors | titlecase}}
+</div>
+
+<ng-container *ngFor="let question of questions">
+  <app-popques [question]="question" [form]="form"></app-popques>
+</ng-container>

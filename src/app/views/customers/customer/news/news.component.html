@@ -1,132 +1,355 @@
-<div *ngIf="entries | async as entries" class="mdc-card mb-4" style="min-height:370px;max-height: 370px;overflow-y:scroll;">
-    <!--  Null -->
-    <ng-container *ngIf="entries?.workflow?.length === 0 && entries?.printing?.length === 0 && entries?.tenders?.length === 0">
-        <div class="alert alert-info m-3 p-3 d-flex align-items-center">
-            <i class="material-icons mr-2">error</i>
+<div *ngIf="entries | async as entries" class="mdc-card mb-4" style="overflow: hidden;">
+    <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center" >
+        <h4 class="m-0 text-white flex-fill align-items-center">
+            Jobs
+        </h4>
+        <div>
+            <button (click)="setCust()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" dialogTrigger="newprint" [disableIfUnauth]="'create'">
+                New Printing
+            </button> 
+            <button (click)="setCust2()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" dialogTrigger="newtender" [disableIfUnauth]="'create'">
+                New Tender
+            </button> 
+            <button (click)="newWF()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1" dialogTrigger="newworkflow" [disableIfUnauth]="'create'">
+                New Workflow
+            </button> 
+        </div>
+    </div>
+    <div style="min-height:300px;max-height:300px;overflow-y:scroll;">
+        <!--  Null -->
+        <ng-container *ngIf="entries?.workflow?.length === 0 && entries?.printing?.length === 0 && entries?.tenders?.length === 0">
+            <div class="alert alert-info m-3 p-3 d-flex align-items-center">
+                <i class="material-icons mr-2">error</i>
+                <p class="mb-0">
+                    There are no entries for this customer.
+                </p>
+            </div>
+        </ng-container>
+      <!-- Latest Workflow Entries -->
+      <ng-container *ngIf="entries?.workflow?.length > 0">
+        <div class="p-3">
+            <h4 class="card-heading mb-0">Latest Workflow Entries</h4>
+        </div>
+        <div class="px-3">
+            <table cdk-table [dataSource]="entries.workflow" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table">
+                <tr cdk-header-row *cdkHeaderRowDef="wf_columns"></tr>
+                <tr cdk-row *cdkRowDef="let row; columns: wf_columns"></tr>
+      
+                <ng-container cdkColumnDef="workflow_id">
+                    <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">WF ID</th>
+                    <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 10%;">
+                        {{row.workflow_id}}
+                    </td>
+                </ng-container>
+                <ng-container cdkColumnDef="time">
+                    <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;">Date</th>
+                    <td cdk-cell *cdkCellDef="let row" style="width: 15%;">
+                        {{row.time | date}}
+                    </td>
+                </ng-container>
+                <ng-container cdkColumnDef="company_name">
+                    <th cdk-header-cell *cdkHeaderCellDef style="width: 30%;">Company</th>
+                    <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 30%;">
+                        {{row.company_name}}
+                    </td>
+                </ng-container>
+                <ng-container cdkColumnDef="step">
+                    <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;">Status</th>
+                    <td cdk-cell *cdkCellDef="let row" style="width: 15%;">
+                        {{row.step || '-'}}
+                    </td>
+                </ng-container>
+                <ng-container cdkColumnDef="product">
+                    <th cdk-header-cell *cdkHeaderCellDef style="width: 30%;">Products</th>
+                    <td cdk-cell *cdkCellDef="let row" style="width: 30%;">
+                        {{row.product || '-'}}
+                    </td>
+                </ng-container>
+            </table>
+        </div>
+      </ng-container>
+    
+      <!-- Latest Printing Jobs -->
+      <ng-container *ngIf="entries?.printing?.length > 0">
+        <div class="p-3">
+            <h4 class="card-heading mb-0">Latest Printing Jobs</h4>
+        </div>
+        <div class="px-3">
+            <table cdk-table [dataSource]="entries?.printing" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table">
+                <tr cdk-header-row *cdkHeaderRowDef="pr_columns"></tr>
+                <tr cdk-row *cdkRowDef="let row; columns: pr_columns"></tr>
+      
+                <ng-container cdkColumnDef="job_id">
+                    <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Job No.</th>
+                    <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 25%;">
+                        {{row.job_id}}
+                    </td>
+                </ng-container>
+                <ng-container cdkColumnDef="product">
+                    <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Product</th>
+                    <td cdk-cell *cdkCellDef="let row"  style="width: 25%;">
+                        {{row.product}}
+                    </td>
+                </ng-container>
+                <ng-container cdkColumnDef="paperspecs">
+                    <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Paper Specifications</th>
+                    <td cdk-cell *cdkCellDef="let row" style="width: 25%;">
+                        {{row.paperspecs}}
+                    </td>
+                </ng-container>
+                <ng-container cdkColumnDef="qtyorder">
+                    <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Qty Ordered</th>
+                    <td cdk-cell *cdkCellDef="let row" style="width: 25%;">
+                        {{row.qtyorder}}
+                    </td>
+                </ng-container>
+      
+            </table>
+        </div>
+      </ng-container>
+    
+      <!-- Latest Tender Jobs -->
+      <ng-container *ngIf="entries?.tenders?.length > 0">
+        <div class="p-3">
+            <h4 class="card-heading mb-0">Latest Tender Jobs</h4>
+        </div>
+        <div class="px-3">
+            <table cdk-table [dataSource]="entries?.tenders" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table">
+                <tr cdk-header-row *cdkHeaderRowDef="td_columns"></tr>
+                <tr cdk-row *cdkRowDef="let row; columns: td_columns"></tr>
+      
+                <ng-container cdkColumnDef="tid">
+                    <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Tender ID</th>
+                    <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 10%;">
+                        {{row.tid}}
+                    </td>
+                </ng-container>
+                <ng-container cdkColumnDef="product">
+                    <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Product</th>
+                    <td cdk-cell *cdkCellDef="let row" style="width: 10%;">
+                        {{row.product}}
+                    </td>
+                </ng-container>
+                <ng-container cdkColumnDef="estimated_quantity">
+                    <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Estimated Quantity</th>
+                    <td cdk-cell *cdkCellDef="let row" style="width: 10%;">
+                        {{row.estimated_quantity}}
+                    </td>
+                </ng-container>
+                <ng-container cdkColumnDef="schedule">
+                    <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Scheduled Date</th>
+                    <td cdk-cell *cdkCellDef="let row" style="width: 10%;">
+                        {{row.schedule === '0000-00-00 00:00:00' ? '-': (row.schedule | date)}}
+                    </td>
+                </ng-container>
+      
+            </table>
+        </div>
+      </ng-container>
+    </div>
+</div>
+
+<app-dialog dialogID="newworkflow" title="New Workflow Entry" size="medium" accept="Submit" cancel="Close" (onAccept)="update()" (onCancel)="cancel()" [disabled]="formData?.valid && (formData?.status && formData?.status !== '') ? true : null">
+    <app-popup (update)="loadInfo($event)" [questions]="questions"></app-popup>
+</app-dialog>
+
+<app-dialog dialogID="newprint" title="Add New Printing" size="large" accept="Save" cancel="Close" (onAccept)="newPrintEntry()" [disabled]="newPrintForm.valid">
+    <form [formGroup]="newPrintForm">
+        <div class="d-flex">
+            <form *ngIf="!newPrintForm?.value?.custid" [formGroup]="searchForm" (keydown)="search()" class="form-group mr-2 flex-fill position-relative">
+                <label for="custsearch">Customer Name</label>
+                <input formControlName="company_name" type="search" name="custsearch" id="custsearch" class="form-control w-100">
+                <div *ngIf="searchForm?.value?.company_name !== '' && searchResults | async as searchResults" id="search-ddown" class="my-2 position-absolute w-100">
+                    <ul class="p-0 m-0">
+                        <li *ngFor="let res of searchResults; index as i;">
+                            <a (click)="lockCust(res)">{{res.company_name}}</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+            <div *ngIf="newPrintForm.value.custid" class="alert alert-info flex-fill">
+              <p class="mb-0">
+                <strong>Customer Name: </strong> {{newPrintForm?.value?.company_name}}
+              </p>
+            </div>
+        </div>
+        <div class="d-flex">
+          <div class="form-group mr-2 flex-fill">
+            <label for="startdate">Start Date</label>
+            <input formControlName="startdate" type="date" name="startdate" id="startdate" class="form-control w-100">
+          </div>
+          <div class="form-group mr-2 flex-fill">
+            <label for="enddate">End Date</label>
+            <input formControlName="enddate" type="date" name="enddate" id="enddate" class="form-control w-100">
+          </div>
+          <div class="form-group mr-2 flex-fill">
+            <label for="deliverydate">Delivery Date</label>
+            <input formControlName="deliverydate" type="date" name="deliverydate" id="deliverydate" class="form-control w-100">
+          </div>
+        </div>
+    
+        <div class="d-flex">
+          <div class="form-group mr-2 flex-fill">
+            <label for="product">Product</label>
+            <select formControlName="product" name="product" id="product" class="form-control w-100">
+              <option *ngFor="let prod of prodtype" value="{{prod.id}}">{{prod.name}}</option>
+            </select>
+          </div>
+          <div class="form-group mr-2 flex-fill">
+            <label for="printwork">Printwork</label>
+            <select formControlName="printwork" name="printwork" id="printwork" class="form-control w-100">
+              <option *ngFor="let wrk of printwork" value="{{wrk.id}}">{{wrk.name}}</option>
+            </select>
+          </div>
+          <div class="form-group flex-fill">
+            <label for="ppunit">Price per Unit</label>
+            <input formControlName="ppunit" type="text" name="ppunit" id="ppunit" class="form-control w-100">
+          </div>
+        </div>
+    
+        <div class="d-flex">
+          <div class="form-group mr-2 flex-fill">
+            <label for="jobdesc">Job Description</label>
+            <textarea formControlName="jobdesc" name="jobdesc" id="jobdesc" rows="5" class="form-control"></textarea>
+          </div>
+          <div class="form-group flex-fill">
+            <label for="remarks">Remarks</label>
+            <textarea formControlName="remarks" name="remarks" id="remarks" rows="5" class="form-control"></textarea>
+          </div>
+        </div>
+    
+        <div class="d-flex">
+          <div class="form-group mr-2 flex-fill">
+            <label for="papertype">Paper Type</label>
+            <input formControlName="paperspecs" type="text" name="paperspecs" id="paperspecs" class="form-control w-100">
+          </div>
+          <div class="form-group mr-2 flex-fill">
+            <label for="filename">Filename</label>
+            <input formControlName="filename" type="text" name="filename" id="filename" class="form-control w-100">
+          </div>
+          <div class="form-group flex-fill">
+            <label for="dimensions">Dimensions</label>
+            <input formControlName="dimensions" type="text" name="dimensions" id="dimensions" class="form-control w-100">
+          </div>
+        </div>
+    
+        <div class="d-flex">
+          <div class="form-group mr-2 flex-fill">
+            <label for="pc">PC</label>
+            <input formControlName="pc" type="text" name="pc" id="pc" class="form-control w-100">
+          </div>
+          <div class="form-group mr-2 flex-fill">
+            <label for="printer">Printer</label>
+            <input formControlName="printer" type="text" name="printer" id="printer" class="form-control w-100">
+          </div>
+          <div class="form-group flex-fill">
+            <label for="printsetting">Print Settings</label>
+            <input formControlName="printsetting" type="text" name="printsetting" id="printsetting" class="form-control w-100">
+          </div>
+        </div>
+    
+        <div class="d-flex">
+          <div class="form-group mr-2 flex-fill">
+            <label for="qtyorder">Qty Ordered</label>
+            <input formControlName="qtyorder" type="number" name="qtyorder" id="qtyorder" class="form-control w-100">
+          </div>
+          <div class="form-group mr-2 flex-fill">
+            <label for="qtyrejected">Qty Rejected</label>
+            <input formControlName="qtyrejected" type="number" name="qtyrejected" id="qtyrejected" class="form-control w-100">
+          </div>
+          <div class="form-group mr-2 flex-fill">
+            <label for="qtyconsumed">Qty Consumed</label>
+            <input formControlName="qtyconsumed" type="number" name="qtyconsumed" id="qtyconsumed" class="form-control w-100">
+          </div>
+          <div class="form-group mr-2 flex-fill">
+            <label for="qtycompleted">Qty Completed</label>
+            <input formControlName="qtycompleted" type="number" name="qtycompleted" id="qtycompleted" class="form-control w-100">
+          </div>
+        </div>
+    
+        <div class="d-flex">
+          <div class="form-group mr-2 flex-fill">
+            <label for="printedby">Printed by</label>
+            <input formControlName="printedby" type="text" name="printedby" id="printedby" class="form-control w-100">
+          </div>
+          <div class="form-group mr-2 flex-fill">
+            <label for="supervisedby">Supervised by</label>
+            <input formControlName="supervisedby" type="text" name="supervisedby" id="supervisedby" class="form-control w-100">
+          </div>
+        </div>
+    </form>
+</app-dialog>
+
+<app-dialog title="Add New Tender" dialogID="newtender" size="large" accept="Save" cancel="Cancel" (onAccept)="newTenderEntry()" [disabled]="newTenderForm.valid">
+  <form [formGroup]="newTenderForm">
+    <div class="d-flex">
+        <form *ngIf="!newTenderForm?.value?.cust_id" [formGroup]="searchForm" (keydown)="search()" class="form-group mr-2 flex-fill position-relative">
+            <label for="custsearch">Customer Name</label>
+            <input formControlName="company_name" type="search" name="custsearch" id="custsearch" class="form-control w-100">
+            <div *ngIf="searchForm?.value?.company_name !== '' && searchResults | async as searchResults" id="search-ddown" class="my-2 position-absolute w-100">
+                <ul class="p-0 m-0">
+                    <li *ngFor="let res of searchResults; index as i;">
+                        <a (click)="lockCust(res)">{{res.company_name}}</a>
+                    </li>
+                </ul>
+            </div>
+        </form>
+        <div *ngIf="newTenderForm?.value?.cust_id" class="alert alert-info flex-fill">
             <p class="mb-0">
-                There are no entries for this customer.
+            <strong>Customer Name: </strong> {{newTenderForm?.value?.company_name}}
             </p>
         </div>
-    </ng-container>
-  <!-- Latest Workflow Entries -->
-  <ng-container *ngIf="entries?.workflow?.length > 0">
-    <div class="p-3">
-        <h4 class="card-heading mb-0">Latest Workflow Entries</h4>
     </div>
-    <div class="px-3">
-        <table cdk-table [dataSource]="entries.workflow" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table">
-            <tr cdk-header-row *cdkHeaderRowDef="wf_columns"></tr>
-            <tr cdk-row *cdkRowDef="let row; columns: wf_columns"></tr>
-  
-            <ng-container cdkColumnDef="workflow_id">
-                <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">WF ID</th>
-                <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 10%;">
-                    {{row.workflow_id}}
-                </td>
-            </ng-container>
-            <ng-container cdkColumnDef="time">
-                <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;">Date</th>
-                <td cdk-cell *cdkCellDef="let row" style="width: 15%;">
-                    {{row.time | date}}
-                </td>
-            </ng-container>
-            <ng-container cdkColumnDef="company_name">
-                <th cdk-header-cell *cdkHeaderCellDef style="width: 30%;">Company</th>
-                <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 30%;">
-                    {{row.company_name}}
-                </td>
-            </ng-container>
-            <ng-container cdkColumnDef="step">
-                <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;">Status</th>
-                <td cdk-cell *cdkCellDef="let row" style="width: 15%;">
-                    {{row.step || '-'}}
-                </td>
-            </ng-container>
-            <ng-container cdkColumnDef="product">
-                <th cdk-header-cell *cdkHeaderCellDef style="width: 30%;">Products</th>
-                <td cdk-cell *cdkCellDef="let row" style="width: 30%;">
-                    {{row.product || '-'}}
-                </td>
-            </ng-container>
-        </table>
+    <div class="d-flex">
+      <div class="form-group mr-2 flex-fill">
+        <label for="product">Product</label>
+        <input formControlName="product" type="text" name="product" id="product" class="form-control w-100">
+      </div>
+      <div class="form-group mr-2 flex-fill">
+        <label for="estimated_quantity">Estimated Quantity</label>
+        <input formControlName="estimated_quantity" type="number" name="estimated_quantity" id="estimated_quantity" class="form-control w-100">
+      </div>
+      <div class="form-group flex-fill">
+        <label for="actual_quantity">Actual Quantity</label>
+        <input formControlName="actual_quantity" type="number" name="actual_quantity" id="actual_quantity" class="form-control w-100">
+      </div>
     </div>
-  </ng-container>
-
-  <!-- Latest Printing Jobs -->
-  <ng-container *ngIf="entries?.printing?.length > 0">
-    <div class="p-3">
-        <h4 class="card-heading mb-0">Latest Printing Jobs</h4>
+    <div class="d-flex">
+      <div class="form-group mr-2 flex-fill">
+        <label for="receive_date">Received Date</label>
+        <input formControlName="receive_date" type="date" name="receive_date" id="receive_date" class="form-control w-100">
+      </div>
+      <div class="form-group mr-2 flex-fill">
+        <label for="closing_date">Closing Date</label>
+        <input formControlName="closing_date" type="date" name="closing_date" id="closing_date" class="form-control w-100">
+      </div>
+      <div class="form-group flex-fill">
+        <label for="schedule">Schedule</label>
+        <input formControlName="schedule" type="date" name="schedule" id="schedule" class="form-control w-100">
+      </div>
     </div>
-    <div class="px-3">
-        <table cdk-table [dataSource]="entries?.printing" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table">
-            <tr cdk-header-row *cdkHeaderRowDef="pr_columns"></tr>
-            <tr cdk-row *cdkRowDef="let row; columns: pr_columns"></tr>
-  
-            <ng-container cdkColumnDef="job_id">
-                <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Job No.</th>
-                <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 25%;">
-                    {{row.job_id}}
-                </td>
-            </ng-container>
-            <ng-container cdkColumnDef="product">
-                <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Product</th>
-                <td cdk-cell *cdkCellDef="let row"  style="width: 25%;">
-                    {{row.product}}
-                </td>
-            </ng-container>
-            <ng-container cdkColumnDef="paperspecs">
-                <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Paper Specifications</th>
-                <td cdk-cell *cdkCellDef="let row" style="width: 25%;">
-                    {{row.paperspecs}}
-                </td>
-            </ng-container>
-            <ng-container cdkColumnDef="qtyorder">
-                <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Qty Ordered</th>
-                <td cdk-cell *cdkCellDef="let row" style="width: 25%;">
-                    {{row.qtyorder}}
-                </td>
-            </ng-container>
-  
-        </table>
+    <div class="d-flex">
+      <div class="form-group mr-2 flex-fill">
+        <label for="product_quoted">Product Quoted</label>
+        <input formControlName="product_quoted" type="text" name="product_quoted" id="product_quoted" class="form-control w-100">
+      </div>
+      <div class="form-group mr-2 flex-fill">
+        <label for="price_quoted">Price Quoted</label>
+        <input formControlName="price_quoted" type="text" name="price_quoted" id="price_quoted" class="form-control w-100">
+      </div>
+      <div class="form-group flex-fill">
+        <label for="delivery">Delivery</label>
+        <input formControlName="delivery" type="text" name="delivery" id="delivery" class="form-control w-100">
+      </div>
     </div>
-  </ng-container>
-
-  <!-- Latest Tender Jobs -->
-  <ng-container *ngIf="entries?.tenders?.length > 0">
-    <div class="p-3">
-        <h4 class="card-heading mb-0">Latest Tender Jobs</h4>
+    <div class="d-flex">
+      <div class="form-group mr-2 flex-fill">
+        <label for="comments">Comments</label>
+        <textarea formControlName="comments" name="comments" id="comments" rows="4" class="form-control w-100"></textarea>
+      </div>
+      <div class="form-group flex-fill">
+        <label for="attachment">Upload Attachment</label>
+      </div>
     </div>
-    <div class="px-3">
-        <table cdk-table [dataSource]="entries?.tenders" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table">
-            <tr cdk-header-row *cdkHeaderRowDef="td_columns"></tr>
-            <tr cdk-row *cdkRowDef="let row; columns: td_columns"></tr>
-  
-            <ng-container cdkColumnDef="tid">
-                <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Tender ID</th>
-                <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 10%;">
-                    {{row.tid}}
-                </td>
-            </ng-container>
-            <ng-container cdkColumnDef="product">
-                <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Product</th>
-                <td cdk-cell *cdkCellDef="let row" style="width: 10%;">
-                    {{row.product}}
-                </td>
-            </ng-container>
-            <ng-container cdkColumnDef="estimated_quantity">
-                <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Estimated Quantity</th>
-                <td cdk-cell *cdkCellDef="let row" style="width: 10%;">
-                    {{row.estimated_quantity}}
-                </td>
-            </ng-container>
-            <ng-container cdkColumnDef="schedule">
-                <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Scheduled Date</th>
-                <td cdk-cell *cdkCellDef="let row" style="width: 10%;">
-                    {{row.schedule === '0000-00-00 00:00:00' ? '-': (row.schedule | date)}}
-                </td>
-            </ng-container>
-  
-        </table>
-    </div>
-  </ng-container>
-</div>
+  </form>
+</app-dialog>

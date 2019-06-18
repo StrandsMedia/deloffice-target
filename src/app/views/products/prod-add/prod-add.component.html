@@ -1,0 +1,188 @@
+<div class="row">
+  <div class="col-4">
+    <img id="picture" src="assets/images/NONE.jpg" alt="picture" class="img-fluid img-thumbnail">
+
+    <div class="input-group mb-3">
+      <div class="custom-file">
+        <input (change)="loadFile($event)" type="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
+        <label class="custom-file-label" for="inputGroupFile01">{{filename}}</label>
+      </div>
+    </div>
+
+    <button id="upload" (click)="onUpload()" type="button" class="tgt-button-full bg-primary d-flex py-1 px-2" style="line-height: 30px;" [disabled]="!selectedFile || loading">
+      <i class="material-icons">cloud_upload</i>
+    </button>
+    
+  </div>
+  <div class="col-8 pl-0">
+    <form [formGroup]="prodAddForm" [ngSwitch]="status">
+      <ul class="nav nav-pills mb-4">
+        <li class="nav-item">
+          <a (click)="status = 1" class="nav-link point" [class.active]="status === 1">Description</a>
+        </li>
+        <li class="nav-item">
+          <a (click)="status = 4" class="nav-link point" [class.active]="status === 4">Long Des</a>
+        </li>
+        <li class="nav-item">
+          <a (click)="status = 2" class="nav-link point" [class.active]="status === 2">Category</a>
+        </li>
+        <li class="nav-item">
+          <a (click)="status = 3" class="nav-link point" [class.active]="status === 3">Pricing</a>
+        </li>
+      </ul>
+
+      <div *ngIf="errors" class="alert alert-danger">
+        <i class="material-icons">warning</i>
+        {{errors | titlecase}}
+      </div>
+      
+      <ng-container *ngSwitchCase="1">
+        <div class="form-group d-flex">
+          <label class="w-25" for="p_id">Product Code</label>
+          <input formControlName="p_id" type="text" name="p_id" id="p_id" class="form-control w-100">
+        </div>
+        <div class="form-group d-flex">
+          <label class="w-25" for="des1">Description 1</label>
+          <input formControlName="des1" type="text" name="des1" id="des1" class="form-control w-100">
+        </div>
+        <div class="form-group d-flex">
+          <label class="w-25" for="des2">Description 2</label>
+          <input formControlName="des2" type="text" name="des2" id="des2" class="form-control w-100">
+        </div>
+        <div class="form-group d-flex">
+          <label class="w-25" for="des3">Description 3</label>
+          <input formControlName="des3" type="text" name="des3" id="des3" class="form-control w-100">
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="4">
+        <div class="form-group d-flex">
+          <label class="w-25" for="deslong1">Deslong 1</label>
+          <input formControlName="deslong1" type="text" name="deslong1" id="deslong1" class="form-control w-100">
+        </div>
+        <div class="form-group d-flex">
+          <label class="w-25" for="deslong2">Deslong 2</label>
+          <input formControlName="deslong2" type="text" name="deslong2" id="deslong2" class="form-control w-100">
+        </div>
+        <div class="form-group d-flex">
+          <label class="w-25" for="deslong3">Deslong 3</label>
+          <input formControlName="deslong3" type="text" name="deslong3" id="deslong3" class="form-control w-100">
+        </div>
+        <div class="form-group d-flex">
+          <label class="w-25" for="deslong4">Deslong 4</label>
+          <input formControlName="deslong4" type="text" name="deslong4" id="deslong4" class="form-control w-100">
+        </div>
+        <div class="form-group d-flex">
+          <label class="w-25" for="deslong5">Deslong 5</label>
+          <input formControlName="deslong5" type="text" name="deslong5" id="deslong5" class="form-control w-100">
+        </div>
+        <div class="form-group d-flex">
+          <label class="w-25" for="deslong6">Deslong 6</label>
+          <input formControlName="deslong6" type="text" name="deslong6" id="deslong6" class="form-control w-100">
+        </div>
+        <div class="form-group d-flex">
+          <label class="w-25" for="deslong7">Deslong 7</label>
+          <input formControlName="deslong7" type="text" name="deslong7" id="deslong7" class="form-control w-100">
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="2">
+        <ng-container *ngIf="categories | async as categories">
+          <div class="form-group d-flex">
+            <label for="pf_cat_id" class="w-25">Category 1</label>
+            <select formControlName="pf_cat_id" name="pf_cat_id" id="pf_cat_id" class="form-control w-100">
+              <option value="0" selected disabled>-</option>
+              <option *ngFor="let cat of categories.records; index as i" value="{{cat.id}}">{{cat.description}}</option>
+            </select>
+          </div>
+          <div class="form-group d-flex">
+            <label for="category2" class="w-25">Category 2</label>
+            <select formControlName="category2" name="category2" id="category2" class="form-control w-100">
+              <option value="0" selected disabled>-</option>
+              <ng-container *ngFor="let cat of categories.records; index as i">
+                <ng-container *ngFor="let subcat of cat.subcat; index as j;">
+                  <option *ngIf="subcat.upcat === f.pf_cat_id.value" value="{{subcat.id}}">{{subcat.description}}</option>
+                </ng-container>
+              </ng-container>
+            </select>
+          </div>
+          <div class="form-group d-flex">
+            <label for="category3" class="w-25">Category 3</label>
+            <select formControlName="category3" name="category3" id="category3" class="form-control w-100">
+              <option value="0" selected disabled>-</option>
+              <ng-container *ngFor="let cat of categories.records; index as i">
+                <ng-container *ngFor="let subcat of cat.subcat; index as j;">
+                  <ng-container *ngFor="let subsubcat of subcat.subcat">
+                    <option *ngIf="subsubcat.upcat === f.category2.value" value="{{subsubcat.id}}">{{subsubcat.description}}</option>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+            </select>
+          </div>
+          <div class="form-group d-flex">
+            <label for="category4" class="w-25">Category 4</label>
+            <select formControlName="category4" name="category4" id="category4" class="form-control w-100">
+              <option value="0" selected disabled>-</option>
+              <ng-container *ngFor="let cat of categories.records; index as i">
+                <ng-container *ngFor="let subcat of cat.subcat; index as j;">
+                  <ng-container *ngFor="let subsubcat of subcat.subcat">
+                    <ng-container *ngFor="let subsubsubcat of subsubcat.subcat">
+                      <option *ngIf="subsubsubcat.upcat === f.category3.value" value="{{subsubsubcat.id}}">{{subsubsubcat.description}}</option>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+            </select>
+          </div>
+        </ng-container>
+
+        <div class="form-group d-flex">
+          <label for="taxcode" class="w-25">Tax Code</label>
+          <select formControlName="taxcode" name="taxcode" id="taxcode" class="form-control w-100">
+            <option value="1.4">1.4</option>
+            <option value="1.2">1.2</option>
+          </select>
+        </div>
+        <div class="form-group d-flex">
+          <label for="visible" class="w-25">Visibility</label>
+          <select formControlName="visible" name="visible" id="visible" class="form-control w-100">
+            <option value="Y">Visible On Web</option>
+            <option value="N">Not Visible On Web</option>
+            <option value="P">Pastel Only</option>
+          </select>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="3">
+        <div class="form-group d-flex">
+          <label for="avgcost" class="w-25">Cost Price</label>
+          <input formControlName="avgcost" type="text" name="avgcost" id="avgcost" class="form-control w-100">
+        </div>
+        <div class="form-group d-flex">
+          <label for="puprice" class="w-25">Public Price</label>
+          <input formControlName="puprice" type="text" name="puprice" id="puprice" class="form-control w-100">
+        </div>
+        <div class="form-group d-flex">
+          <label for="coprice" class="w-25">Corporate Price 1</label>
+          <input formControlName="coprice" type="text" name="coprice" id="coprice" class="form-control w-100">
+        </div>
+        <div class="form-group d-flex">
+          <label for="delcityprice" class="w-25">Corporate Price 2</label>
+          <input formControlName="delcityprice" type="text" name="delcityprice" id="delcityprice" class="form-control w-100">
+        </div>
+        <div class="form-group d-flex">
+          <label for="wsprice" class="w-25">Wholesale Price</label>
+          <input formControlName="wsprice" type="text" name="wsprice" id="wsprice" class="form-control w-100">
+        </div>
+        <div class="form-group d-flex">
+          <label for="delcitypromo" class="w-25">Tender Price</label>
+          <input formControlName="delcitypromo" type="text" name="delcitypromo" id="delcitypromo" class="form-control w-100">
+        </div>
+        <div class="form-group d-flex">
+          <label for="spprice" class="w-25">Promotion Price</label>
+          <input formControlName="spprice" type="text" name="spprice" id="spprice" class="form-control w-100">
+        </div>
+      </ng-container>
+    </form>
+  </div>
+</div>

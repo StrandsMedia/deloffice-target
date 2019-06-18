@@ -14,3 +14,17 @@ th i.material-icons {
     position: relative;
     top: 7px;
 }
+
+table.tgt-table {
+    tbody {
+        tr {
+            td {
+                word-break: all;
+            }
+        }
+    }
+}
+
+td.bg-primary:hover {
+    cursor: pointer;
+}

@@ -5,9 +5,12 @@
       <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
         <h3 class="m-0 text-white flex-fill align-items-center">
           Delivery Workflow
-          <img *ngIf="loading" width="23px" src="/assets/icons/rolling_white.svg" alt="Rolling White">
+          <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
         </h3>
         <div>
+          <button (click)="editBatch()" *ngIf="pushToDelArr?.length > 0" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" dialogTrigger="wfpopup">
+            Send to Delivery
+          </button>
           <button (click)="get()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3">
             Refresh List
           </button>
@@ -25,33 +28,33 @@
       </div> -->
     
       <!-- Data table -->
-      <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+      <table cdk-table respHeight [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
         <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
-        <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+        <tr cdk-row *cdkRowDef="let row; columns: columns" [ngClass]="{'table-warning': row.urgent == 1, 'table-danger': row.allocs}"></tr>
       
         <ng-container cdkColumnDef="workflow_id">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">#</th>
-          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 5%;">
+          <td [routerLink]="['/workflow/event/' + row.workflow_id ]" cdk-cell *cdkCellDef="let row" class="text-center font-weight-bold point text-center" style="width: 5%;">
             {{row.workflow_id}}
           </td>
         </ng-container>
         <ng-container cdkColumnDef="job_id">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">Sess. ID</th>
-          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 5%;">
+          <td [routerLink]="row.sessionID ? '/workflow/job/' + row.sessionID : null" cdk-cell *cdkCellDef="let row" [class.point]="row.sessionID" class="font-weight-bold text-center" style="width: 5%;">
             {{row.sessionID || '-'}}
           </td>
         </ng-container>
     
         <ng-container cdkColumnDef="date">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">Date</th>
-          <td cdk-cell *cdkCellDef="let row" style="width: 8%;">
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 8%;">
             {{row.time | date:'dd-MM-yyyy'}}
           </td>
         </ng-container>
         <ng-container cdkColumnDef="time">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 6%;">Time</th>
-          <td cdk-cell *cdkCellDef="let row" style="width: 6%;">
-            {{row.time | date:'H:mm:ss'}}
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 6%;">
+            {{row.time | date:'HH:mm:ss'}}
           </td>
         </ng-container>
       
@@ -71,23 +74,23 @@
             Invoiced
             <i *ngIf="sortKey === 'invoiceNo'" class="material-icons">{{clicked === 1 ? 'arrow_drop_up': 'arrow_drop_down'}}</i>
           </th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 6}" style="width: 10%;">
+          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 6}" style="width: 10%;" (click)="editWF($event, row)" name="5" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'">
             {{row.invoiceNo | uppercase}}
           </td>
         </ng-container>
         <ng-container cdkColumnDef="goodsready">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Goods Ready</th>
-          <td cdk-cell *cdkCellDef="let row" [ngClass]="{'bg-primary': row.status == 7}" style="width: 10%;"></td>
+          <td cdk-cell *cdkCellDef="let row" [ngClass]="{'bg-primary': row.status == 7}" style="width: 10%;" (click)="editWF($event, row)" [dialogTrigger]="hasClass ? 'wfpopup' : null" name="8" [clickDisabled]="'update'"></td>
         </ng-container>
         <ng-container cdkColumnDef="goodsalloc">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Goods Allocated</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 9}" style="width: 10%;">
+          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 9}" style="width: 10%;" (click)="editWF($event, row)" [dialogTrigger]="hasClass ? 'wfpopup' : null" name="9" [clickDisabled]="'update'">
             {{row.status == 9 ? row.vehicleNo : null | uppercase}}
           </td>
         </ng-container>
         <ng-container cdkColumnDef="deliveryinprogress">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Delivery In Progress</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 8}" style="width: 10%;">
+          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 8}" style="width: 10%;" (click)="editWF($event, row)" [dialogTrigger]="hasClass ? 'wfpopup' : null" name="9" [clickDisabled]="'update'">
             {{row.status == 8 ? row.vehicleNo : null | uppercase}}
           </td>
         </ng-container>
@@ -102,8 +105,10 @@
         </ng-container>
         <ng-container cdkColumnDef="edit">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;"></th>
-          <td cdk-cell *cdkCellDef="let row" style="width: 5%;">
-            
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 5%;">
+            <div *ngIf="row.status == 7" class="form-check form-check-inline mr-0">
+              <input (click)="pushToArr($event)" class="form-check-input mr-0" type="checkbox" value="{{row.workflow_id}}">
+            </div>
           </td>
         </ng-container>
       
@@ -111,3 +116,7 @@
     </div>
   </div>
 </div>
+
+<app-dialog dialogID="wfpopup" title="Edit Workflow Entry" size="medium" accept="Submit" cancel="Close" (onAccept)="update()" (onCancel)="cancel()" [disabled]="formData?.valid && (formData?.status && formData?.status !== '') ? true : null">
+  <app-popup (update)="loadInfo($event)" [questions]="questions"></app-popup>
+</app-dialog>

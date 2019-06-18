@@ -1,0 +1,17 @@
+.alert-danger {
+    font-size: 13px;
+}
+
+.alert-danger i.material-icons {
+    font-size: 14px;
+    line-height: 13px;
+}
+
+button#upload:disabled {
+    background-color: #007bff!important;
+    opacity: 0.8;
+}
+
+button#upload:disabled:hover {
+    background-color: #007bff!important;
+}

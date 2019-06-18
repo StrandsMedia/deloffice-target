@@ -37,6 +37,28 @@ export class TendersComponent implements OnInit {
     company_name: [''],
   });
 
+  public tenderEditForm = this.fb.group({
+    tid: null,
+    cust_id: null,
+    product: null,
+    estimated_quantity: null,
+    schedule: null,
+    receive_date: null,
+    closing_date: null,
+    actual_quantity: null,
+    delivery: null,
+    product_quoted: null,
+    price_quoted: null,
+    attachment: null,
+    result: null,
+    comments: null,
+    status: null,
+    createdAt: null,
+    updatedAt: null,
+    company_name: null,
+    path: null
+  });
+
   constructor(private fb: FormBuilder, private tender: TendersService) { }
 
   ngOnInit() {
@@ -52,10 +74,43 @@ export class TendersComponent implements OnInit {
     this.loading = true;
     return this.dataSource$ = this.tender.getTenders(this.searchForm.value).pipe(
       map(tenders => tenders.records),
+      map(tenders => {
+        tenders.map(tndr => {
+          if (tndr['schedule']) {
+            tndr['schedule'] = tndr['schedule'].split(' ')[0];
+          }
+
+          if (tndr['receive_date']) {
+            tndr['receive_date'] = tndr['receive_date'].split(' ')[0];
+          }
+
+          if (tndr['closing_date']) {
+            tndr['closing_date'] = tndr['closing_date'].split(' ')[0];
+          }
+          return tndr;
+        });
+        return tenders;
+      }),
       delay(500),
       tap((e) => {
         this.loading = !this.loading;
       })
+    );
+  }
+
+  trackByFn(index, item) {
+    return index;
+  }
+
+  loadInfo(row) {
+    this.tenderEditForm.setValue(row);
+  }
+
+  editTender() {
+    this.tender.updateTender(this.tenderEditForm.value).subscribe(
+      (data) => console.log(data),
+      (err) => console.log(err),
+      () => this.get()
     );
   }
 

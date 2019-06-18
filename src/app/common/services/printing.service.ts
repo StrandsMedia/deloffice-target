@@ -15,7 +15,15 @@ export class PrintingService {
 
   constructor(private http: HttpClient) { }
 
+  createPrinting(info): Observable<any> {
+    return this.http.post(this.url + 'printing/create.php', info);
+  }
+
   getPrinting(info): Observable<any> {
     return this.http.post(this.url + 'printing/read.php', info);
+  }
+
+  updatePrinting(info): Observable<any> {
+    return this.http.post(this.url + 'printing/update.php', info);
   }
 }

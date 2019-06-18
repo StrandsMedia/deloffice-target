@@ -36,8 +36,8 @@
           <img *ngIf="loading" width="23px" src="/assets/icons/rolling_white.svg" alt="Rolling White">
         </h3>
         <div>
-          <button (click)="exportCSV()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3">
-            Export
+          <button class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" dialogTrigger="savecsv">
+            Generate Report
           </button>
           <button (click)="get()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3">
             Refresh List
@@ -53,7 +53,7 @@
           </form>
         </div>
       </div>
-      <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+      <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll" respHeight>
           <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
           <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
 
@@ -64,21 +64,21 @@
             </td>
           </ng-container>
           <ng-container cdkColumnDef="date">
-            <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Date</th>
-            <td cdk-cell *cdkCellDef="let row" style="width: 10%;">
-              {{row.date2 | date:'dd-MM-yyyy H:mm:ss'}}
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 11%;">Date</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 11%;">
+              {{row.date2 | date:'dd.MM.yy H:mm:ss'}}
             </td>
           </ng-container>
           <ng-container cdkColumnDef="customer">
-            <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Customer Name</th>
-            <td [routerLink]="['/customers/' + row.cust_id ]" cdk-cell *cdkCellDef="let row" class="font-weight-bold point" style="width: 25%;">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 29%;">Customer Name</th>
+            <td [routerLink]="['/customers/' + row.cust_id ]" cdk-cell *cdkCellDef="let row" class="font-weight-bold point" style="width: 29%;">
               {{row.company_name}}
             </td>
           </ng-container>
           <ng-container cdkColumnDef="comment">
-            <th cdk-header-cell *cdkHeaderCellDef style="width: 50%;">Comment</th>
-            <td cdk-cell *cdkCellDef="let row" style="width: 50%;">
-              {{row.comment}}
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 45%;">Comment</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 45%;">
+              {{row.comment || '-'}}
             </td>
           </ng-container>
           <ng-container cdkColumnDef="sales_rep">
@@ -91,3 +91,63 @@
     </div>
   </div>
 </div>
+
+<app-dialog dialogID="savecsv" title="Confirm Save CSV" accept="Save" cancel="Cancel" (onAccept)="exportCSV()" (onCancel)="resetState()">
+      <div *ngIf="response" class="alert alert-danger">
+        <p class="mb-0">{{response}}</p>
+      </div>
+
+  <p>Select a date range in the field below and click on the Search button to generate a report of all comments inserted in that period of time.</p>
+
+  <p>Once the search is completed, a green icon will appear to let you know the query was successful. Then click on Save to get a CSV file (Excel) of the generated report.</p>
+
+  <form [formGroup]="searchForm">
+    <div class="form-inline w-100">
+      <div class="form-group flex-fill">
+        <label for="fromdate" class="mr-2">From: </label>
+        <input formControlName="from" type="date" name="fromdate" id="fromdate" class="form-control mr-2 w-100">
+      </div>
+      <div class="form-group flex-fill">
+        <label for="todate" class="mr-2">To: </label>
+        <input formControlName="to" type="date" name="todate" id="todate" class="form-control w-100">
+      </div><br />
+    </div>
+    <div class="form-inline w-100">
+      <div *ngIf="defaultUser.usertype !== 'admin'" class="form-group mt-3">
+        <label for="user" class="mr-2">User: </label>
+        <select formControlName="user" class="form-control mr-2" name="user" id="user">
+          <option value="" selected disabled>Select User</option>
+          <option *ngFor="let usr of users | async; index as i; trackBy: trackByFn" [value]="usr.sales_id">{{usr.sales_rep}}</option>
+        </select>
+      </div>
+      <div class="form-group mt-3">
+        <button (click)="searchCmts()" type="button" class="py-2 px-3 tgt-button-full" [ngClass]="{
+            'tgt-btn-white': searchstate === 0,
+            'tgt-btn-red': searchstate === 1,
+            'tgt-btn-green': searchstate === 2
+          }" [disabled]="searchstate === 1 || searchstate === 2">
+          {{state}}
+        </button>
+      </div>
+    </div>
+  </form>
+</app-dialog>
+
+<ng-container *ngIf="comments | async as comments">
+  <table id="cmtreport" *ngIf="comments?.length > 0">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Company Name</th>
+        <th>Comment</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let cmt of comments">
+        <td>{{cmt.date2 | date:'dd-MM-yy'}}</td>
+        <td>{{cmt.company_name}}</td>
+        <td>{{cmt.comment}}</td>
+      </tr>
+    </tbody>
+  </table>
+</ng-container>

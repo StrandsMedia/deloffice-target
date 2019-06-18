@@ -4,8 +4,8 @@
       <!-- Header Section of Card -->
       <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
         <h3 class="m-0 text-white flex-fill align-items-center">
-          Credit Note Report
-          <img *ngIf="loading" width="23px" src="/assets/icons/rolling_white.svg" alt="Rolling White">
+          Cancellation Report
+          <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
         </h3>
         <div>
           
@@ -17,7 +17,7 @@
       </div> -->
     
       <!-- Beginning of data table -->
-      <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+      <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll" respHeight>
         <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
         <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
       

@@ -15,21 +15,21 @@ export class CategoryService {
 
   constructor(private http: HttpClient) { }
 
-  getCategory(): Observable<any> {
+  getCategory(): Observable<Category> {
     return this.http.get(this.url + 'category/read.php').pipe(
-      map((category: any) => category.category)
+      map((category: CatBlock) => category.category)
     );
   }
 
-  getSector(): Observable<any> {
+  getSector(): Observable<Sector> {
     return this.http.get(this.url + 'category/read.php').pipe(
-      map((category: any) => category.sector)
+      map((category: CatBlock) => category.sector)
     );
   }
 
-  getSubsector(): Observable<any> {
+  getSubsector(): Observable<Subsector> {
     return this.http.get(this.url + 'category/read.php').pipe(
-      map((category: any) => category.subsector)
+      map((category: CatBlock) => category.subsector)
     );
   }
 }

@@ -16,7 +16,7 @@
             </a>
             <ul class="p-0" style="list-style: none;">
               <li *ngFor="let subnav of nav.children">
-                <a [routerLink]="nav.path + subnav.path" [routerLinkActive]="'mdc-list-item--activated'"  class="mdc-list-item pl-5">{{subnav.name}}</a>
+                <a [routerLink]="nav.path + subnav.path" [queryParams]="subnav.query ? subnav.query : null" [routerLinkActive]="'mdc-list-item--activated'"  class="mdc-list-item pl-5">{{subnav.name}}</a>
               </li>
             </ul>
           </ng-template>

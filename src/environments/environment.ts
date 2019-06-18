@@ -5,7 +5,9 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:8888/newapi/',
-  apiUrl2: 'http://192.168.100.250/new-api/'
+  apiUrl2: 'http://192.168.100.250/newapi/',
+  imgUrl: 'http://localhost:8888/imgdir/',
+  remoteURL: 'https://printnpack.mu/'
 };
 
 /*

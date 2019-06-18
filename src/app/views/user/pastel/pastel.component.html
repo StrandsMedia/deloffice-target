@@ -1,0 +1,74 @@
+<div class="row" *ngIf="dataSource$ | async as data">
+  <div class="col-12">
+      <div class="mdc-card mb-3" style="overflow: hidden;">
+          <!-- Header Section of Card -->
+          <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+              <div class="text-white flex-fill align-items-center">
+                <h3 class="mb-1">Current Agents In Session</h3>
+                <p class="mb-1 text-white">Sage Pastel Evolution</p>
+              </div>
+              <div class="align-items-center">
+                <p class="text-white mb-1 text-right">Allowed Users: 7</p>
+                <p class="text-white mb-1 text-right">Last Updated on: {{data?.updatedAt | date:'MMM d, y, HH:mm:ss'}}</p>
+              </div>
+          </div>
+
+          <ng-container >
+            <!-- Beginning of data table -->
+            <table cdk-table [dataSource]="data?.records" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll" respHeight>
+                <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+                <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+  
+                <ng-container cdkColumnDef="id">
+                  <th cdk-header-cell *cdkHeaderCellDef style="width: 10%">ID</th>
+                  <td cdk-cell *cdkCellDef="let row" [ngClass]="{
+                    'bg-primary': row.status === 1,
+                    'bg-secondary': row.status === 2,
+                    'bg-danger': row.status === 3
+                  }" class="font-weight-bold text-center text-white" style="width: 10%">
+                    {{row.idSessions}}
+                  </td>
+                </ng-container>
+                <ng-container cdkColumnDef="database">
+                  <th cdk-header-cell *cdkHeaderCellDef style="width: 15%">Database Name</th>
+                  <td cdk-cell *cdkCellDef="let row" style="width: 15%">
+                    {{row.DatabaseName}}
+                  </td>
+                </ng-container>
+                <ng-container cdkColumnDef="user">
+                  <th cdk-header-cell *cdkHeaderCellDef style="width: 15%">User Name</th>
+                  <td cdk-cell *cdkCellDef="let row" style="width: 15%">
+                    {{parseUserName(row.UserName) | titlecase}}
+                  </td>
+                </ng-container>
+                <ng-container cdkColumnDef="agent">
+                  <th cdk-header-cell *cdkHeaderCellDef class="flex-fill">Agent Name</th>
+                  <td cdk-cell *cdkCellDef="let row" class="flex-fill">
+                    {{parseName(row.AgentName) | titlecase}}
+                  </td>
+                </ng-container>
+                <ng-container cdkColumnDef="connected">
+                  <th cdk-header-cell *cdkHeaderCellDef style="width: 20%">Connected Time</th>
+                  <td cdk-cell *cdkCellDef="let row"  style="width: 20%">
+                    {{row.ConnectTime | date:'MMM d, y, HH:mm:ss'}}
+                  </td>
+                </ng-container>
+                <ng-container cdkColumnDef="refresh">
+                  <th cdk-header-cell *cdkHeaderCellDef style="width: 20%">Refresh Time</th>
+                  <td cdk-cell *cdkCellDef="let row" style="width: 20%">
+                    {{row.RefreshTime | date:'MMM d, y, HH:mm:ss'}}
+                  </td>
+                </ng-container>
+                <ng-container cdkColumnDef="kill">
+                  <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;" [hidden]="user.usertype !== 'Admin'">Kill</th>
+                  <td cdk-cell *cdkCellDef="let row" style="width: 5%" class="text-center" [hidden]="user.usertype !== 'Admin'">
+                    <button (click)="killSession(row.idSessions)" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2 float-left">
+                      <i class="material-icons" style="line-height: 30px;">close</i>
+                    </button>
+                  </td>
+                </ng-container>
+            </table>
+          </ng-container>
+      </div>
+  </div>
+</div>

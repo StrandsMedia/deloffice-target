@@ -71,7 +71,7 @@
         <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
           <h3 class="m-0 text-white flex-fill align-items-center">
             View Entries
-            <img *ngIf="loading" width="23px" src="/assets/icons/rolling_white.svg" alt="Rolling White">
+            <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
           </h3>
           <div>
             
@@ -83,7 +83,7 @@
 
             <ng-container cdkColumnDef="tempid">
               <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">TID</th>
-              <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center" style="width: 5%;">{{row.invoice_id}}</td>
+              <td [routerLink]="['/order-entry/view/' + row.invoice_id]" cdk-cell *cdkCellDef="let row" class="font-weight-bold point text-center" style="width: 5%;">{{row.invoice_id}}</td>
             </ng-container>
             <ng-container cdkColumnDef="wfid">
               <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">WF ID</th>

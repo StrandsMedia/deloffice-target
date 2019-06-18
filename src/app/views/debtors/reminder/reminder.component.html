@@ -1,0 +1,389 @@
+<!-- Navigation Tabs -->
+<div *ngIf="!toggle" class="row">
+  <div class="col-12">
+      <div class="mdc-tab-bar mb-3" role="tablist" aria-label="Navigation">
+          <div class="mdc-tab-scroller">
+              <div class="mdc-tab-scroller__scroll-area">
+                  <div class="mdc-tab-scroller__scroll-content">
+                    <ng-container *ngFor="let tab of tabs; index as i;">
+                      <button routerLink="." [queryParams]="{status: tab.id}" class="mdc-tab" [class.mdc-tab--active]="tabselect == tab.id" role="tab" [attr.aria-selected]="tabselect == tab.id ? 'true' : 'false'" [attr.tabindex]="tabselect == tab.id ? '0' : '-1'" [clickDisabled]="'read'">
+                          <span class="mdc-tab__content">
+                              <span class="mdc-tab__text-label">{{tab.fullname}}</span>
+                          </span>
+                          <span class="mdc-tab-indicator" [class.mdc-tab-indicator--active]="tabselect == tab.id">
+                              <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                          </span>
+                          <span class="mdc-tab__ripple"></span>
+                      </button>
+                    </ng-container>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+<div  class="row">
+  <div class="col-12 mb-2">
+    <div *ngIf="error" class="alert alert-warning">{{error}}</div>
+  </div>
+  <div class="col-12">
+    <!-- Beginning of Card -->
+      <div class="mdc-card mb-3" style="overflow: hidden;">
+
+        <!-- Header Section of Card -->
+          <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+            <h3 class="m-0 text-white flex-fill align-items-center">Reminder List</h3>
+            <div>
+              <button (click)="toggleView()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" [clickDisabled]="'read'">{{!toggle ? 'Show Archive' : 'Show All'}}</button>
+              <button (click)="onNew()" dialogTrigger="addnew" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1" [disableIfUnauth]="'create'">Add Customer</button>
+            </div>
+          </div>          
+        
+        <ng-container *ngIf="dataSource$ | async as data">
+          <!-- Data table -->
+          <table *ngIf="data?.records?.length > 0" cdk-table [dataSource]="data?.records" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+            <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+            <tr cdk-row *cdkRowDef="let row; columns: columns" [class.table-warning]="!(row.status >= 0 && row.status < 4 && row.approved == 0)"></tr>
+  
+            <ng-container cdkColumnDef="customer">
+              <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Customer Name</th>
+              <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 25%;">
+                {{row.company_name}}
+              </td>
+            </ng-container>
+            <ng-container cdkColumnDef="company">
+              <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;">Company</th>
+              <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center" style="width: 7%;">
+                {{row.company}}
+              </td>
+            </ng-container>
+            <ng-container cdkColumnDef="status">
+              <th cdk-header-cell *cdkHeaderCellDef class="flex-fill" [hidden]="true">Status</th>
+              <td cdk-cell *cdkCellDef="let row" class="flex-fill" [hidden]="true">
+                {{row.courtstatus || '-'}}
+              </td>
+            </ng-container>
+            <!-- <ng-container cdkColumnDef="status">
+              <th cdk-header-cell *cdkHeaderCellDef class="flex-fill" [hidden]="tabselect !== 'court'">Status</th>
+              <td cdk-cell *cdkCellDef="let row" class="flex-fill" [hidden]="tabselect !== 'court'">
+                {{row.courtstatus || '-'}}
+              </td>
+            </ng-container> -->
+            <ng-container cdkColumnDef="amount">
+              <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;" >Amount Due</th>
+              <td cdk-cell *cdkCellDef="let row" style="width: 10%;" class="text-right" >
+                {{row.amt | number:'1.2-2'}}
+                <i (click)="loadRow(row)" class="ml-2 material-icons point" dialogTrigger="editamt">mode_edit</i>
+              </td>
+            </ng-container>
+            <ng-container cdkColumnDef="sent">
+              <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;" [hidden]="tabselect === 7 || tabselect === 0">Date Sent</th>
+              <td cdk-cell *cdkCellDef="let row" style="width: 10%;" class="text-center" [hidden]="tabselect === 7 || tabselect === 0">
+                {{row.sentDate | date:'dd-MM-yyyy'}}
+              </td>
+            </ng-container>
+            <ng-container cdkColumnDef="comment">
+              <th cdk-header-cell *cdkHeaderCellDef class="flex-fill" >Latest Comment</th>
+              <td cdk-cell *cdkCellDef="let row" class="flex-fill" >
+                {{row.comment || '-'}}
+              </td>
+            </ng-container>
+            <ng-container cdkColumnDef="nextcourt">
+              <th cdk-header-cell *cdkHeaderCellDef class="flex-fill" [hidden]="tabselect !== 7">Court Date</th>
+              <td cdk-cell *cdkCellDef="let row" class="flex-fill"  [hidden]="tabselect !== 7">
+                {{row.courtDate | date:'dd-MM-yyyy'}}
+                <i (click)="loadRow(row)" class="ml-2 material-icons point" dialogTrigger="editdate">mode_edit</i>
+              </td>
+            </ng-container>
+            <ng-container cdkColumnDef="nextrem">
+              <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;" [hidden]="tabselect === 7 || tabselect === 0">Next Reminder</th>
+              <td cdk-cell *cdkCellDef="let row" style="width: 10%;" class="text-center" [ngClass]="{'blink': isDatePast(row)}" [hidden]="tabselect === 7 || tabselect === 0">
+                {{nextDate(row.sentDate) | date:'dd-MM-yyyy'}}
+              </td>
+            </ng-container>
+            <ng-container cdkColumnDef="amtpaid">
+              <th cdk-header-cell *cdkHeaderCellDef class="flex-fill"  [hidden]="tabselect !== 7">Amount Paid</th>
+              <td cdk-cell *cdkCellDef="let row" class="flex-fill"  [hidden]="tabselect !== 7">
+                {{(row.amtpaid | number:'1.2-2') || '-'}}
+              </td>
+            </ng-container>
+            <ng-container cdkColumnDef="actions">
+              <th cdk-header-cell *cdkHeaderCellDef style="width: 11.5%;"></th>
+              <td cdk-cell *cdkCellDef="let row" style="width: 11.5%;">
+                <ng-container *ngIf="row.status != 8">
+                  <button (click)="archiveEntry(row.dbt_rem_id)" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2 float-left mr-2" title="Archive Entry">
+                    <i class="material-icons" style="line-height: 30px;">archive</i>
+                  </button>
+                  <button (click)="loadCmts(row.dbt_rem_id);loadInfoCmt(row)" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2 float-left mr-2" title="Add New Comment" dialogTrigger="comment">
+                    <i class="material-icons" style="line-height: 30px;">add_comment</i>
+                  </button>
+                  <ng-container *ngIf="tabselect === 7">
+                    <button (click)="loadRow(row)" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2 float-left mr-2" title="Update Amount Paid" dialogTrigger="uppay">
+                      <i class="material-icons" style="line-height: 30px;">attach_money</i>
+                    </button>
+                  </ng-container>
+                  <ng-container *ngIf="tabselect !== 7">
+                    <ng-container *ngIf="(row.status >= 0 && row.status <= 5); else lastBtn" >
+                      <button
+                        *ngIf="(row.status >= 0 && row.status < 4 && row.approved == 0) || (row.status >= 4 && row.approved == 1); else disaBtn"
+                        (click)="loadInfo(row);loadId(row.dbt_rem_id)"
+                        class="tgt-button-full bg-primary d-flex h-100 py-1 px-2 float-left"
+                        title="Send Next Reminder"
+                        dialogTrigger="sendrem"
+                        #sendBtn
+                      >
+                        <i class="material-icons" style="line-height: 30px;pointer-events: none;">send</i>
+                      </button>
+                      <ng-template #disaBtn>
+                        <button
+                          *ngIf="user.usertype !== 'Admin'"
+                          (click)="checkBtnState($event)"
+                          class="tgt-button-full bg-primary d-flex h-100 py-1 px-2 float-left"
+                          title="No Permission to Send Reminder"
+                          [class.disabled]="(row.status >= 4 && row.status <= 6)"
+                        >
+                          <i class="material-icons" style="line-height: 30px;pointer-events: none;">send</i>
+                        </button>
+                        <button
+                          *ngIf="user.usertype === 'Admin'"
+                          (click)="authorizeSend($event, row)"
+                          class="tgt-button-full bg-primary d-flex h-100 py-1 px-2 float-left"
+                          title="Permission to Send Reminder"
+                        >
+                          <i class="material-icons" style="line-height: 30px;pointer-events: none;">done_all</i>
+                        </button>
+                      </ng-template>
+                    </ng-container>
+                    <ng-template #lastBtn>
+                      <button
+                        (click)="sendToCourt(row)"
+                        class="tgt-button-full bg-primary d-flex h-100 py-1 px-2 float-left"
+                        title="Send To Court"
+                        [class.disabled]="row.status <= 4 && row.status >= 6"
+                      >
+                        <i class="material-icons" style="line-height: 30px;pointer-events: none;">send</i>
+                      </button>
+                    </ng-template>
+                    
+                  </ng-container>
+                </ng-container>
+
+              </td>
+            </ng-container>
+          </table>
+        </ng-container>
+      </div>
+  </div>
+</div>
+
+<ng-container *ngIf="statement | async as statement">
+  <table id="statementtable" class="d-none">
+    <thead>
+      <tr>
+        <th>Inv Date</th>
+        <th>Doc</th>
+        <th>Ref No.</th>
+        <th>Description</th>
+        <th>Debit<br>(Rs)</th>
+        <th>Credit<br>(Rs)</th>
+        <th>Balance<br>(Rs)</th>
+        <th>Cum - Bal<br>(Rs)</th>
+      </tr>
+    </thead>
+    <tbody>
+        <ng-container *ngFor="let item of statement?.records; index as i; trackBy: trackByFn;">
+          <tr>
+            <td>{{item.TxDate | date:'dd-MM-yy'}}</td>
+            <td>{{item.Code}}</td>
+            <td>{{item.Reference}}</td>
+            <td>{{item.Description}}</td>
+            <td>{{item.Debit | number:'1.2'}}</td>
+            <td>{{item.Credit !== '0.0' ? (item.Credit | number:'1.2') : '-'}}</td>
+            <td>{{item.Debit | number:'1.2'}}</td>
+            <td>{{item.allocated ? ((item.cum - item.allocated) | number:'1.2') : (item.cum | number: '1.2')}}</td>
+          </tr>
+          <ng-container *ngIf="item?.allocR">
+            <tr *ngFor="let it of item?.allocR; index as j; trackBy: trackByFn;">
+              <td>{{it.TxDate | date:'dd-MM-yy'}}</td>
+              <td>{{it.Code}}</td>
+              <td>{{it.Reference}}</td>
+              <td>{{it.Description}}</td>
+              <td>{{it.Debit !== '0.0' ? (it.Debit | number:'1.2') : '-'}}</td>
+              <td>{{it.Credit !== '0.0' ? (it.Credit | number:'1.2') : '-'}}</td>
+              <td>{{it.Debit !== '0.0' ? (it.Debit | number:'1.2') : '-'}}</td>
+              <td>{{item.cum | number:'1.2'}}</td>
+            </tr>
+          </ng-container>
+        </ng-container>
+    </tbody>
+  </table>
+
+  <table id="baltable" class="d-none">
+    <thead>
+      <tr>
+        <th>Amount Due (Rs)</th>
+        <th *ngFor="let item of statement?.balance; index as i; trackBy:trackByFn;">{{item.Name}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{baltotal | number:'1.2-2'}}</td>
+        <td *ngFor="let item of statement?.balance; index as i; trackBy:trackByFn;">{{item.Outstanding | number:'1.2-2'}}</td>
+      </tr>
+    </tbody>
+  </table>
+</ng-container>
+
+<app-dialog dialogID="sendrem" title="Send Next Reminder" size="medium" accept="Submit" cancel="Cancel" (onAccept)="sendPDF()" (onCancel)="cancelMail()" [disabled]="(stat === 'Ready') && sendMail.valid">
+  <p>Attachment status: {{stat}}</p>
+
+  <form [formGroup]="sendMail">
+    <div class="form-group">
+      <label for="email">To:</label>
+      <input formControlName="email" type="email" name="email" id="email" class="form-control w-100" placeholder="Type sender's e-mail address">
+    </div>
+    <div class="form-group">
+      <label for="subject">Subject:</label>
+      <select (change)="selectTab($event)" *ngIf="row?.company_name" formControlName="subject" name="subject" id="subject" class="form-control w-100">
+        <option *ngFor="let tab of filtTabs" [attr.data-tab]="tab.id" value="{{row?.company_name}} - {{tab.fullname}}">{{row?.company_name}} - {{tab.fullname}}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="message">Message:</label>
+      <textarea formControlName="message" name="message" id="message" rows="10" class="form-control w-100" placeholder="Type your message here"></textarea>
+    </div>
+  </form>
+</app-dialog>
+
+
+<app-dialog dialogID="addnew" title="Add New Entry" size="medium" accept="Submit" cancel="Cancel" (onAccept)="insertNew()" (onCancel)="cancel(); cancelCust()" [disabled]="addRemForm.valid">
+    <div *ngIf="custid.invalid && (custid.errors.exists || custid.errors.duplicate)" class="alert alert-danger mb-2">
+      <i class="material-icons">warning</i>
+      <ng-container *ngIf="custid.errors.exists">
+        There has to be an entry for this customer in <strong routerLink="/debtors/control" class="point">Debtors Chasing</strong> to send reminders.
+      </ng-container>
+      <ng-container *ngIf="custid.errors.duplicate">
+        There appears to be an active entry for this customer already. Make sure to archive the previous entry before you can place another entry.
+      </ng-container>
+    </div>
+  <form [formGroup]="addRemForm">
+
+      <form *ngIf="!addRemForm?.value?.cust_id" [formGroup]="pickCustForm" (keydown)="search()" class="d-flex position-relative">
+        <div class="form-group flex-fill mr-2">
+          <label for="custsearch">Customer Name</label>
+          <input formControlName="custsearch" type="search" name="custsearch" id="custsearch" class="form-control w-100">
+          <ng-container *ngIf="searchResults | async as searchResults">
+            <div *ngIf="pickCustForm?.value?.company_name !== '' && searchResults.length > 0" id="search-ddown" class="my-2 position-absolute w-100">
+                <ul class="p-0 m-0">
+                    <li *ngFor="let res of searchResults; index as i;">
+                        <a (click)="lockCust(res)">{{res.company_name}}</a>
+                    </li>
+                </ul>
+            </div>
+          </ng-container>
+        </div>
+        <div class="form-group" style="width: 35%;">
+          <label for="data">Database</label>
+          <select formControlName="data" name="data" id="data" class="form-control">
+            <option [value]="1">DelOffice Ltd</option>
+            <option [value]="2">Roll n Sheet Ltd</option>
+            <option [value]="3">Print n Pack Ltd</option>
+          </select>
+        </div>
+      </form>
+      <div *ngIf="addRemForm.value.cust_id" class="alert alert-info flex-fill">
+        <p class="mb-0">
+          <strong>Customer Name: </strong> {{addRemForm?.value?.company_name}}
+        </p>
+      </div>
+
+
+      <!-- Rest of form -->
+      <div class="d-flex">
+        <div class="form-group flex-fill" [class.mr-2]="addRemForm.value.status == 7">
+          <label for="status">Reminder Type</label>
+          <select formControlName="status" name="status" id="status" class="form-control w-100">
+            <option *ngFor="let rem of tabs" value="{{rem.id}}">{{rem.fullname}}</option>
+          </select>
+        </div>
+
+        <div *ngIf="addRemForm.value.status == 7" class="flex-fill form-group">
+          <label for="sentDate">Date</label>
+          <input formControlName="sentDate" type="date" name="sentDate" id="sentDate" class="form-control w-100">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="amt">Amount Due</label>
+        <input formControlName="amt" type="number" name="amt" id="amt" class="form-control w-100">
+      </div>
+
+  </form>
+</app-dialog>
+
+<app-dialog dialogID="comment" title="View Comments" size="medium" cancel="Close" comment="true">
+  <ul *ngIf="comments | async as comments" class="list-group list-group-flush" #scrollMe [scrollTop]="scrollMe.scrollHeight" style="max-height: 300px; overflow-y: scroll;">
+
+      <ng-container *ngIf="comments?.records?.length > 0; else nocomment;">
+        <li *ngFor="let cmt of comments?.records; index as i;trackBy:trackByFn" class="list-group-item py-3">
+          <div class="media">
+            <span class="align-self-start mr-3 round-image bg-normal" style="width: 45px; height: 45px; overflow: hidden;">
+              <h2 class="text-white text-center w-100 h-100" style="font-weight:400; font-size: 1.2rem; vertical-align: middle; line-height: 45px;">{{getInitials(cmt.sales_rep) | uppercase}}</h2>
+            </span>
+            <div class="media-body">
+              <div class="span float-left">
+                  <h5 class="mt-0" style="font-size: 1rem;">{{cmt.sales_rep}}</h5>
+                  <p class="mb-0" style="font-weight: 14px;">{{cmt.dbt_comment}}</p>
+              </div>
+              <small class="d-block float-right font-italic" style="font-weight: 13px;">{{cmt.createdAt | date:'medium'}}</small>
+            </div>
+          </div>
+        </li>
+      </ng-container>
+      <ng-template #nocomment>
+        <li class="list-group-item py-3">
+          <div class="media">
+            <div class="media-body">
+              <p class="mb-0 text-italic" style="font-weight: 14px;">Sorry, there are no comments to display.</p>
+            </div>
+          </div>
+        </li>
+      </ng-template>
+
+    </ul>
+    <div id="card-footer" class="p-2">
+      <form (ngSubmit)="insert()" [formGroup]="newCmtForm" class="form-inline d-flex">
+        <textarea formControlName="comment" class="form-control w-75 mr-2" placeholder="Enter your comment here..."></textarea>
+        <button class="flex-fill h-100 tgt-button-full tgt-btn-white py-3" type="submit" [disabled]="!newCmtForm.valid">Submit</button>
+      </form>
+    </div>
+</app-dialog>
+
+<app-dialog dialogID="editamt" title="Update Amount Due" accept="Submit" cancel="Cancel" (onAccept)="updateAmtDue()" [disabled]="updateAmtDueForm.valid">
+  <form [formGroup]="updateAmtDueForm">
+    <div class="form-group mb-0">
+      <label for="newAmt">Update Amount Due</label>
+      <input formControlName="newAmt" type="number" name="newAmt" id="newAmt" class="form-control w-100">
+    </div>
+  </form>
+</app-dialog>
+
+<app-dialog dialogID="editdate" title="Update Court Date" accept="Submit" cancel="Cancel" (onAccept)="updateCourtDate()" [disabled]="updateCourtForm.valid">
+  <form [formGroup]="updateCourtForm">
+    <div class="form-group mb-0">
+      <label for="newDate">New Court Date</label>
+      <input formControlName="newDate" type="date" name="newDate" id="newDate" class="form-control w-100">
+    </div>
+  </form>
+</app-dialog>
+
+<app-dialog dialogID="uppay" title="Update Amount Paid" accept="Submit" cancel="Cancel" (onAccept)="updateAmtPaid()" [disabled]="updatePayForm.valid">
+  <form [formGroup]="updatePayForm">
+    <div class="form-group mb-0">
+      <label for="amount">Amount Paid</label>
+      <input formControlName="amount" type="number" name="amount" id="amount" class="form-control w-100">
+    </div>
+  </form>
+</app-dialog>

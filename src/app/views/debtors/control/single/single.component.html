@@ -1,0 +1,160 @@
+<ng-container *ngIf="dataSource$ | async as data">
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="mdc-card py-3" style="padding: 25px;">
+        <div class="d-flex">
+          <div id="company" class="pr-4" style="width: 400px; border-right: 1px solid #eee;">
+            <h4>{{data?.customerCode ? data?.customerCode + ' - ' : null}}{{data?.company_name}}</h4>
+            <p *ngIf="data?.address" class="mb-2" style="font-size: 15px;">{{data?.address}}</p>
+            <p class="font-weight-bold mb-2">{{data.contact_person_acc}}</p>
+            <p class="mb-2">
+              <span *ngIf="data.tel_acc">Tel: {{data.tel_acc}}</span><br *ngIf="data.tel_acc">
+              <span *ngIf="data.fax_acc">Fax: {{data.fax_acc}}</span><br *ngIf="data.fax_acc">
+              <span *ngIf="data.mob_acc">Mob: {{data.mob_acc}}</span>
+            </p>
+          </div>
+          <div [formGroup]="dbtControlForm" class="px-4 align-items-center flex-fill d-flex" style="border-right: 1px solid #eee;">
+            <div class="form-group w-100">
+              <label for="issue" class="float-left font-weight-bold">Issue: </label>
+              <input (change)="changeStatus()" formControlName="issue" type="text" name="issue" id="issue" class="form-control w-100">
+            </div>
+          </div>
+          <div class="pl-4 align-items-center flex-fill d-flex">
+            <button (click)="saveForm()" class="tgt-button-full bg-primary px-3 py-2 my-1 mr-3 d-flex align-items-center" [class.disabled-btn]="!changed" [disabled]="!changed">
+              <i class="material-icons mr-0" style="font-size: 26px; line-height: 34px;pointer-events: none;">save</i>
+              <span *ngIf="loading" class="ml-2 text-white">Loading...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-6">
+      <form (change)="changeStatus()" class="mdc-card py-3 h-100" style="padding: 25px;">
+        <table class="table tgt-table w-100">
+          <thead>
+            <tr>
+              <th></th>
+              <th class="text-center" style="width: 15%;">YES</th>
+              <th class="text-center" style="width: 15%;">NO</th>
+              <th class="text-center" style="width: 15%;">DONE/UTP</th>
+            </tr>
+          </thead>
+          <tbody [formGroup]="dbtControlForm">
+            <ng-container *ngFor="let cho of choices; index as i;">
+              <tr>
+                <td>
+                  <div class="custom-control custom-radio">
+                    <input formControlName="status" type="radio" id="choiceRadio{{i + 1}}" name="status" class="custom-control-input" [value]="i + 1">
+                    <label class="custom-control-label font-weight-bold" for="choiceRadio{{i + 1}}">{{cho.name}}</label>
+                  </div>
+                </td>
+                <td class="text-center" style="width: 15%;">
+                  <div *ngIf="cho.yes" class="custom-control custom-radio">
+                    <input [formControlName]="cho.field ? cho.field : null" [name]="cho.field ? cho.field : null" type="radio" class="custom-control-input" id="yes{{i}}" value="Y">
+                    <label class="custom-control-label" for="yes{{i}}"></label>
+                  </div>
+                </td>
+                <td class="text-center" style="width: 15%;">
+                  <div *ngIf="cho.no" class="custom-control custom-radio">
+                    <input [formControlName]="cho.field ? cho.field : null" [name]="cho.field ? cho.field : null" type="radio" class="custom-control-input" id="no{{i}}" value="N">
+                    <label class="custom-control-label" for="no{{i}}"></label>
+                  </div>
+                </td>
+                <td class="text-center" style="width: 15%;">
+                  <div *ngIf="cho.done" class="custom-control custom-radio">
+                    <input [formControlName]="cho.field ? cho.field : null" [name]="cho.field ? cho.field : null" type="radio" class="custom-control-input" id="done{{i}}" value="D">
+                    <label class="custom-control-label" for="done{{i}}"></label>
+                  </div>
+                </td>
+              </tr>
+              <ng-container *ngIf="cho.children">
+                <ng-container *ngFor="let child of childchoices; index as j;">
+                  <tr>
+                    <td>{{child.name}}</td>
+                    <td class="text-center" style="width: 15%;">
+                      <div *ngIf="child.yes" class="custom-control custom-radio">
+                        <input [formControlName]="child.id ? child.id : null" [name]="child.id ? child.id : null" type="radio" class="custom-control-input" id="childyes{{j}}" value="Y">
+                        <label class="custom-control-label" for="childyes{{j}}"></label>
+                      </div>
+                    </td>
+                    <td class="text-center" style="width: 15%;">
+                      <div *ngIf="child.no" class="custom-control custom-radio">
+                        <input [formControlName]="child.id ? child.id : null" [name]="child.id ? child.id : null" type="radio" class="custom-control-input" id="childno{{j}}" value="N">
+                        <label class="custom-control-label" for="childno{{j}}"></label>
+                      </div>
+                    </td>
+                    <td class="text-center" style="width: 15%;">
+                      <div *ngIf="child.done" class="custom-control custom-radio">
+                        <input [formControlName]="child.id ? child.id : null" [name]="child.id ? child.id : null" type="radio" class="custom-control-input" id="childone{{j}}" value="D">
+                        <label class="custom-control-label" for="childone{{j}}"></label>
+                      </div>
+                    </td>
+                  </tr>
+                  <ng-container *ngIf="child.children">
+                    <tr *ngFor="let gchild of grandchildchoices; index as k;">
+                      <td>{{gchild.name}}</td>
+                      <td class="text-center" style="width: 15%;">
+                        <div class="custom-control custom-radio">
+                          <input [formControlName]="gchild.id" [name]="gchild.id" type="radio" class="custom-control-input" id="gchildyes{{k}}" value="Y">
+                          <label class="custom-control-label" for="gchildyes{{k}}"></label>
+                        </div>
+                      </td>
+                      <td style="width: 15%;"></td>
+                      <td class="text-center" style="width: 15%;">
+                        <div class="custom-control custom-radio">
+                          <input [formControlName]="gchild.id" [name]="gchild.id" type="radio" class="custom-control-input" id="gchildno{{k}}" value="D">
+                          <label class="custom-control-label" for="gchildno{{k}}"></label>
+                        </div>
+                      </td>
+                    </tr>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+          </tbody>
+        </table>
+      </form>
+    </div>
+
+    <div class="col-6">
+      <div class="mdc-card mb-4 h-100" style="overflow:hidden;">
+          <ul class="list-group list-group-flush" #scrollMe [scrollTop]="scrollMe.scrollHeight" style="height: 100%; overflow-y: scroll;">
+            <ng-container *ngIf="data?.comments?.length > 0; else nocomment;">
+              <li *ngFor="let cmt of data?.comments | reverse; index as i;" class="list-group-item py-3">
+                  <div class="media">
+                    <span class="align-self-start mr-3 round-image bg-normal" style="width: 45px; height: 45px; overflow: hidden;">
+                      <h2 class="text-white text-center w-100 h-100" style="font-weight:400; font-size: 1.2rem; vertical-align: middle; line-height: 45px;">{{getInitials(cmt.sales_rep) | uppercase}}</h2>
+                    </span>
+                    <div class="media-body">
+                      <div class="span float-left">
+                          <h5 class="mt-0" style="font-size: 1rem;">{{cmt.sales_rep}}</h5>
+                          <p class="mb-0" style="font-weight: 14px;">{{cmt.dc_comment}}</p>
+                      </div>
+                      <small class="d-block float-right font-italic" style="font-weight: 13px;">{{cmt.createdAt | date:'medium'}}</small>
+                    </div>
+                  </div>
+              </li>
+            </ng-container>
+            <ng-template #nocomment>
+              <li class="list-group-item py-3">
+                <div class="media">
+                  <div class="media-body">
+                    <p class="mb-0 text-italic" style="font-weight: 14px;">Sorry, there are no comments to display.</p>
+                  </div>
+                </div>
+              </li>
+            </ng-template>
+          </ul>
+          <div id="card-footer" class="p-2">
+            <form (ngSubmit)="insert()" [formGroup]="newCmtForm" class="form-inline d-flex">
+              <textarea formControlName="comment" class="form-control w-75 mr-2" placeholder="Enter your comment here..."></textarea>
+              <button class="flex-fill h-100 tgt-button-full tgt-btn-white py-3" type="submit" [disabled]="!newCmtForm.valid">Submit</button>
+            </form>
+          </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

@@ -1,0 +1,27 @@
+<ng-container *ngIf="reminders | async as reminders">
+  <ng-container *ngFor="let rem of reminders">
+    <div class="reminder alert p-0">
+      <div class="reminder-body">
+        <button (click)="assignRem(rem)" type="button" class="close" aria-label="Close" dialogTrigger="dismiss">
+          <span aria-hidden="true" class="material-icons" style="font-size: 12px;">close</span>
+        </button>
+        <h5 class="alert-heading d-flex align-items-center">
+          <i class="material-icons mr-1">alarm</i>
+          Reminder
+        </h5>
+        <p class="reminder-text mb-0">
+          {{rem.reminder_name}}
+        </p>
+      </div>
+      <div class="reminder-body-footer d-flex align-items-center">
+        <div class="flex-fill">Reminder set on {{rem.reminder_time | date}} </div>
+        <button (click)="assignRem(rem)" type="button" class="reminder-btn" dialogTrigger="snooze">Snooze</button>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>
+
+<app-dialog dialogID="snooze" title="Snooze Reminder?" accept="Snooze" cancel="Cancel" (onAccept)="snooze()" (onCancel)="cancel()">
+</app-dialog>
+<app-dialog dialogID="dismiss" title="Dismiss Reminder?" accept="Dismiss" cancel="Cancel" (onAccept)="dismiss()" (onCancel)="cancel()">
+</app-dialog>

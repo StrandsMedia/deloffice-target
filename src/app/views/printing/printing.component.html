@@ -5,10 +5,17 @@
       <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
         <h3 class="m-0 text-white flex-fill align-items-center">
           Printing Overview
-          <img *ngIf="loading" width="23px" src="/assets/icons/rolling_white.svg" alt="Rolling White">
+          <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
         </h3>
         <div>
-          
+          <ng-container  *ngIf="user.user_id == 1 || user.user_id == 47">
+            <button *ngIf="click <= 0" (click)="incrClick()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1">Chris, don't click</button>
+            <button *ngIf="click > 0 && click <= 1" (click)="incrClick()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1">To Clicker Meme</button>
+            <button *ngIf="click > 1 && click <= 12" (click)="incrClick()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1">Contigne Clicker Alors</button>
+            <button *ngIf="click > 12" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1" dialogTrigger="hellochris">
+              Hello Chris
+            </button>
+          </ng-container>
         </div>
       </div>
       <!-- Sub header -->
@@ -38,13 +45,13 @@
       </div>
     
       <!-- Beginning of data table -->
-      <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+      <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll" respHeight>
         <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
         <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
       
         <ng-container cdkColumnDef="jobid">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 6%;">Job No.</th>
-          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 6%;">
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center" style="width: 6%;">
             {{row.job_id}}
           </td>
         </ng-container>
@@ -121,7 +128,11 @@
         </ng-container>
         <ng-container cdkColumnDef="edit">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;"></th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 5%;"></td>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 5%;">
+            <button (click)="editPrint(row)" type="submit" class="tgt-button-full tgt-btn-white" dialogTrigger="printedit">
+              <i class="material-icons" style="line-height: 24px;margin-top: 3px;">mode_edit</i>
+            </button>
+          </td>
         </ng-container>
 
       
@@ -131,3 +142,130 @@
   </div>
 </div>
 
+<app-dialog title="Edit Printing Entry" dialogID="printedit" accept="Save" cancel="Close" size="large" (onAccept)="update()">
+  <form [formGroup]="printEditForm">
+    <div class="alert alert-info">
+      <p class="mb-0">
+        <strong>Customer Name: </strong> {{printEditForm.value?.company_name}}
+      </p>
+    </div>
+    <div class="d-flex">
+      <div class="form-group mr-2 flex-fill">
+        <label for="startdate">Start Date</label>
+        <input formControlName="startdate" type="date" name="startdate" id="startdate" class="form-control w-100">
+      </div>
+      <div class="form-group mr-2 flex-fill">
+        <label for="enddate">End Date</label>
+        <input formControlName="enddate" type="date" name="enddate" id="enddate" class="form-control w-100">
+      </div>
+      <div class="form-group mr-2 flex-fill">
+        <label for="deliverydate">Delivery Date</label>
+        <input formControlName="deliverydate" type="date" name="deliverydate" id="deliverydate" class="form-control w-100">
+      </div>
+      <div class="form-group w-25">
+        <label for="status">Status</label>
+        <select formControlName="status" name="status" id="status" class="form-control w-100">
+          <option value="" selected disabled>Select a status</option>
+          <option value="0">Open</option>
+          <option value="1">Close</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="d-flex">
+      <div class="form-group mr-2 flex-fill">
+        <label for="product">Product</label>
+        <select formControlName="product" name="product" id="product" class="form-control w-100">
+          <option *ngFor="let prod of prodtype" value="{{prod.id}}">{{prod.name}}</option>
+        </select>
+      </div>
+      <div class="form-group mr-2 flex-fill">
+        <label for="printwork">Printwork</label>
+        <select formControlName="printwork" name="printwork" id="printwork" class="form-control w-100">
+          <option *ngFor="let wrk of printwork" value="{{wrk.id}}">{{wrk.name}}</option>
+        </select>
+      </div>
+      <div class="form-group flex-fill">
+        <label for="ppunit">Price per Unit</label>
+        <input formControlName="ppunit" type="text" name="ppunit" id="ppunit" class="form-control w-100">
+      </div>
+    </div>
+
+    <div class="d-flex">
+      <div class="form-group mr-2 flex-fill">
+        <label for="jobdesc">Job Description</label>
+        <textarea formControlName="jobdesc" name="jobdesc" id="jobdesc" rows="5" class="form-control"></textarea>
+      </div>
+      <div class="form-group flex-fill">
+        <label for="remarks">Remarks</label>
+        <textarea formControlName="remarks" name="remarks" id="remarks" rows="5" class="form-control"></textarea>
+      </div>
+    </div>
+
+    <div class="d-flex">
+      <div class="form-group mr-2 flex-fill">
+        <label for="papertype">Paper Type</label>
+        <input formControlName="paperspecs" type="text" name="paperspecs" id="paperspecs" class="form-control w-100">
+      </div>
+      <div class="form-group mr-2 flex-fill">
+        <label for="filename">Filename</label>
+        <input formControlName="filename" type="text" name="filename" id="filename" class="form-control w-100">
+      </div>
+      <div class="form-group flex-fill">
+        <label for="dimensions">Dimensions</label>
+        <input formControlName="dimensions" type="text" name="dimensions" id="dimensions" class="form-control w-100">
+      </div>
+    </div>
+
+    <div class="d-flex">
+      <div class="form-group mr-2 flex-fill">
+        <label for="pc">PC</label>
+        <input formControlName="pc" type="text" name="pc" id="pc" class="form-control w-100">
+      </div>
+      <div class="form-group mr-2 flex-fill">
+        <label for="printer">Printer</label>
+        <input formControlName="printer" type="text" name="printer" id="printer" class="form-control w-100">
+      </div>
+      <div class="form-group flex-fill">
+        <label for="printsetting">Print Settings</label>
+        <input formControlName="printsetting" type="text" name="printsetting" id="printsetting" class="form-control w-100">
+      </div>
+    </div>
+
+    <div class="d-flex">
+      <div class="form-group mr-2 flex-fill">
+        <label for="qtyorder">Qty Ordered</label>
+        <input formControlName="qtyorder" type="number" name="qtyorder" id="qtyorder" class="form-control w-100">
+      </div>
+      <div class="form-group mr-2 flex-fill">
+        <label for="qtyrejected">Qty Rejected</label>
+        <input formControlName="qtyrejected" type="number" name="qtyrejected" id="qtyrejected" class="form-control w-100">
+      </div>
+      <div class="form-group mr-2 flex-fill">
+        <label for="qtyconsumed">Qty Consumed</label>
+        <input formControlName="qtyconsumed" type="number" name="qtyconsumed" id="qtyconsumed" class="form-control w-100">
+      </div>
+      <div class="form-group mr-2 flex-fill">
+        <label for="qtycompleted">Qty Completed</label>
+        <input formControlName="qtycompleted" type="number" name="qtycompleted" id="qtycompleted" class="form-control w-100">
+      </div>
+    </div>
+
+    <div class="d-flex">
+      <div class="form-group mr-2 flex-fill">
+        <label for="printedby">Printed by</label>
+        <input formControlName="printedby" type="text" name="printedby" id="printedby" class="form-control w-100">
+      </div>
+      <div class="form-group mr-2 flex-fill">
+        <label for="supervisedby">Supervised by</label>
+        <input formControlName="supervisedby" type="text" name="supervisedby" id="supervisedby" class="form-control w-100">
+      </div>
+    </div>
+
+  </form>
+</app-dialog>
+
+
+<app-dialog title="Hello Chris" dialogID="hellochris" cancel="Close" size="large">
+  <img class="img-fluid" src="assets/images/chris.JPG" alt="chris">
+</app-dialog>

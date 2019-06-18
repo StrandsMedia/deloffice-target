@@ -40,9 +40,9 @@
     </ng-template>
   </ul>
   <div id="card-footer" class="p-2">
-    <form class="form-inline d-flex">
-      <textarea class="form-control w-75 mr-2" placeholder="Enter your comment here..."></textarea>
-      <button class="flex-fill h-100 tgt-button-full tgt-btn-white py-3" type="submit">Submit</button>
+    <form (ngSubmit)="insert()" [formGroup]="newCmtForm" class="form-inline d-flex">
+      <textarea formControlName="comment" class="form-control w-75 mr-2" placeholder="Enter your comment here..."></textarea>
+      <button class="flex-fill h-100 tgt-button-full tgt-btn-white py-3" type="submit" [disabled]="!newCmtForm.valid || state !== 'Submit'" [disableIfUnauth]="'create'">{{state}}</button>
     </form>
   </div>
 </div>

@@ -1,3 +1,265 @@
-<p>
-  collect works!
-</p>
+<!-- Navigation Tabs -->
+<div class="row">
+  <div class="col-6">
+      <div class="mdc-tab-bar mb-3" role="tablist" aria-label="Navigation">
+          <div class="mdc-tab-scroller">
+              <div class="mdc-tab-scroller__scroll-area">
+                  <div class="mdc-tab-scroller__scroll-content">
+                    <ng-container *ngFor="let tab of tabs; index as i;">
+                      <button (click)="update2(tab.name)" class="mdc-tab" [class.mdc-tab--active]="tabselect === tab.name" role="tab" [attr.aria-selected]="tabselect === tab.name ? 'true' : 'false'" [attr.tabindex]="tabselect === tab.name ? '0' : '-1'" [clickDisabled]="'read'">
+                          <span class="mdc-tab__content">
+                              <span class="mdc-tab__text-label">{{tab.fullname}}</span>
+                          </span>
+                          <span class="mdc-tab-indicator" [class.mdc-tab-indicator--active]="tabselect === tab.name">
+                              <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                          </span>
+                          <span class="mdc-tab__ripple"></span>
+                      </button>
+                    </ng-container>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="col-6"></div>
+</div>
+
+<div class="row">
+  <div class="col-12">
+    <!-- Beginning of Card -->
+      <div class="mdc-card mb-3" style="overflow: hidden;">
+      <!-- Header Section of Card -->
+        <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+          <h3 class="m-0 text-white flex-fill align-items-center">Entry List</h3>
+          <div>
+            <button *ngIf="summ_array?.length > 0" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-2" dialogTrigger="markcollect">Mark Batch as Collected</button>
+            <button *ngIf="summ_array?.length > 0" (click)="printSummary()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-2">Save Summary</button>
+            <button *ngIf="summ_array?.length === 0" (click)="printSummary()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-2">Save Whole Summary</button>
+            <!-- <button class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-2">Save Ticket Batch</button> -->
+            <button dialogTrigger="addnew" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1" [disableIfUnauth]="'create'">Add Customer</button>
+          </div>
+        </div>
+
+      <!-- Subheader Section of Card -->
+        <div id="card-subheader" class="py-3 px-4 d-flex align-items-center">
+          <h5 class="flex-fill mb-0 ">Showing: {{status === 0 ? 'Active' : 'Archive'}} {{tabselect | titlecase}} Entries</h5>
+          <form (change)="update()" [formGroup]="statusChange" class="float-right">
+            <select formControlName="status" name="status" id="status" class="form-control" style="width: 300px;height: 37px;">
+              <option value="" selected disabled>Select a status</option>
+              <option value="0">Active</option>
+              <option value="1">Archive</option>
+            </select>
+          </form>
+        </div>
+
+      <!-- Data table -->
+        <table cdk-table [dataSource]="dataSource$" class="table table-hover table-bordered tgt-table tgt-scroll" respHeight>
+          <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+          <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+  
+          <ng-container cdkColumnDef="id">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 4%;">ID</th>
+            <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center" style="width: 4%;">
+              {{row.debt_id}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="customer">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 18%;">Customer Name</th>
+            <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 18%;">{{row.company_name}}</td>
+          </ng-container>
+          <ng-container cdkColumnDef="region">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Region</th>
+            <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center" style="width: 10%;">{{row.region || '-'}}</td>
+          </ng-container>
+          <ng-container cdkColumnDef="payment">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Payment Method</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 10%;">{{parsePayMethod(row.pay_method)}}</td>
+          </ng-container>
+          <ng-container cdkColumnDef="delivery">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Delivery Against Payment</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 10%;">{{parseDeliveryPay(row.delivery_pay)}}</td>
+          </ng-container>
+          <ng-container cdkColumnDef="collected">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">Collected</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 8%;">{{parseDeliveryPay(row.collected)}}</td>
+          </ng-container>
+          <ng-container cdkColumnDef="amount">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">Amount</th>
+            <td cdk-cell *cdkCellDef="let row" class="text-right" style="width: 8%;">{{row.amount | number:'1.2-2'}}</td>
+          </ng-container>
+          <ng-container cdkColumnDef="createdAt">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">Created on</th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 8%;">{{row.createdAt | date:'dd-MM-yy'}}</td>
+          </ng-container>
+          <ng-container cdkColumnDef="comment">
+            <th cdk-header-cell *cdkHeaderCellDef class="flex-fill">Comment</th>
+            <td cdk-cell *cdkCellDef="let row" class="flex-fill">{{row.comment || '-'}}</td>
+          </ng-container>
+          <ng-container cdkColumnDef="complete">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 4%;" [hidden]="status === 1">
+            </th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 4%;" class="text-center" [hidden]="status === 1">
+                <button (click)="assign(row)" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2 float-left" dialogTrigger="markcollect" [disableIfUnauth]="'update'">
+                  <i class="material-icons" style="line-height: 30px;">done_all</i>
+                </button>
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="batchtick">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 2.6%;">
+              <!-- <div class="form-check form-check-inline mr-0">
+                <input class="form-check-input mr-0" type="checkbox">
+              </div> -->
+            </th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 2.6%;">
+                <div class="form-check form-check-inline mr-0">
+                  <input (click)="pushToArr($event, row)" class="form-check-input mr-0" type="checkbox" value="{{row}}" [disableIfUnauth]="'read'">
+                </div>
+            </td>
+          </ng-container>
+        </table>
+      </div>
+
+  </div>
+</div>
+
+<table *ngIf="summ_array?.length > 0" id="firsttable" class="d-none">
+  <thead>
+    <tr>
+      <th>Customer Name</th>
+      <th>Remarks</th>
+      <th>Region</th>
+      <th>Payment Method</th>
+      <th>Delivery Against Payment</th>
+      <th>Created on</th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-container *ngFor="let sum of summ_array; index as i;">
+      <tr>
+        <td>{{sum.company_name}}</td>
+        <td>{{sum.remarks}}</td>
+        <td>{{sum.region}}</td>
+        <td>{{parsePayMethod(sum.pay_method)}}</td>
+        <td>{{parseDeliveryPay(sum.delivery_pay)}}</td>
+        <td>{{sum.createdAt | date}}</td>
+      </tr>
+    </ng-container>
+  </tbody>
+</table>
+<table *ngIf="summ_array?.length === 0" id="firsttable" class="d-none">
+  <thead>
+    <tr>
+      <th>Customer Name</th>
+      <th>Remarks</th>
+      <th>Region</th>
+      <th>Payment Method</th>
+      <th>Delivery Against Payment</th>
+      <th>Created on</th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-container *ngFor="let sum of whole_arr | sort:'region'; index as i;">
+      <tr>
+        <td>{{sum.company_name}}</td>
+        <td>{{sum.remarks}}</td>
+        <td>{{sum.region}}</td>
+        <td>{{parsePayMethod(sum.pay_method)}}</td>
+        <td>{{parseDeliveryPay(sum.delivery_pay)}}</td>
+        <td>{{sum.createdAt | date}}</td>
+      </tr>
+    </ng-container>
+  </tbody>
+</table>
+
+<app-dialog dialogID="markcollect" title="Mark Entry as Collected" size="medium" accept="Submit" cancel="Cancel" (onAccept)="collect()">
+  <form [formGroup]="collectForm">
+    <div class="form-group">
+      <div class="custom-control custom-checkbox">
+        <input formControlName="collected" type="checkbox" class="custom-control-input" id="collected">
+        <label class="custom-control-label" for="collected">Collected</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="comment">Comment</label>
+      <input formControlName="comment" type="text" name="comment" id="comment" class="form-control w-100">
+    </div>
+  </form>
+</app-dialog>
+
+<app-dialog dialogID="addnew" title="Add New Entry" size="medium" accept="Submit" cancel="Cancel" (onAccept)="insert()" (onCancel)="cancel()">
+  <form [formGroup]="addCollectForm">
+
+      <form *ngIf="!addCollectForm?.value?.cust_id" [formGroup]="pickCustForm" (keydown)="search()" class="d-flex position-relative">
+        <div class="form-group flex-fill mr-2">
+          <label for="custsearch">Customer Name</label>
+          <input formControlName="custsearch" type="search" name="custsearch" id="custsearch" class="form-control w-100">
+          <div *ngIf="pickCustForm?.value?.company_name !== '' && searchResults | async as searchResults" id="search-ddown" class="my-2 position-absolute w-100">
+            <ng-container *ngIf="searchResults?.length > 0">
+              <ul class="p-0 m-0">
+                  <li *ngFor="let res of searchResults; index as i;">
+                      <a (click)="lockCust(res)">{{res.company_name}}</a>
+                  </li>
+              </ul>
+            </ng-container>  
+          </div>
+        </div>
+        <div class="form-group" style="width: 35%;">
+          <label for="data">Database</label>
+          <select formControlName="data" name="data" id="data" class="form-control">
+            <option [value]="1">DelOffice Ltd</option>
+            <option [value]="2">Roll n Sheet Ltd</option>
+            <option [value]="3">Print n Pack Ltd</option>
+          </select>
+        </div>
+      </form>
+      <div *ngIf="addCollectForm.value.cust_id" class="alert alert-info flex-fill">
+        <p class="mb-0">
+          <strong>Customer Name: </strong> {{addCollectForm?.value?.company_name}}
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label for="remarks">Address</label>
+        <input formControlName="remarks" type="text" name="remarks" id="remarks" class="form-control w-100">
+      </div>
+
+      <div class="d-flex">
+        <div class="form-group flex-fill mr-2">
+          <label for="amount">Amount</label>
+          <input formControlName="amount" type="number" name="amount" id="amount" class="form-control w-100">
+        </div>
+        <div class="form-group flex-fill">
+          <label for="type">Type</label>
+          <select formControlName="type" id="type" name="type" class="form-control w-100">
+            <option [value]="0">Collection</option>
+            <option [value]="1">Post</option>
+            <option [value]="2">Transfer</option>
+          </select>
+        </div>
+      </div>
+      <div *ngIf="addCollectForm.value.type == 0" class="form-group">
+        <div class="custom-control custom-checkbox">
+          <input formControlName="delivery_pay" type="checkbox" class="custom-control-input" id="delivery_pay" [value]="1">
+          <label class="custom-control-label" for="delivery_pay">Delivery Against Payment ?</label>
+        </div>
+      </div>
+      <div class="d-flex">
+        <div class="form-group flex-fill mr-2">
+          <label for="pay_method">Payment Method</label>
+          <select formControlName="pay_method" id="pay_method" name="pay_method" class="form-control w-100">
+            <option [value]="1">Cheque</option>
+            <option [value]="0">Cash</option>
+            <option [value]="2">Cheque/Cash</option>
+          </select>
+        </div>
+        <div class="form-group flex-fill">
+          <label for="region">Region</label>
+          <select formControlName="region" id="region" name="region" class="form-control w-100">
+            <option value="North">North</option>
+            <option value="South">South</option>
+          </select>
+        </div>
+      </div>
+
+  </form>
+</app-dialog>

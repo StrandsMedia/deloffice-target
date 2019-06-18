@@ -1,3 +1,198 @@
-<p>
-  dashboard works!
-</p>
+<div class="row mb-4">
+  <div class="col-8">
+    <div class="mdc-card h-100" style="background-color: #1559BC;">
+      <div class="d-flex p-4 justify-content-between">
+        <div>
+          <h3 class="text-white">{{timeOfDay.msg | titlecase}}</h3>
+          <p class="text-white">
+            Welcome to Target.
+          </p>
+          <ng-container *ngIf="quote$ | async as quote">
+            <div class="d-flex text-white" style="width: 520px;">
+              <blockquote class="pl-4" style="border-left: 4px solid white;">
+                <h4 class="mb-2">
+                  {{quote?.contents?.quotes[0]?.quote}}
+                </h4>
+                <small class="font-italic">- {{quote?.contents?.quotes[0]?.author}}</small>
+              </blockquote>
+              <i class="material-icons" style="font-size: 36px;">format_quote</i>
+            </div>
+          </ng-container>
+
+          <small class="text-white">Today is {{today | date:'EEEE, MMMM d, y'}}</small>
+          <h3 class="text-white mb-0">{{today | date:'HH:mm:ss'}}</h3>
+
+        </div>
+        <div class="d-flex" style="height: 200px;overflow:hidden;" >
+          <img style="width: 105%;" [src]="'assets/images/' + timeOfDay.time + '-back.svg'" [alt]="timeOfDay.time">
+        </div>
+       
+      </div>
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="mdc-card h-100">
+      <div class="d-flex p-4 justify-content-between">
+        <div class="w-100">
+          <div class="d-flex">
+            <h5 class="flex-fill">Monthly Sales Overview</h5>
+            <div [formGroup]="qtyReportForm" class="form-group">
+              <select (change)="get()" formControlName="product" name="product" id="product" class="form-control w-100">
+                <option value="paper" selected>Paper</option>
+                <option value="envelopes">Envelopes</option>
+                <option value="files">Files</option>
+                <option value="pens">Pens</option>
+
+              </select>
+            </div>
+          </div>
+          <ng-container *ngIf="qtyData | async as qtyData"></ng-container>
+          <div class="position-relative" style="width: 100%; height: 170px;">
+            <canvas width="200px" height="200px" #qtyChartRef>{{qtyChart}}</canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-4">
+    <div class="mdc-card h-100">
+      <div class="p-4">
+        <div class="w-100">
+          <div class="d-flex align-content-center">
+            <h5 class="flex-fill">My Tasks</h5>
+            <div [formGroup]="taskForm" class="form-group mr-2">
+              <select (change)="getTasks()" formControlName="num" name="num" id="num" class="form-control w-100">
+                <option [value]="0">Created</option>
+                <option [value]="3">Sent</option>
+                <option [value]="2">Received</option>
+                <option [value]="1">Completed</option>
+              </select>
+            </div>
+            <button (click)="bindUser()" dialogTrigger="newtask" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2" style="line-height: 30px;">
+              <i class="material-icons">add</i>
+            </button>
+          </div>
+        </div>
+        <div class="w-100 pr-1" style="height: 170px; overflow-y:scroll;">
+            <ng-container *ngIf="tasks | async as tasks">
+              <ng-container *ngFor="let tsk of tasks?.records; index as i; trackBy:trackByFn">
+                <div class="card mb-3">
+                  <div class="card-body py-3">
+                    <div class="form-check">
+                      <input (change)="markDone(tsk)" class="form-check-input" type="checkbox" value="" id="defaultTask{{i}}" [checked]="tsk.status == 1" [disabled]="tsk.status == 1">
+                      <label class="form-check-label" for="defaultTask{{i}}">
+                        {{tsk.taskname | titlecase}}
+                      </label>
+                    </div>
+                    <small>{{tsk.user == tsk.assignedTo ? 'Self-assigned: ' + tsk.userassigned : 'Assigned by ' + tsk.username + ' to ' + tsk.userassigned}}</small><br>
+                    <small *ngIf="tsk.user != tsk.assignedTo">Status: {{tsk.acknowledged == 1 ? 'Done': 'Pending'}}<br></small>
+                    <small>On {{tsk.createdAt | date}}</small><br>
+
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="mdc-card h-100">
+      <div class="p-4">
+        <div class="w-100">
+          <div class="d-flex align-content-center">
+            <h5 class="flex-fill">My Reminders</h5>
+            <div [formGroup]="reminderForm" class="form-group mr-2">
+              <select (change)="getReminders()" formControlName="status" name="status" id="status" class="form-control w-100">
+                <option [value]="0">Active</option>
+                <option [value]="1">Completed</option>
+              </select>
+            </div>
+            <button (click)="bindUser()" dialogTrigger="newrem" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2" style="line-height: 30px;">
+              <i class="material-icons">add</i>
+            </button>
+          </div>
+        </div>
+        <div class="w-100 pr-1" style="height: 170px; overflow-y:scroll;">
+          <ng-container *ngIf="reminders | async as reminders">
+            <ng-container *ngFor="let rem of reminders?.records; index as i; trackBy:trackByFn">
+              <div class="card mb-3">
+                <div class="card-body py-3">
+                  <h6>{{rem.reminder_name | titlecase}}</h6>
+                  <small>Scheduled for:<br> {{rem.reminder_time | newdate:'medium'}}</small><br>
+
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+</div>
+
+<app-dialog dialogID="newtask" title="Add New Task" size="medium" accept="Submit" cancel="Cancel" (onAccept)="addNewTask()" [disabled]="newTaskForm.valid">
+  <form [formGroup]="newTaskForm">
+    <div class="form-group">
+      <label for="taskname">Task Name</label>
+      <input formControlName="taskname" type="text" name="taskname" id="taskname" class="form-control w-100" placeholder="Enter the name of your task">
+    </div>
+  </form>
+  <div class="form-group">
+    <label class="mr-2">Assign Task To: </label>
+    <div class="custom-control custom-radio custom-control-inline">
+      <input type="radio" id="selftask" name="task" value="self" class="custom-control-input" [(ngModel)]="choice">
+      <label class="custom-control-label" for="selftask">Self</label>
+    </div>
+    <div class="custom-control custom-radio custom-control-inline">
+      <input type="radio" id="othertask" name="task" value="other" class="custom-control-input" [(ngModel)]="choice">
+      <label class="custom-control-label" for="othertask">Other User</label>
+    </div>
+    <div class="custom-control custom-radio custom-control-inline">
+      <input type="radio" id="depttask" name="task" value="dept" class="custom-control-input" [(ngModel)]="choice">
+      <label class="custom-control-label" for="depttask">Dept</label>
+    </div>
+  </div>
+  <form [formGroup]="newTaskForm">
+    <div *ngIf="choice === 'other'" class="form-group">
+      <label for="assignedTo">User</label>
+      <select formControlName="assignedTo" name="assignedTo" id="assignedTo" class="form-control w-100">
+        <option value="" selected disabled>Select a user</option>
+        <option *ngFor="let usr of users | async; index as i;" [value]="usr.sales_id">{{usr.sales_rep}}</option>
+      </select>
+    </div>
+    <div *ngIf="choice === 'dept'" class="form-group">
+      <label for="assignedTo">Department</label>
+      <select formControlName="assignedTo" name="assignedTo" id="assignedTo" class="form-control w-100">
+        <option value="" selected disabled>Select a user</option>
+        <option value="Sales">Sales</option>
+        <option value="Accounting">Accounting</option>
+        <option value="Printing">Printing</option>
+        <option value="Delivery">Delivery</option>
+        <option value="Admin">Admin</option>
+      </select>
+    </div>
+  </form>
+</app-dialog>
+
+<app-dialog dialogID="newrem" title="Add New Reminder" size="medium" accept="Submit" cancel="Cancel" (onAccept)="addNewReminder()" [disabled]="newReminderForm.valid">
+  <form [formGroup]="newReminderForm">
+    <div class="form-group">
+      <label for="reminder_name">Reminder Name</label>
+      <input formControlName="reminder_name" type="text" name="reminder_name" id="reminder_name" class="form-control w-100" placeholder="Enter the name of your reminder">
+    </div>
+    <div class="form-group">
+      <label for="reminder_date">Reminder Date</label>
+      <input formControlName="reminder_date" type="date" name="reminder_date" id="reminder_date" class="form-control w-100">
+    </div>
+    <div class="form-group">
+      <label for="reminder_time">Reminder Time</label>
+      <input formControlName="reminder_time" type="time" name="reminder_time" id="reminder_time" class="form-control w-100">
+    </div>
+  </form>
+</app-dialog>

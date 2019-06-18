@@ -1,0 +1,130 @@
+<div class="row">
+  <div class="col-12">
+    <!-- Beginning of Card -->
+    <div class="mdc-card mb-3" style="overflow: hidden;">
+      <!-- Header Section of Card -->
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center justify-content-between">
+        <h3 class="m-0 text-white align-items-center">
+          Debtors Control - My Review List
+          <ng-container>({{user?.username}})</ng-container>
+        </h3>
+
+        <div class="d-flex flex-row align-items-center">
+          <select (change)="getOther()" [(ngModel)]="selecteduser" name="users" id="users" class="form-control mr-3" style="width: 200px;">
+            <option value="" selected disabled>Select a user</option>
+            <option *ngFor="let user of users$ | async; index as i" value="{{user?.sales_id}}">{{user?.sales_rep}}</option>
+          </select>
+          <button class="tgt-button-full tgt-btn-white px-3 py-2 my-1 mr-2" style="width: 150px;">Refresh List</button>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <table cdk-table [dataSource]="review$" class="table table-hover table-bordered tgt-table tgt-scroll" respHeight>
+        <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+        <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+
+        <ng-container cdkColumnDef="lastrev">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Last Review</th>
+          <td cdk-cell *cdkCellDef="let row; index as i;" class="text-center" style="width: 10%;">
+            {{(row.reviewAt | date) || '-'}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="company">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Customer Name</th>
+          <td cdk-cell *cdkCellDef="let row; index as i;" class="font-weight-bold" style="width: 20%;">
+            {{row.company_name}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="cmp">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">Comp.</th>
+          <td cdk-cell *cdkCellDef="let row; index as i;" class="font-weight-bold text-center" style="width: 5%;">
+            {{row.company}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="rem">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">REM</th>
+          <td cdk-cell *cdkCellDef="let row; index as i;" class="font-weight-bold text-center" style="width: 5%;">
+            {{row.reminder_procedure | rem}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="status">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;">Status</th>
+          <td cdk-cell *cdkCellDef="let row; index as i;" style="width: 15%;">
+            {{row.status}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="comment">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Last Comment</th>
+          <td cdk-cell *cdkCellDef="let row; index as i;" style="width: 25%;">
+            {{row.comment}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="reviewper">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Review Period</th>
+          <td cdk-cell *cdkCellDef="let row; index as i;" class="text-center" style="width: 10%;">
+            {{row.reviewPeriod}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="release">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;"></th>
+          <td cdk-cell *cdkCellDef="let row; index as i;" style="width: 10%;" class="text-center">
+              <button (click)="renderComments(row)" class="tgt-button-full bg-primary d-flex py-1 px-2 float-left mr-2" title="Add New Comment" dialogTrigger="comment">
+                <i class="material-icons" style="line-height: 30px;">comment</i>
+              </button>
+              <button [disabled]="user.usertype !== 'Admin'" (click)="prepareReview(row)" class="tgt-button-full bg-primary d-flex py-1 px-2 float-left mr-2" [title]="user.usertype == 'Admin' ? 'Release Review' : 'Not yet released'" dialogTrigger="release">
+                <i class="material-icons" style="line-height: 30px;">replay</i>
+              </button>
+          </td>
+        </ng-container>
+      </table>
+    </div>
+  </div>
+</div>
+
+<app-dialog dialogID="comment" title="Comment Box" size="medium" cancel="Close" comment="true">
+  <ng-container *ngIf="comment$ | async as comment">
+      <ul class="list-group list-group-flush" #scrollMe [scrollTop]="scrollMe.scrollHeight">
+        <ng-container *ngIf="comment?.length > 0; else nocomment;">
+            <li *ngFor="let cmt of comment | reverse; index as i;" class="list-group-item py-3">
+              <div class="media">
+                <span class="align-self-start mr-3 round-image bg-normal" style="width: 45px; height: 45px; overflow: hidden;">
+                  <h2 class="text-white text-center w-100 h-100" style="font-weight:400; font-size: 1.2rem; vertical-align: middle; line-height: 45px;">{{getInitials(cmt.sales_rep) | uppercase}}</h2>
+                </span>
+                <div class="media-body">
+                  <div class="span float-left">
+                      <h5 class="mt-0" style="font-size: 1rem;">{{cmt.sales_rep}}</h5>
+                      <p class="mb-0" style="font-weight: 14px;">{{cmt.dc_comment}}</p>
+                  </div>
+                  <small class="d-block float-right font-italic" style="font-weight: 13px;">{{cmt.createdAt | date:'medium'}}</small>
+                </div>
+              </div>
+            </li>
+        </ng-container>
+        <ng-template #nocomment>
+          <li class="list-group-item py-3">
+            <div class="media">
+              <div class="media-body">
+                <p class="mb-0 text-italic" style="font-weight: 14px;">Sorry, there are no comments to display.</p>
+              </div>
+            </div>
+          </li>
+        </ng-template>
+      </ul>
+      <div id="card-footer" class="p-2">
+        <form (ngSubmit)="insertCmt()" [formGroup]="newCmtForm" class="form-inline d-flex">
+          <textarea formControlName="comment" class="form-control w-75 mr-2" placeholder="Enter your comment here..."></textarea>
+          <button class="flex-fill h-100 tgt-button-full tgt-btn-white py-3" type="submit" [disabled]="!newCmtForm.valid">Submit</button>
+        </form>
+      </div>
+  </ng-container>
+</app-dialog>
+
+<app-dialog dialogID="release" title="Release Review" size="medium" accept="Submit" cancel="Cancel" (onAccept)="releaseReview()" [disabled]="releaseReviewForm.valid">
+  <form [formGroup]="releaseReviewForm">
+    <div class="form-group">
+      <label for="reviewPeriod">Review Period</label>
+      <input formControlName="reviewPeriod" type="number" name="reviewPeriod" id="reviewPeriod" class="form-control w-100">
+    </div>
+  </form>
+</app-dialog>

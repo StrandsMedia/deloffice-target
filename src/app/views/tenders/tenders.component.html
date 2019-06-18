@@ -33,7 +33,7 @@
       </div>
     
       <!-- Beginning of data table -->
-      <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+      <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll" respHeight>
         <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
         <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
       
@@ -42,7 +42,7 @@
             Customer Name
             <i *ngIf="sortKey === 'company_name'" class="material-icons">{{clicked === 1 ? 'arrow_drop_up': 'arrow_drop_down'}}</i>
           </th>
-          <td routerLink="/customers/{{row.custid}}" cdk-cell *cdkCellDef="let row" class="font-weight-bold py-2 point" style="width: 16%;">
+          <td routerLink="/customers/{{row.cust_id}}" cdk-cell *cdkCellDef="let row" class="font-weight-bold py-2 point" style="width: 16%;">
             {{row.company_name}}
           </td>
         </ng-container>
@@ -57,15 +57,15 @@
         </ng-container>
         <ng-container cdkColumnDef="schedule">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;">Schedule</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 7%;">{{row.schedule !== '0000-00-00 00:00:00' ? (row.schedule | date) : '-'}}</td>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 7%;">{{row.schedule !== '0000-00-00' ? (row.schedule | date:'dd-MM-yy') : '-'}}</td>
         </ng-container>
         <ng-container cdkColumnDef="received">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;">Received</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 7%;">{{row.receive_date !== '0000-00-00 00:00:00' ? (row.receive_date | date) : '-'}}</td>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 7%;">{{row.receive_date !== '0000-00-00' ? (row.receive_date | date:'dd-MM-yy') : '-'}}</td>
         </ng-container>
         <ng-container cdkColumnDef="closing">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;">Closing</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 7%;">{{row.closing_date !== '0000-00-00 00:00:00' ? (row.closing_date | date) : '-'}}</td>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 7%;">{{row.closing_date !== '0000-00-00' ? (row.closing_date | date:'dd-MM-yy') : '-'}}</td>
         </ng-container>
         <ng-container cdkColumnDef="actqty">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">Act Qty</th>
@@ -97,7 +97,11 @@
         </ng-container>
         <ng-container cdkColumnDef="edit">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;"></th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 5%;"></td>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 5%;">
+              <button (click)="loadInfo(row)" type="submit" class="tgt-button-full tgt-btn-white" dialogTrigger="tenderedit">
+                <i class="material-icons" style="line-height: 24px;margin-top: 3px;">mode_edit</i>
+              </button>
+          </td>
         </ng-container>
 
       
@@ -106,3 +110,83 @@
 
   </div>
 </div>
+
+<app-dialog title="Edit Tender Entry" dialogID="tenderedit" size="large" accept="Save" cancel="Cancel" (onAccept)="editTender()">
+  <form [formGroup]="tenderEditForm">
+    <div class="alert alert-info">
+      <p class="mb-0">
+        <strong>Customer Name: </strong> {{tenderEditForm.value?.company_name}}
+      </p>
+    </div>
+    <div class="d-flex">
+      <div class="form-group mr-2 flex-fill">
+        <label for="product">Product</label>
+        <input formControlName="product" type="text" name="product" id="product" class="form-control w-100">
+      </div>
+      <div class="form-group mr-2 flex-fill">
+        <label for="estimated_quantity">Estimated Quantity</label>
+        <input formControlName="estimated_quantity" type="number" name="estimated_quantity" id="estimated_quantity" class="form-control w-100">
+      </div>
+      <div class="form-group flex-fill">
+        <label for="actual_quantity">Actual Quantity</label>
+        <input formControlName="actual_quantity" type="number" name="actual_quantity" id="actual_quantity" class="form-control w-100">
+      </div>
+    </div>
+    <div class="d-flex">
+      <div class="form-group mr-2 flex-fill">
+        <label for="receive_date">Received Date</label>
+        <input formControlName="receive_date" type="date" name="receive_date" id="receive_date" class="form-control w-100">
+      </div>
+      <div class="form-group mr-2 flex-fill">
+        <label for="closing_date">Closing Date</label>
+        <input formControlName="closing_date" type="date" name="closing_date" id="closing_date" class="form-control w-100">
+      </div>
+      <div class="form-group flex-fill">
+        <label for="schedule">Schedule</label>
+        <input formControlName="schedule" type="date" name="schedule" id="schedule" class="form-control w-100">
+      </div>
+    </div>
+    <div class="d-flex">
+      <div class="form-group mr-2 flex-fill">
+        <label for="product_quoted">Product Quoted</label>
+        <input formControlName="product_quoted" type="text" name="product_quoted" id="product_quoted" class="form-control w-100">
+      </div>
+      <div class="form-group mr-2 flex-fill">
+        <label for="price_quoted">Price Quoted</label>
+        <input formControlName="price_quoted" type="text" name="price_quoted" id="price_quoted" class="form-control w-100">
+      </div>
+      <div class="form-group flex-fill">
+        <label for="delivery">Delivery</label>
+        <input formControlName="delivery" type="text" name="delivery" id="delivery" class="form-control w-100">
+      </div>
+    </div>
+    <div class="d-flex">
+      <div class="form-group mr-2 flex-fill">
+        <label for="result">Result</label>
+        <select formControlName="result" name="result" id="result" class="form-control w-100">
+          <option value="" selected disabled>Select a result</option>
+          <option value="Win">Win</option>
+          <option value="Lost">Lost</option>
+          <option value="Part">Part</option>
+        </select>
+      </div>
+      <div class="form-group flex-fill">
+        <label for="status">Status</label>
+        <select formControlName="status" name="status" id="status" class="form-control w-100">
+          <option value="" selected disabled>Select a status</option>
+          <option value="0">Open</option>
+          <option value="1">Close</option>
+        </select>
+      </div>
+    </div>
+    <div class="d-flex">
+      <div class="form-group mr-2 flex-fill">
+        <label for="comments">Comments</label>
+        <textarea formControlName="comments" name="comments" id="comments" rows="4" class="form-control w-100"></textarea>
+      </div>
+      <div class="form-group flex-fill">
+        <label for="attachment">Upload Attachment</label>
+      </div>
+    </div>
+  </form>
+</app-dialog>

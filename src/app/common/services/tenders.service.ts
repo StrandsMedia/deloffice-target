@@ -15,7 +15,17 @@ export class TendersService {
 
   constructor(private http: HttpClient) { }
 
+  createTender(info): Observable<any> {
+    return this.http.post(this.url + 'tender/create.php', info);
+  }
+
   getTenders(info): Observable<any> {
     return this.http.post(this.url + 'tender/read.php', info);
   }
+
+  updateTender(info): Observable<any> {
+    return this.http.post(this.url + 'tender/update.php', info);
+  }
+
+
 }

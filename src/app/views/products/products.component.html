@@ -1,3 +1,230 @@
-<p>
-  products works!
-</p>
+<div class="row">
+  <!-- Product Navigation -->
+  <div class="col-3">
+    <ng-container *ngIf="categories | async as categories">
+      <ul class="mdc-list">
+        <ng-container *ngFor="let cat of categories?.records; index as i;">
+          <li class="mdc-list-item" [attr.tabindex]="selected.id == cat.id ? '0' : null" [attr.data-toggle]="cat.subcat ? 'collapse' : null" [attr.data-target]="cat.subcat ? '#collapse' + i : null" [attr.aria-expanded]="cat.subcat ? 'false': null" [attr.aria-controls]="cat.subcat ? 'collapse' + i : null" [attr.name]="cat.id" (click)="assignID(cat, $event)" [class.mdc-list-item--activated]="selected.id == cat.id" role="option">
+            <span class="mdc-list-item__text">{{cat.description}}</span>
+            <span *ngIf="cat.subcat" class="mdc-list-item__meta material-icons" aria-hidden="true">
+              arrow_drop_down
+            </span>
+          </li>
+          <li role="separator" class="mdc-list-divider"></li>
+          <div *ngIf="cat?.subcat?.length > 0" class="subcat collapse" [attr.id]="'collapse' + i">
+            <ng-container *ngFor="let subcat of cat.subcat; index as j;">
+              <li class="mdc-list-item" tabindex="0" [attr.data-toggle]="subcat.subcat ? 'collapse' : null" [attr.data-target]="subcat.subcat ? '#collapse' + i + j : null" [attr.aria-expanded]="subcat.subcat ? 'false': null" [attr.aria-controls]="subcat.subcat ? 'collapse' + i + j : null" [attr.name]="subcat.id" (click)="assignID(subcat, $event)" [class.mdc-list-item--activated]="selected.id == subcat.id" role="option">
+                <span class="mdc-list-item__text">{{subcat.description}}</span>
+                <span *ngIf="subcat.subcat" class="mdc-list-item__meta material-icons" aria-hidden="true">
+                  arrow_drop_down
+                </span>
+              </li>
+              <li role="separator" class="mdc-list-divider"></li>
+              <div *ngIf="subcat?.subcat?.length > 0" class="subsubcat collapse" [attr.id]="'collapse' + i + j">
+                <ng-container *ngFor="let subsubcat of subcat.subcat; index as k;">
+                  <li (click)="assignID(subsubcat, $event)" class="mdc-list-item" tabindex="0" [attr.data-toggle]="subsubcat.subcat ? 'collapse' : null" [attr.data-target]="subsubcat.subcat ? '#collapse' + i + j + k : null" [attr.aria-expanded]="subsubcat.subcat ? 'false': null" [attr.aria-controls]="subsubcat.subcat ? 'collapse' + i + j + k : null" [attr.name]="subsubcat.id" [class.mdc-list-item--activated]="selected.id == subsubcat.id" role="option">
+                    <span class="mdc-list-item__text">{{subsubcat.description}}</span>
+                    <span *ngIf="subsubcat.subcat" class="mdc-list-item__meta material-icons" aria-hidden="true">
+                      arrow_drop_down
+                    </span>
+                  </li>
+                  <li role="separator" class="mdc-list-divider"></li>
+                  <div *ngIf="subsubcat?.subcat?.length > 0" class="subsubsubcat collapse" [attr.id]="'collapse' + i + j + k">
+                    <ng-container *ngFor="let subsubsubcat of subsubcat.subcat; index as l;">
+                      <li (click)="assignID(subsubsubcat, $event)" class="mdc-list-item" tabindex="0" [attr.name]="subsubsubcat.id" [class.mdc-list-item--activated]="selected.id == subsubsubcat.id" role="option">
+                        <span class="mdc-list-item__text">{{subsubsubcat.description}}</span>
+                        <span class="mdc-list-item__meta material-icons" aria-hidden="true">
+                          radio_button_unchecked
+                        </span>
+                      </li>
+                    </ng-container>
+                  </div>
+                </ng-container>
+              </div>
+            </ng-container>
+          </div>
+        </ng-container>
+      </ul>
+    </ng-container>
+  </div>
+  <div class="col-9">
+    <div class="w-100">
+      <div class="row mb-3 d-flex pr-4 align-items-center">
+        <form (ngSubmit)="search()" [formGroup]="searchProdForm" class="form-inline flex-fill">
+          <div class="form-group float-right" style="width: 250px;">
+            <input formControlName="searchprod" type="search" name="searchprod" id="searchprod" class="form-control w-100" placeholder="Type in product code or name">
+          </div>
+          <div class="ml-2 form-group float-right">
+            <button [disabled]="!searchProdForm.valid" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2" style="line-height: 30px;" type="submit">
+              <i class="material-icons">search</i>
+            </button>
+          </div>
+          <div class="ml-2 float-right form-group">
+            <select (change)="changeMode()" formControlName="mode" name="mode" id="mode" class="form-control w-100">
+              <option value="" selected disabled>Select a view</option>
+              <option [value]="1">Website</option>
+              <option [value]="2">Pastel</option>
+            </select>
+          </div>
+        </form>
+        <div>
+            <button [hideIfUnauth]="'create'" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2" style="line-height: 30px;" dialogTrigger="prodadd">
+              <i class="material-icons">add</i>
+            </button>
+        </div>
+
+      </div>
+
+        <ng-container *ngIf="products | async as products; else noprods">
+          <div class="row" lazy-load style="max-height: 600px;overflow-y: scroll;">
+            <ng-container *ngIf="products?.records?.length > 0; else noprods2">
+              <ng-container *ngFor="let prod of products?.records; index as i; trackBy:trackByFn">
+                <div class="col-3 mb-3 pl-0">
+                  <div class="card prod-card" style="min-height: 470px; max-height: 470px;" >
+                    <img (click)="loadProd(prod)" class="card-img-top point" [attr.data-lazy]="imgUrl + prod.p_id + '.jpg'" [alt]="prod.p_id" onError="this.src = 'assets/images/NONE.jpg'" dialogTrigger="prodview">
+                    <div class="card-body py-1 px-2" >
+                      <p class="card-text text-center bolder mb-1 text-primary" style="font-size: 13.7px; color: #0d47a1 !important;">
+                        {{prod.des1}}
+                        {{prod.des2}}<br>
+                        <span class="font-weight-bold">Brand: {{prod.des3}}</span><br>
+                      </p>
+      
+                      <div class="row mt-2">
+                        <div class="col-6 pr-0">
+                          <p class="font-weight-bold" style="font-size: 13.3px; margin-bottom: 5px;">
+                            <span *ngIf="prod.puprice != '0.00'">
+                              PP: Rs. {{prod.puprice | number:'1.2-2'}}
+                              <span *ngIf="prod?.priceDefault && prod?.priceDefault == '1' && !prod?.dealprice" class="badge badge-pill badge-success badge-round">&nbsp;</span><br>
+                            </span>
+                            <span *ngIf="prod.wsprice != '0.00'">
+                              WP: Rs. {{prod.wsprice | number:'1.2-2'}}
+                              <span *ngIf="prod?.priceDefault && prod?.priceDefault == '3' && !prod?.dealprice" class="badge badge-pill badge-success badge-round">&nbsp;</span><br>
+                            </span>
+                            <span *ngIf="prod.delcitypromo != '0.00'">
+                              TP: Rs. {{prod.delcitypromo | number:'1.2-2'}}
+                              <span *ngIf="prod?.priceDefault && prod?.priceDefault == '5' && !prod?.dealprice" class="badge badge-pill badge-success badge-round">&nbsp;</span><br>
+                            </span>
+                          </p>
+                        </div>
+                        <div class="col-6 pr-0">
+                          <p class="font-weight-bold" style="font-size: 13.3px; margin-bottom: 5px;">
+                            <span *ngIf="prod.coprice != '0.00'">
+                              CP1: Rs. {{prod.coprice | number:'1.2-2'}}
+                              <span *ngIf="prod?.priceDefault && prod?.priceDefault == '2' && !prod?.dealprice" class="badge badge-pill badge-success badge-round">&nbsp;</span><br>
+                            </span>
+                            <span *ngIf="prod.delcityprice != '0.00'">
+                              CP2: Rs. {{prod.delcityprice | number:'1.2-2'}}
+                              <span *ngIf="prod?.priceDefault && prod?.priceDefault == '4' && !prod?.dealprice" class="badge badge-pill badge-success badge-round">&nbsp;</span><br>
+                            </span>
+                            <span *ngIf="prod.dealprice">
+                              DP: Rs. {{prod.dealprice | number:'1.2-2'}}
+                              <span *ngIf="prod?.priceDefault && prod?.dealprice" class="badge badge-pill badge-success badge-round">&nbsp;</span><br>
+                            </span>
+                            <span *ngIf="prod.spprice && !prod.dealprice">
+                              SP: Rs. {{prod.spprice | number:'1.2-2'}}
+                            </span>
+                          </p>
+                        </div>
+                        <div class="col-12">
+                          <p class="text-center font-weight-bold mb-0">Qty: {{(prod.stock | number:'1.0-0') + ' unit(s)' || 'N/A'}}</p>
+                        </div>
+                      </div>
+
+                      <!-- <div class="row">
+                        <div class="col-12">
+                          <small class="d-block text-center">Qty: {{(prod.stock | number:'1.0-0') || '0'}} unit(s)</small>
+                        </div>
+                      </div> -->
+      
+                    </div>
+                    <div class="card-footer">
+                      <p class="font-weight-bold text-center mb-0" style="font-size: 13.5px;">
+                        Code: {{prod.p_id}}
+                        <span *ngIf="prod?.visible === 'Y'" class="badge badge-pill badge-success badge-round ml-1">&nbsp;</span>
+                        <span *ngIf="prod?.visible === 'P'" class="badge badge-pill badge-primary badge-round ml-1">&nbsp;</span>
+                        <i [hideIfUnauth]="'update'" (click)="editProd(prod)" class="material-icons m-0 point" role="button" dialogTrigger="prodedit">mode_edit</i>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+            <ng-template #noprods2>
+              <div class="alert alert-info">
+                <p class="mb-0">Error: {{products?.message}}</p>
+              </div>
+            </ng-template>
+          </div>
+        </ng-container>
+        <ng-template #noprods>
+          <div class="row">
+            <div class="alert alert-info">
+              <p class="mb-0">No queries made yet. Please search a product or select a category to begin.</p>
+            </div>
+          </div>
+        </ng-template>
+
+    </div>
+  </div>
+</div>
+
+<app-dialog dialogID="prodview" [title]="'Product Details'" size="large" cancel="Close" (onCancel)="cancel()">
+  <ng-container *ngIf="selprod | async as selprod">
+    <div class="row">
+      <div class="col-6">
+        <img [src]="imgUrl + selprod?.p_id + '.jpg'" [alt]="selprod.p_id" class="img-fluid img-thumbnail" onError="this.src = 'assets/images/NONE.jpg'">
+      </div>
+      <div class="col-6 pl-0">
+        <h5 style="font-size: 1.2rem;">{{selprod?.des1}} {{selprod?.des2}}</h5>
+        <h6 style="font-size: 0.95rem;">{{selprod?.des3}}</h6>
+        <p class="mb-4" style="font-size: 14px;">{{selprod?.p_id}}</p>
+        
+
+          <table id="pricetable" class="table table-sm mb-2">
+            <tbody>
+              <tr>
+                <td>Cost Price</td>
+                <td>{{selprod?.prices?.avgcost || '-'}}</td>
+              </tr>
+              <tr>
+                <td>Public Price</td>
+                <td>{{selprod?.prices?.puprice || '-'}}</td>
+              </tr>
+              <tr>
+                <td>Corporate Price 1</td>
+                <td>{{selprod?.prices?.coprice || '-'}}</td>
+              </tr>
+              <tr>
+                <td>Corporate Price 2</td>
+                <td>{{selprod?.prices?.delcityprice || '-'}}</td>
+              </tr>
+              <tr>
+                <td>Wholesale Price</td>
+                <td>{{selprod?.prices?.wsprice || '-'}}</td>
+              </tr>
+              <tr>
+                <td>Tender Price</td>
+                <td>{{selprod?.prices?.delcitypromo || '-'}}</td>
+              </tr>
+              <tr>
+                <td>Promotion Price</td>
+                <td>{{selprod?.prices?.spprice || '-'}}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p class="font-weight-bold" style="font-size: 14px;">Stock: {{(selprod?.stock | number:'1.0-0') + ' unit(s)' || '-'}}</p>
+
+      </div>
+    </div>
+  </ng-container>
+</app-dialog>
+
+<app-dialog *ngIf="prodedit" dialogID="prodedit" title="Edit Product" size="xlarge" cancel="Close" accept="Submit" (onAccept)="updateForm()" (onCancel)="cancel()">
+  <app-prod-edit (update)="updateData($event)" [data]="prodedit"></app-prod-edit>
+</app-dialog>
+
+<app-dialog dialogID="prodadd" title="Add Product" size="xlarge" cancel="Close" accept="Submit" (onAccept)="insertProd()" [disabled]="formData.valid">
+  <app-prod-add (update)="updateData($event)"></app-prod-add>
+</app-dialog>
+

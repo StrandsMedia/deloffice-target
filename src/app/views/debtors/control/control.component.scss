@@ -1,0 +1,136 @@
+.badge {
+    white-space: pre-wrap;
+    font-size: 13px;
+    line-height: 15px;
+}
+
+#search-ddown {
+    border-radius: 5px;
+    background-color: white;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+    overflow: hidden;
+    z-index: 4;
+}
+
+#search-ddown ul {
+    list-style: none;
+}
+
+#search-ddown ul li a {
+    display: block;
+    width: 100%;
+    padding: 5px 10px;
+}
+
+#search-ddown ul li a:hover {
+    cursor: pointer;
+    background-color: blue;
+    color: white;
+}
+
+.tgt-scroll thead tr {
+    padding-right: 10px;
+}
+
+td.bg-primary:hover {
+    cursor: pointer;
+}
+
+$mdc-theme-primary: #0c127e;
+$mdc-theme-secondary: #d20c1d;
+
+:host {
+    display: block;
+}
+
+.round-image {
+    border-radius: 50%;
+}
+
+.bg-normal {
+    background-color: $mdc-theme-primary;
+}
+
+.bg-admin {
+    background-color: $mdc-theme-secondary;
+}
+
+.disabled-btn {
+    background-color: rgb(37, 37, 37) !important;
+}
+
+.disabled-btn:hover {
+    background-color: rgb(37, 37, 37) !important;
+}
+
+.tick {
+    background-color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    pointer-events: none;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+td {
+    position: relative;
+}
+
+td i.material-icons.back {
+    display: none;
+    position: absolute;
+    left: -20px;
+    font-weight: bold;
+    color: #007bff;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+td:hover i.material-icons.back {
+    display: block;
+}
+
+.alert-danger {
+    font-size: 13px;
+}
+
+.alert-danger i.material-icons {
+    font-size: 14px;
+    line-height: 13px;
+}
+
+td.not {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+}
+
+td.not span {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: black;
+
+    &.task {
+        position: relative;
+        top: -5px;
+        left: 2px;
+        background-color: red;
+    }
+
+    &.reminder {
+        position: relative;
+        bottom: -5px;
+        right: 2px;
+        background-color: blue;
+    }
+
+    &:hover {
+        cursor: pointer;
+    }
+}

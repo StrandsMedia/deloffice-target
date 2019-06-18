@@ -1,0 +1,16 @@
+<div [formGroup]="form" class="form-group" [class.d-inline-flex]="question.controlType === 'multibox' && !question?.extra">
+  <ng-container *ngIf="question?.length > 0">
+      <ng-container *ngFor="let item of question; index as i;">
+        <div *ngIf="item.controlType === 'radio'; else textbox;" class="custom-control custom-radio custom-control-inline">
+          <input [formControlName]="item?.key" [name]="item?.key" [attr.id]="item.key + i" [type]="item.type" class="custom-control-input" [value]="item.value">
+          <label [attr.for]="item.key + i" class="custom-control-label">{{item.label}}</label>
+        </div>
+      </ng-container>
+  </ng-container>
+  <div [ngSwitch]="question.controlType" [hidden]="question.key === 'workflow_id' || question.key === 'step'">
+    <ng-container *ngSwitchCase="'textbox'">
+        <label [attr.for]="question.key">{{question.label}}</label>
+        <input [formControlName]="question.key" [id]="question.key" [type]="question.type" class="form-control w-100">
+    </ng-container>
+  </div>
+</div>

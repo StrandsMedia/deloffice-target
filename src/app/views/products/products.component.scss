@@ -1,0 +1,57 @@
+ul.mdc-list {
+    background-color: #fff;
+    box-shadow: 0 0 3px rgba(0,0,0,0.2);
+    overflow: hidden;
+    padding: 0;
+    border-radius: 4px;
+}
+
+.subcat.collapse {
+    background-color: #eee;
+}
+
+.subsubcat.collapse {
+    background-color: rgb(184, 184, 184);
+}
+
+.subsubsubcat.collapse {
+    background-color: rgb(116, 116, 116);
+    color: #fff;
+}
+
+.subsubsubcat.collapse span.material-icons {
+    color: #fff;
+}
+
+li.mdc-list-item:hover {
+    cursor: pointer;
+}
+
+span.mdc-list-item__text {
+    pointer-events: none;
+}
+
+.card-footer p i.material-icons {
+    font-size: 20px;
+    position: relative;
+    top: 4px;
+}
+
+button.tgt-button-full:disabled {
+    opacity: 0.8;
+}
+
+.prod-card {
+    transform: translateY(30%);
+    opacity: 0;
+}
+
+.fade-card {
+    transform: translateY(0%);
+    opacity: 1;
+    transition: all 500ms;
+}
+
+table#pricetable tbody tr td:last-child {
+    text-align: right;
+}

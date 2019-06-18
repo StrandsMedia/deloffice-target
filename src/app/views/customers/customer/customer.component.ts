@@ -1,12 +1,15 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 
-import { CustomerService } from '../../../common/services/customer.service';
-import { MaterialService } from '../../../common/services/material.service';
+import { AuthService } from 'src/app/common/services/auth.service';
+import { CategoryService } from 'src/app/common/services/category.service';
+import { CustomerService } from 'src/app/common/services/customer.service';
+import { MaterialService } from 'src/app/common/services/material.service';
 
 import { Subscription, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
+import { TitleService } from 'src/app/common/services/title.service';
 
 @Component({
   selector: 'app-customer',
@@ -18,10 +21,16 @@ export class CustomerComponent implements OnInit, AfterViewInit {
   customer: Observable<any>;
   balance: Observable<any>;
   statement: Observable<any>;
+
+  categories: Observable<Category>;
+  sectors: Observable<Sector>;
+  subsectors: Observable<Subsector>;
+
   tabstatus: Tabs = 'jobs';
   tabbar;
   total = 0;
   baltotal = 0;
+  user: any;
 
   public tabs = [
     'Jobs',
@@ -36,6 +45,16 @@ export class CustomerComponent implements OnInit, AfterViewInit {
     'balance'
   ];
 
+  terms = [
+    'Current',
+    '30 days',
+    '60 days',
+    '90 days',
+    '120 days',
+    '150 days',
+    '180 days'
+  ];
+
   public editContactForm = this.fb.group({
     contact_person: null,
     email: null,
@@ -46,16 +65,39 @@ export class CustomerComponent implements OnInit, AfterViewInit {
     cust_id: null
   });
 
+  public editCustomerForm: FormGroup = this.fb.group({
+    cust_id: [null, Validators.required],
+    customerCode: null,
+    company_name: [null, Validators.required],
+    address: null,
+    category: null,
+    sector: [''],
+    subsector: ['']
+  });
+
+  public changeTermForm: FormGroup = this.fb.group({
+    term: ['', Validators.required],
+    DCLink: [null, Validators.required],
+  });
+
   constructor(
+    private auth: AuthService,
+    private cat: CategoryService,
     private cust: CustomerService,
     private route: ActivatedRoute,
     private router: Router,
     private mdc: MaterialService,
-    private fb: FormBuilder
-  ) { }
+    private fb: FormBuilder,
+    private title: TitleService
+  ) {
+    auth.currentUser.subscribe(data => this.user = data);
+  }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.get();
+    this.categories = this.cat.getCategory();
+    this.sectors = this.cat.getSector();
+    this.subsectors = this.cat.getSubsector();
   }
 
   ngAfterViewInit() {
@@ -65,6 +107,9 @@ export class CustomerComponent implements OnInit, AfterViewInit {
   get() {
     this.route.params.forEach((params: Params) => {
       this.customer = this.cust.getCustomer(+params['id']).pipe(
+        tap((data) => {
+          this.title.swapTitle(data.company_name);
+        }),
         map((data: any) => {
           if (data.customerCode) {
             this.balance = this.cust.getBalance(data.customerCode).pipe(
@@ -75,9 +120,15 @@ export class CustomerComponent implements OnInit, AfterViewInit {
             );
 
             this.statement = this.cust.getStatement(data.customerCode).pipe(
-              map(allocs => allocs.records),
+              map((allocs: any) => {
+                if (allocs) {
+                  return allocs.records;
+                }
+              }),
               map((allocs) => {
-                this.baltotal = allocs.reduce((acc, curr) => acc + +curr.Outstanding, 0);
+                if (allocs) {
+                  this.baltotal = allocs.reduce((acc, curr) => acc + +curr.Outstanding, 0);
+                }
               })
             );
           }
@@ -95,6 +146,11 @@ export class CustomerComponent implements OnInit, AfterViewInit {
     return index;
   }
 
+  bindTerm(val) {
+    this.changeTermForm.controls['term'].setValue(val.terms);
+    this.changeTermForm.controls['DCLink'].setValue(val.DCLink);
+  }
+
   switchData(person, id) {
     this.editContactForm.setValue({
       contact_person: person.contact_person,
@@ -108,19 +164,78 @@ export class CustomerComponent implements OnInit, AfterViewInit {
     console.log(this.editContactForm.value);
   }
 
-  public getAmt(amt): any {
-    return amt;
-  }
-
-  submit() {
-    this.cust.updateDetails(this.editContactForm.value).subscribe((data) => {
-      this.mdc.materialSnackBar(data);
-      this.get();
+  loadProfile(customer) {
+    this.editCustomerForm.setValue({
+      cust_id: customer.cust_id,
+      company_name: customer.company_name,
+      customerCode: customer.customerCode,
+      address: customer.address,
+      category: customer.category,
+      sector: customer.sector,
+      subsector: customer.subsector
     });
   }
 
+  public getAmt(amt: any): string {
+    if (amt === '0.0' || amt === null) {
+      return '-';
+    }
+
+    if (amt < 0) {
+      return `(${(Math.abs(amt)).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')})`;
+    }
+
+    return Number(amt).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+  }
+
+  submit() {
+    this.cust.updateDetails(this.editContactForm.value).subscribe(
+      (data) => {
+        this.mdc.materialSnackBar(data);
+      },
+      (err) => {
+        this.mdc.materialSnackBar(err.error);
+      },
+      () => {
+        this.get();
+      }
+    );
+  }
+
+  updateProfile() {
+    this.cust.updateProfile(this.editCustomerForm.value).subscribe(
+      (data) => {
+        this.mdc.materialSnackBar(data);
+        console.log(data);
+      },
+      (err) => {
+        this.mdc.materialSnackBar(err.error);
+        console.log(err);
+      },
+      () => {
+        this.get();
+        this.editCustomerForm.reset();
+      }
+    );
+  }
+
   generateStatement() {
-    
+    //
+  }
+
+  updateTerm() {
+    console.log(this.changeTermForm.value);
+    this.cust.updateTerm(this.changeTermForm.value).subscribe(
+      (data) => {
+        this.mdc.materialSnackBar(data);
+      },
+      (err) => {
+        this.mdc.materialSnackBar(err.error);
+      },
+      () => {
+        this.get();
+      }
+    );
   }
 
 }

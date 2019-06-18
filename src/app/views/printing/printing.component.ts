@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 
+import { AuthService } from '../../common/services/auth.service';
 import { PrintingService } from '../../common/services/printing.service';
 
 import { Observable, of } from 'rxjs';
@@ -14,6 +15,8 @@ import { map, tap, delay } from 'rxjs/operators';
 export class PrintingComponent implements OnInit {
   dataSource$: Observable<any>;
   loading = false;
+  click = 0;
+  user: any;
   choice = 'status';
   columns = [
     'jobid',
@@ -46,8 +49,20 @@ export class PrintingComponent implements OnInit {
     { id: 'Certificate', name: 'Certificate' },
     { id: 'Voucher', name: 'Voucher' },
     { id: 'Poster', name: 'Poster' },
+    { id: 'Booklet', name: 'Booklet' },
     { id: 'Other', name: 'Other' },
   ];
+
+  printwork = [
+    { id: 'rectoQuad', name: 'Recto Quad' },
+    { id: 'rectoBlack', name: 'Recto Black' },
+    { id: 'versoBlack', name: 'Verso Black' },
+    { id: 'versoQuad', name: 'Verso Quad' },
+    { id: 'Recto/Verso Quad', name: 'Recto/Verso Quad' },
+    { id: 'Recto/Verso Black', name: 'Recto/Verso Black' }
+  ];
+
+  printedit: any;
 
   public searchForm = this.fb.group({
     status: 0,
@@ -55,7 +70,36 @@ export class PrintingComponent implements OnInit {
     product: ['']
   });
 
-  constructor(private fb: FormBuilder, private print: PrintingService) { }
+  public printEditForm = this.fb.group({
+    job_id: null,
+    custid: null,
+    product: null,
+    printwork: null,
+    startdate: null,
+    enddate: null,
+    status: null,
+    jobdesc: null,
+    paperspecs: null,
+    filename: null,
+    pc: null,
+    printer: null,
+    printsetting: null,
+    qtyorder: null,
+    qtyconsumed: null,
+    qtycompleted: null,
+    qtyrejected: null,
+    remarks: null,
+    printedby: null,
+    supervisedby: null,
+    deliverydate: null,
+    dimensions: null,
+    ppunit: null,
+    company_name: null
+  });
+
+  constructor(private auth: AuthService, private fb: FormBuilder, private print: PrintingService) {
+    this.auth.currentUser.subscribe(user => this.user = user);
+  }
 
   ngOnInit() {
     this.get();
@@ -82,23 +126,45 @@ export class PrintingComponent implements OnInit {
     );
   }
 
+  update() {
+    this.loading = true;
+    this.print.updatePrinting(this.printEditForm.value).subscribe(() => this.get());
+  }
+
   trackByFn(index, item) {
     return index;
   }
 
+  incrClick() {
+    this.click++;
+  }
+
   remainingAmt(row) {
-    const amt = (row['qtyorder'] - (row['qtyconsumed'] - row['qtyrejected']));
-    return amt === 0 ? 'None' : amt;
+    if (row['qtyorder'] && row['qtyconsumed'] && row['qtyrejected']) {
+      const amt = (row['qtyorder'] - (row['qtyconsumed'] - row['qtyrejected']));
+      return amt === 0 ? 'None' : amt;
+    }
+    return '-';
   }
 
   remainingAmtAlt(row) {
-    const amt = (+row['qtyorder'] - +row['qtycompleted']);
-    return amt === 0 ? 'None' : amt;
+    if (row['qtyorder'] && row['qtycompleted']) {
+      const amt = (+row['qtyorder'] - +row['qtycompleted']);
+      return amt === 0 ? 'None' : amt;
+    }
+    return '-';
   }
 
   getPercentage(row) {
-    const amt = (+row['qtyrejected'] / +row['qtyconsumed']);
-    return amt;
+    if (row['qtyrejected'] && row['qtyconsumed']) {
+      const amt = (+row['qtyrejected'] / +row['qtyconsumed']);
+      return amt;
+    }
+    return null;
+  }
+
+  editPrint(row) {
+    this.printEditForm.setValue(row);
   }
 
 }

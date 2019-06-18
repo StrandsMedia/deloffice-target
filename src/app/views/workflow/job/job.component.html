@@ -1,0 +1,242 @@
+<ng-container *ngIf="job | async as job">
+  <div class="row">
+    <div class="col-12">
+      <div class="mdc-card mb-3" style="overflow: hidden;">
+        <!-- Header Section of Card -->
+        <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+          <div class="w-25 align-items-center">
+            <h3 class="mb-2 text-white">
+              Workflow Job
+              <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
+            </h3>
+            <p class="m-0 text-white">
+              <strong>Session:</strong> {{'#' + job?.jobID || '-'}}<br>
+              <strong>Van:</strong> {{job?.vehicle || '-'}}<br>
+            </p>
+          </div>
+          <div class="w-25 align-items-center">
+            <p class="m-0 text-white">
+              <strong>No. of Invoices:</strong>  {{job?.invCount || '-'}}<br>
+              {{job?.time | date:'fullDate'}}
+            </p>
+          </div>
+          <div class="w-25 align-items-center">
+            <p class="m-0 text-white">
+              <strong>Status:</strong>  {{(job?.seshstatus | session) || '-'}}<br>
+              <strong>Driver:</strong>  {{job?.driver || 'Not Specified'}}
+            </p>
+          </div>
+          <div class="flex-fill align-items-center">
+            <button (click)="renderPDF(job)" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" [disableIfUnauth]="'update'">Print Job</button>
+            <button *ngIf="job?.seshstatus == 0" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" dialogTrigger="closejob" [disableIfUnauth]="'update'">Close Job</button>
+            <button *ngIf="batch?.length > 0" (click)="editWF()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" dialogTrigger="batchprocess" [disableIfUnauth]="'update'">Batch Process</button>
+          </div>
+        </div>
+        <table cdk-table [dataSource]="job?.records" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+          <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+          <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+  
+          <ng-container cdkColumnDef="id">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">#</th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center font-weight-bold point" style="width: 5%;" routerLink="/workflow/event/{{row.workflow_id}}" >
+              {{row.workflow_id}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="date">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;">Date</th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 7%;">
+              {{row.time | date:'dd/MM/yy'}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="time">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;">Time</th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 7%;">
+              {{row.time | date:'hh:mm:ss'}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="customer">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 21%;">Customer</th>
+            <td cdk-cell *cdkCellDef="let row" routerLink="/customers/{{row.cust_id}}" class="font-weight-bold point" style="width: 21%;">
+              {{row.company_name}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="invno">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Invoice No.</th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 9%;">
+              {{row.invoice_no | uppercase}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="product">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 19%;">Product</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 19%;">
+              {{row.product || '-'}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="status">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 13%;">Status</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 13%;">
+              {{row.step || '-'}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="delivery">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 13%;">Delivery Instructions</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 13%;">
+              {{row.comments || '-'}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="realloc">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 4%;"></th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 4%;">
+              <button (click)="select(row.workflow_id)" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2 float-left" dialogTrigger="confirmrealloc" [disableIfUnauth]="'update'">
+                <i class="material-icons" style="line-height: 30px;">reply</i>
+              </button>
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="tick">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 4%;"></th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 4%;">
+              <div class="form-check form-check-inline mr-0">
+                <input (click)="pushinto($event)" class="form-check-input mr-0" type="checkbox" value="{{row.workflow_id}}" [disableIfUnauth]="'update'">
+              </div>
+            </td>
+          </ng-container>
+        </table>
+        <table *ngIf="job?.papersumm?.length > 0" class="table table-hover table-bordered tgt-table tgt-scroll">
+          <thead>
+            <tr>
+              <th style="width: 15%">ID</th>
+              <th style="width: 25%">Client Name</th>
+              <th style="width: 15%">Invoice</th>
+              <th style="width: 15%">Format</th>
+              <th style="width: 20%">Paper Brand</th>
+              <th style="width: 10%">Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let sum of job?.papersumm; index as i;trackBy: trackByFn">
+              <tr *ngFor="let entry of sum?.records; index as j;trackBy:trackByFn">
+                <td routerLink="/workflow/event/{{entry.workflow_id}}" class="font-weight-bold point" style="width: 15%">{{entry.workflow_id}}</td>
+                <td routerLink="/customers/{{entry.cust_id}}" class="font-weight-bold point" style="width: 25%">{{entry.company_name}}</td>
+                <td style="width: 15%">{{entry.invoice_no}}</td>
+                <td style="width: 15%">{{entry.format}}</td>
+                <td style="width: 20%">-</td>
+                <td style="width: 10%" class="text-right">{{entry.qty}}</td>
+              </tr>
+              <tr *ngIf="sum.records?.length > 0">
+                <td colspan="12" class="flex-fill text-right font-weight-bold">
+                  {{sum.brand}} Total: {{sum.total}}<br>
+                  Box Total: {{sum.total | paper}}
+                </td>
+              </tr>
+              <tr *ngIf="!job?.papersumm[i+1]">
+                <td colspan="12" class="flex-fill text-right font-weight-bold">
+                  Van Total: {{job?.total}}<br>
+                  Van Box Total: {{job?.total | paper}}
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <app-dialog *ngIf="job?.seshstatus == 0" dialogID="closejob" title="Confirm Closing Job?" size="medium" accept="Submit" cancel="Cancel" [disabled]="closeSessionForm.valid" (onAccept)="closeSession(job)">
+    <form [formGroup]="closeSessionForm">
+      <div class="form-group">
+        <label for="vehicle">Vehicle Number</label>
+        <select formControlName="vehicle" name="vehicle" id="vehicle" class="form-control w-100">
+          <option value="" selected disabled>Select a vehicle</option>
+          <option *ngFor="let van of vehicles" value="{{van}}">{{van}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="driver">Driver/Helper Name</label>
+        <input formControlName="driver" type="text" name="driver" id="driver" class="form-control" placeholder="Type in Driver/Helper Name">
+      </div>
+      <!-- <div class="form-group">
+        <label for="region">Region</label>
+        <select formControlName="region" name="region" id="region" class="form-control w-100"></select>
+      </div> -->
+    </form>
+  </app-dialog>
+
+  <app-dialog *ngIf="batch?.length > 0" dialogID="batchprocess" title="Edit Workflow Batch Entries" size="medium" accept="Submit" cancel="Close" [disabled]="formData?.valid && (formData?.status && formData?.status !== '') ? true : null" (onAccept)="update()">
+    <app-popup (update)="loadInfo($event)" [questions]="questions"></app-popup>
+  </app-dialog>
+
+  <app-dialog dialogID="confirmrealloc" title="Are you sure you want to reallocate entry?" accept="Confirm" cancel="Cancel" (onAccept)="reallocate(job?.jobID)"></app-dialog>
+
+  <table id="maintable" class="d-none">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Customer</th>
+        <th>Invoice No.</th>
+        <th>Product</th>
+        <th>Remarks</th>
+        <th>Region</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let wf of job?.records; index as i;">
+        <td>{{i + 1}}</td>
+        <td>{{wf.company_name}}</td>
+        <td>{{wf.invoice_no}}</td>
+        <td>{{breakLine(wf.product)}}</td>
+        <td>
+          {{breakLine2(wf.address, wf.tel, wf.comments)}}
+        </td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table *ngIf="job?.papersumm?.length > 0" id="papersum" class="d-none">
+    <thead>
+      <tr>
+        <th>Client Name</th>
+        <th>Invoice</th>
+        <th>Format</th>
+        <th>Paper Brand</th>
+        <th>Quantity</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let sum of job?.papersumm; index as i;">
+        <ng-container *ngFor="let wf3 of sum?.records">
+          <tr>
+            <td>{{wf3.company_name}}</td>
+            <td>{{wf3.invoice_no}}</td>
+            <td>{{wf3.format}}</td>
+            <td>{{stringCheck(wf3.brand, wf3.format)}}</td>
+            <td class="text-right">{{wf3.qty}}</td>
+          </tr>
+        </ng-container>
+        <tr *ngIf="sum.records?.length > 0">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td class="bolder">
+            {{sum.brand}} Total: {{sum.total}}<br>
+            Box Total: {{sum.total | paper}}
+          </td>
+        </tr>
+        <tr *ngIf="!job?.papersumm[i+1]">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td class="bolder">
+            Van Total: {{job?.total}}<br>
+            Van Box Total: {{job?.total | paper}}
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+
+  <object *ngIf="tempPDF" id="tempPDF" [data]="tempPDF" type="application/pdf"></object>
+</ng-container>

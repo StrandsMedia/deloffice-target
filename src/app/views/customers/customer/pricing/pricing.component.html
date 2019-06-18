@@ -1,3 +1,132 @@
-<p>
-  pricing works!
-</p>
+<div class="mdc-card h-100" style="max-height: 370px;overflow:hidden;">
+  <div id="card-header" class="d-flex tgt-bg px-4 pt-3 align-items-center">
+    <h3 class="text-white flex-fill align-items-center">Deal Prices</h3>
+    <div>
+        <button class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1" dialogTrigger="newdeal" [disableIfUnauth]="'create'">New Deal Price</button>
+    </div>
+  </div>
+  <ng-container *ngIf="dataSource$ | async as data">
+    <table cdk-table [dataSource]="data.records" class="table table-hover table-bordered tgt-table  ">
+        <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+        <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+  
+        <ng-container cdkColumnDef="date">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Date</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 10%;">
+            {{row.createdAt | date:'dd-MM-yy'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="p_id">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Item Code</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center font-weight-bold" style="width: 10%;">
+            {{row.p_id}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="product">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 23%;">Product</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 23%;">
+            {{row.des1}} {{row.des2}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="brand">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">Brand</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 8%;">
+            {{row.des3}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="price">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Price</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 9%;">
+            {{row.customprice ? ('Rs.' + (row.customprice | number:'1.2-2')) : '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="validity">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Validity</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 10%;">
+            {{row.validity_date | date:'dd-MM-yy'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="notes">
+          <th cdk-header-cell *cdkHeaderCellDef class="flex-fill">Notes</th>
+          <td cdk-cell *cdkCellDef="let row" class="flex-fill">
+            {{row.tar_notes}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="user">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;">User</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 7%;">
+            {{row.sales_rep}}
+          </td>
+        </ng-container>
+  
+    </table>
+  </ng-container>
+</div>
+
+<app-dialog dialogID="newdeal" title="Add New Deal" size="medium" accept="Submit" cancel="Cancel" (onCancel)="cancelForm()" (onAccept)="insert()">
+  <form [formGroup]="newTargetForm">
+    <div class="row">
+      <!-- <div class="col-12">
+        <div class="form-group">
+          <label for="pf_id">Product Family</label>
+          <select name="pf_id" id="pf_id" class="form-control w-100">
+            <option value="" selected disabled></option>
+            <option value=""></option>
+          </select>
+        </div>
+      </div> -->
+      <div class="col-12 mb-2">
+        <form *ngIf="!newTargetForm.value.p_id" [formGroup]="searchProdForm" class="position-relative">
+          <label for="search">Product Name</label>
+          <input (keydown)="searchProd()" formControlName="search" type="search" name="search" id="search" class="form-control w-100">
+          <ng-container *ngIf="prodResults | async as prodResults">
+            <div *ngIf="searchProdForm?.value?.search !== '' && prodResults?.length > 0" id="search-ddown" class="my-2 position-absolute w-100">
+              <ul class="p-0 m-0">
+                  <li *ngFor="let res of prodResults; index as i;">
+                      <a (click)="assignProd(res)">{{res.p_id + ' - ' + res.des3 + ' ' + res.des1 + ' ' + res.des2}}</a>
+                  </li>
+              </ul>
+            </div>
+          </ng-container>
+        </form>
+        <div *ngIf="newTargetForm.value.p_id" class="alert alert-info">
+          {{newTargetForm.value.prod_name}}
+        </div>
+      </div>
+
+      <div 
+        class="mb-2"
+        [ngClass]="{
+          'col-6': newTargetForm.value.pricecat_id == 8,
+          'col-12': newTargetForm.value.pricecat_id != 8
+        }"
+      >
+        <label for="pricecat_id">Price Category</label>
+        <select formControlName="pricecat_id" name="pricecat_id" id="pricecat_id" class="form-control w-100">
+          <option value="" selected disabled>Select a price category</option>
+          <option [value]="2">Public Price</option>
+          <option [value]="3">Corporate Price 1</option>
+          <option [value]="4">Corporate Price 2</option>
+          <option [value]="5">Wholesale Price</option>
+          <option [value]="6">Tender Price</option>
+          <option [value]="8">Deal Price (Custom)</option>
+        </select>
+      </div>
+      <div *ngIf="newTargetForm.value.pricecat_id == 8" class="col-6">
+        <label for="customprice">Custom Price</label>
+        <input formControlName="customprice" type="number" name="customprice" id="customprice" class="form-control w-100">
+      </div>
+
+      <div class="col-12 mt-2">
+        <label for="validity_date">Validity Date</label>
+        <input formControlName="validity_date" type="date" name="validity_date" id="validity_date" class="form-control w-100">
+      </div>
+
+      <div class="col-12 mt-2">
+        <label for="tar_notes">Notes</label>
+        <textarea formControlName="tar_notes" class="form-control w-100" name="tar_notes" id="tar_notes" rows="3"></textarea>
+      </div>
+    </div>
+  </form>
+</app-dialog>
+

@@ -1,0 +1,165 @@
+<ng-container *ngIf="event | async as event">
+  <div class="row">
+    <div class="col-12">
+      <div class="mdc-card mb-3" style="overflow: hidden;">
+        <!-- Header Section of Card -->
+        <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+          <div class="w-25 align-items-center">
+            <h3 class="mb-2 text-white ">
+              Workflow Event
+              <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
+            </h3>
+            <p class="m-0 text-white">
+              Workflow ID: {{'#' + event?.workflow_id || '-'}}<br>
+              Customer: {{event?.company_name}}<br>
+              Delivery Job ID: <span [routerLink]="event?.sessionID ? '/workflow/job/' + event?.sessionID : null" [class.point]="event?.sessionID">{{event?.sessionID || '-'}}</span>
+            </p>
+          </div>
+          <div class="align-items-center">
+            <p class="m-0 text-white">
+              Purchase Order Number: {{event?.orderNo || '-'}}<br>
+              Invoice Number: {{event?.invoiceNo || '-'}}
+            </p>
+          </div>
+          <div class="w-25 d-flex" style="justify-content: center;">
+            <button (click)="toggleStatus($event, event?.workflow_id)" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" [class.disabled]="event?.urgent == 0" [value]="event?.urgent == 0 ? 1 : 0" name="urgent" [disableIfUnauth]="'update'">
+              <i class="material-icons mr-0 text-dark" style="font-size: 26px; line-height: 34px;pointer-events: none;">warning</i>
+            </button>
+            <button (click)="toggleStatus($event, event?.workflow_id)" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" [class.disabled]="event?.purchase == 0" [value]="event?.purchase == 0 ? 1 : 0" name="purchase" [disableIfUnauth]="'update'">
+              <i class="material-icons mr-0 text-dark" style="font-size: 26px; line-height: 34px;pointer-events: none;">shopping_basket</i>
+            </button>
+          </div>
+          <div class="flex-fill">
+            <button (click)="moveToGReady(event?.workflow_id)" *ngIf="event?.status == 6" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" [disableIfUnauth]="'update'">
+              Move to G. Ready
+            </button>
+            <button (click)="editWF(event?.workflow_id)" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" dialogTrigger="changeprod" [disableIfUnauth]="'update'">
+              Change Products
+            </button>
+            <button *ngIf="event?.status > 5" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" dialogTrigger="invnum" [disableIfUnauth]="'update'">
+              Change Invoice Number
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="response" class="col-12">
+      <div class="alert" [ngClass]="{'alert-success': response.status === 'success', 'alert-danger': response.status === 'error'}">
+        {{response?.message}}
+      </div>
+    </div>
+    <div class="col-12">
+      <h4 class="mb-3">Order: {{event?.products || '-'}}</h4>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div [formGroup]="deliveryForm" class="col-6">
+      <label for="dinstr" class="float-left">Delivery Instructions</label>
+      <i (click)="changeInstructions(deliveryForm)" class="material-icons float-right point" [clickDisabled]="'update'">save</i>
+      <textarea formControlName="instructions" rows="3" class="form-control"></textarea>
+    </div>
+    <div [formGroup]="purchaseForm" class="col-6">
+      <label for="pinstr">Purchase Instructions</label>
+      <i (click)="changeInstructions(purchaseForm)" class="material-icons float-right point" [clickDisabled]="'update'">save</i>
+      <textarea formControlName="instructions" rows="3" class="form-control"></textarea>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <div class="mdc-card mb-3" style="overflow: hidden;">
+        <!-- Header Section of Card -->
+        <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+          <h5 class="mb-0 text-white flex-fill">
+            Event History
+          </h5>
+        </div>
+        <!-- Beginning of data table -->
+        <table cdk-table [dataSource]="event?.history" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+          <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+          <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+
+          <ng-container cdkColumnDef="date">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;">Date</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 7%;">
+              {{row.time | date:'dd-MM-yy'}}
+            </td>
+          </ng-container>
+
+          <ng-container cdkColumnDef="time">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;">Time</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 7%;">
+              {{row.time | date:'HH:mm:ss'}}
+            </td>
+          </ng-container>
+
+          <ng-container cdkColumnDef="agent">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;">Agent</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 7%;">
+              {{row.sales_rep}}
+            </td>
+          </ng-container>
+
+          <ng-container cdkColumnDef="status">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 14%;">Status</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 14%;">
+              {{row.stepname}}
+            </td>
+          </ng-container>
+
+          <ng-container cdkColumnDef="details">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;">Details</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 15%;">
+              {{row.note || '-'}}
+            </td>
+          </ng-container>
+          
+          <ng-container cdkColumnDef="duration">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Duration</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 10%;">
+              {{row.time | daydiff:row?.prev}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="durationplus">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Duration+</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 10%;">
+              {{row.time | daydiff:row?.first}}
+            </td>
+          </ng-container>
+
+          <ng-container cdkColumnDef="comment">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 30%;">Comment</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 30%;">
+              {{row.comment || '-'}}
+            </td>
+          </ng-container>
+
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <app-dialog dialogID="invnum" title="Change Invoice Number" size="medium" accept="Submit" cancel="Cancel" (onAccept)="changeInvNum(event?.workflow_id)" [disabled]="changeInvoiceForm.valid">
+    <form [formGroup]="changeInvoiceForm">
+      <div class="form-group">
+        <label for="invoiceNo">New Invoice Number</label>
+        <input formControlName="invoiceNo" type="text" name="invoiceNo" id="invoiceNo" class="form-control w-100" placeholder="Type New Invoice Number (ex: INV123456 or SO12345)" pattern="(([iI][nN][vV])+([0-9]{6}$)|([sS][oO])+([0-9]{5}$))" required>
+      </div>
+      <div *ngIf="invoiceNo.invalid && (invoiceNo.dirty || invoiceNo.touched)" class="alert alert-danger mb-0">
+        <i class="material-icons">warning</i>
+        <ng-container *ngIf="invoiceNo?.errors?.required">
+          Invoice Number is required.
+        </ng-container>
+        <ng-container *ngIf="invoiceNo?.errors?.pattern">
+          Invalid Invoice Number format. Invoice number should begin with "INV" followed by a series of 6 numbers or begin with "SO" followed by a series of 5 numbers.
+        </ng-container>
+        <ng-container *ngIf="invoiceNo?.errors?.exists">
+          Invoice Number already exists. Please try with another Invoice Number.
+        </ng-container>
+      </div>
+    </form>
+  </app-dialog>
+
+  <app-dialog dialogID="changeprod" title="Change Products" size="medium" accept="Submit" cancel="Close" (onAccept)="update(event?.workflow_id)" (onCancel)="cancel()" [disabled]="formData?.valid && (formData?.status) ? true : null">
+    <app-popup (update)="loadInfo($event)" [questions]="questions"></app-popup>
+  </app-dialog>
+</ng-container>

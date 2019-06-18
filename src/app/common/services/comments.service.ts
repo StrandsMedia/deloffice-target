@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { environment } from '../../../environments/environment';
 
-import { of, timer } from 'rxjs';
+import { of, timer, Observable } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 
 @Injectable({
@@ -15,7 +15,12 @@ export class CommentsService {
 
   constructor(private http: HttpClient) { }
 
-  downloadCSV(csv, filename) {
+  /**
+   * Generates a CSV file from a comma-separated array.
+   * @param {Array} csv - Array formatted to create CSV file
+   * @param {string} filename - Name of generated file
+  */
+  downloadCSV(csv: any, filename: string): void {
     let csvFile;
     let downloadLink;
 
@@ -41,9 +46,13 @@ export class CommentsService {
     downloadLink.click();
   }
 
-  tbltoCSV(filename) {
+  /**
+   * This function generates a comma-separated array of values formatted to be saved in CSV and then downloads it
+   * @param filename - Name of file to be generated
+   */
+  tbltoCSV(filename: string) {
     const csv = [];
-    const rows = document.querySelectorAll('table tr');
+    const rows = document.querySelectorAll('table#cmtreport tr');
 
     for (let i = 0; i < rows.length; i++) {
       const row = [], cols = rows[i].querySelectorAll('td, th') as any;
@@ -60,7 +69,13 @@ export class CommentsService {
     this.downloadCSV(csv.join('\n'), filename);
   }
 
-  getComments(number, user?, cust?) {
+  /**
+   * This function fetches comments from the database depending on the parameters fed to it
+   * @param {number} number - If sales comments or debtors comments
+   * @param {number} user - Optional: Fetch comment by user
+   * @param {number} cust - Optional: Fetch comment by customer id
+   */
+  getComments(number: number, user?: number, cust?: number): Observable<any> {
     let url = this.url + 'comments/read.php';
     switch (number) {
       case 1:
@@ -100,5 +115,24 @@ export class CommentsService {
         return this.http.get(url);
       })
     );
+  }
+
+
+  /**
+   * Retrieves the comments for report
+   * @param info - contains from and to date to get comments
+   */
+  getCmtReport(info): Observable<any> {
+    let url = this.url + 'comments/report.php';
+    url = url + '?u=' + info.user + '&d1=' + info.from + '&d2=' + info.to;
+    return this.http.get(url);
+  }
+
+  /**
+   * Inserts a comment into the database
+   * @param info - Data to insert as comment in database
+   */
+  insertCmt(info): Observable<any> {
+    return this.http.post(this.url + 'comments/insert.php', info);
   }
 }

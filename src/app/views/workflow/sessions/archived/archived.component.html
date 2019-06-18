@@ -17,13 +17,13 @@
             </form>
         </div>
     </div>
-    <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+    <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll" respHeight>
         <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
         <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
     
         <ng-container cdkColumnDef="jobid">
             <th cdk-header-cell *cdkHeaderCellDef style="width: 16.6%">Job ID</th>
-            <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 16.6%">
+            <td routerLink="/workflow/job/{{row.sessionID}}" cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 16.6%">
                 #{{row.sessionID}}
             </td>
         </ng-container>
@@ -37,7 +37,7 @@
         <ng-container cdkColumnDef="type" >
             <th cdk-header-cell *cdkHeaderCellDef style="width: 16.6%">Session Type</th>
             <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 16.6%">
-                {{row.status}}
+                {{row.status | sesh}}
             </td>
         </ng-container>
         <ng-container cdkColumnDef="vehicle" >

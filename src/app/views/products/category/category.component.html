@@ -1,0 +1,109 @@
+<ng-container *ngIf="category$ | async as categories">
+  <div class="row">
+    <div class="col">
+      <div class="mdc-card pb-3 mb-3" style="overflow: hidden;min-height:400px;">
+        <!-- Header Section of Card -->
+        <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+          <h3 class="m-0 text-white flex-fill align-items-center">
+            Product Categories
+            <img *ngIf="loading" width="23px" src="/assets/icons/rolling_white.svg" alt="Rolling White">
+          </h3>
+          <div>
+            
+          </div>
+        </div>
+  
+        <!-- Beginning of multi-list -->
+        <div class="d-flex p-2">
+          <ng-container>
+            <div class="w-25 m-2">
+              <select (change)="catselect.category = $event.target.value" name="category" id="category" class="form-control h-100" multiple>
+                <option *ngFor="let cat of categories.category; index as i;" value="{{cat.id}}" class="p-2">{{cat.description}}</option>
+              </select>
+  
+              <div class="d-flex justify-content-start">
+                <button (click)="catid=1" class="tgt-button-full bg-primary d-flex mt-3 py-1 px-2 float-left" dialogTrigger="newcat">
+                  <i class="material-icons" style="line-height: 30px;">add</i>
+                </button>
+              </div>
+            </div>
+  
+            <div class="w-25 m-2">
+              <select (change)="catselect.category2 = $event.target.value;" name="category2" id="category2" class="form-control h-100" multiple [disabled]="!catselect.category">
+                <ng-container *ngIf="catselect.category">
+                  <ng-container *ngFor="let cat2 of categories.category2">
+                    <option *ngIf="catselect.category == cat2.upcat" value="{{cat2.id}}" class="p-2">{{cat2.description}}</option>
+                  </ng-container>
+                </ng-container>
+              </select>
+  
+              <div class="d-flex justify-content-start">
+                <button (click)="catid=2" class="tgt-button-full bg-primary d-flex mt-3 py-1 px-2 float-left" dialogTrigger="newcat" [disabled]="!catselect.category">
+                    <i class="material-icons" style="line-height: 30px;">add</i>
+                </button>
+              </div>
+            </div>
+  
+            <div class="w-25 m-2">
+              <select (change)="catselect.category3 = $event.target.value" name="category3" id="category3" class="form-control h-100" multiple [disabled]="!catselect.category2">
+                <ng-container *ngIf="catselect.category2">
+                  <ng-container *ngFor="let cat3 of categories.category3">
+                    <option *ngIf="catselect.category2 == cat3.upcat" value="{{cat3.id}}" class="p-2">{{cat3.description}}</option>
+                  </ng-container>
+                </ng-container>
+              </select>
+  
+              <div class="d-flex justify-content-start">
+                <button (click)="catid=3" class="tgt-button-full bg-primary d-flex mt-3 py-1 px-2 float-left" dialogTrigger="newcat" [disabled]="!catselect.category2">
+                  <i class="material-icons" style="line-height: 30px;">add</i>
+                </button>
+              </div>
+            </div>
+  
+            <div class="flex-fill m-2">
+              <select (change)="catselect.category4 = $event.target.value" name="category4" id="category4" class="form-control h-100" multiple [disabled]="!catselect.category3">
+                  <ng-container *ngIf="catselect.category3">
+                    <ng-container *ngFor="let cat4 of categories.category4">
+                      <option *ngIf="catselect.category3 == cat4.upcat" value="{{cat4.id}}" class="p-2">{{cat4.description}}</option>
+                    </ng-container>
+                  </ng-container>
+              </select>
+  
+              <div class="d-flex justify-content-start">
+                <button (click)="catid=4" class="tgt-button-full bg-primary d-flex mt-3 py-1 px-2 float-left" dialogTrigger="newcat" [disabled]="!catselect.category3">
+                    <i class="material-icons" style="line-height: 30px;">add</i>
+                </button>
+              </div>
+            </div>
+  
+          </ng-container>
+        </div>
+  
+      </div>
+    </div>
+  </div>
+  
+  <app-dialog
+    dialogID="newcat"
+    title="Add New Category"
+    size="medium"
+    accept="Save"
+    cancel="Cancel"
+  >
+    <form class="row">
+      <div class="col-12">
+        <div class="form-group">
+          <label for="description">Category Name</label>
+          <input type="text" name="description" id="description" class="form-control w-100">
+        </div>
+  
+        <div *ngIf="boundArr(categories) as boundcat" class="form-group">
+          <label for="upcat">Parent Category</label>
+          <select name="upcat" id="upcat" class="form-control w-100">
+            <option *ngFor="let item of boundcat" value="{{item?.id}}">{{item?.description}}</option>
+          </select>
+        </div>
+      </div>
+    </form>
+  </app-dialog>
+</ng-container>

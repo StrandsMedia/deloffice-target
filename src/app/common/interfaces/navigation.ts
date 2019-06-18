@@ -4,6 +4,7 @@ interface Path {
     name: string;
     path: string;
     icon?: string;
+    query?: { status: number };
     children?: Path[];
 }
 
@@ -39,14 +40,29 @@ export const Navigation: Nav = [
         icon: 'cached',
         children: [
             {
-                name: 'Sales Workflow',
-                path: '/sales',
+                name: 'Marketing Workflow',
+                path: '/marketing',
                 icon: 'shopping_cart'
             },
             {
-                name: 'Goods Preparation Workflow',
-                path: '/goods-preparation',
+                name: 'Proforma Workflow',
+                path: '/proforma',
+                icon: 'shopping_cart'
             },
+            {
+                name: 'Goods Prep. Workflow',
+                path: '/goods-preparation',
+                icon: 'shopping_cart'
+            },
+            {
+                name: 'Invoicing Workflow',
+                path: '/invoicing',
+                icon: 'shopping_cart'
+            },
+            // {
+            //     name: 'Goods Preparation Workflow',
+            //     path: '/goods-preparation',
+            // },
             {
                 name: 'Delivery Workflow',
                 path: '/delivery',
@@ -55,6 +71,10 @@ export const Navigation: Nav = [
             {
                 name: 'Delivery Sessions',
                 path: '/sessions',
+            },
+            {
+                name: 'Completion Report',
+                path: '/completion'
             },
             {
                 name: 'Delivery Archive',
@@ -90,12 +110,23 @@ export const Navigation: Nav = [
                 path: '/allocations'
             },
             {
-                name: 'Debtors Control',
+                name: 'Debtors Chasing',
                 path: '/control'
+            },
+            {
+                name: 'My Review List',
+                path: '/review'
             },
             {
                 name: 'Debt Collection',
                 path: '/collect'
+            },
+            {
+                name: 'Reminders',
+                path: '/reminder',
+                query: {
+                    status: 0
+                }
             }
         ]
     },
@@ -112,7 +143,19 @@ export const Navigation: Nav = [
     {
         name: 'Products',
         path: '/products',
-        icon: 'local_mall'
+        icon: 'local_mall',
+        children: [
+            {
+                name: 'Products',
+                path: '/view',
+                icon: 'local_mall'
+            },
+            {
+                name: 'Categories',
+                path: '/category',
+                icon: 'local_mall'
+            }
+        ]
     },
     {
         name: 'Tenders',

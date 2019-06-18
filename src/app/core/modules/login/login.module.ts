@@ -9,7 +9,11 @@ import { LoginComponent } from '../../layout/login/login.component';
 const loginroutes: Routes = [
   {
     path: '',
-    component: LoginComponent
+    component: LoginComponent,
+    data: {
+      title: 'Login',
+      id: 999
+    }
   }
 ];
 

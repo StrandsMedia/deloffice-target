@@ -8,18 +8,15 @@
                     <p class="mb-2"><strong>Sector: </strong>{{customer?.sector_name || '-'}}</p>
                     <p class="mb-2"><strong>Subsector: </strong>{{customer?.subsector_name || '-'}}</p>
                     <p class="mb-2">Last Updated on: {{customer?.updatedAt | date}}</p>
-                    <button class="tgt-button-full tgt-btn-green px-3 py-2 my-1 mr-3">
+                    <!-- <button class="tgt-button-full tgt-btn-green px-3 py-2 my-1 mr-3">
                         Follow
-                    </button>
-                    <button class="tgt-button-full tgt-btn-white px-3 py-2 my-1 mr-3" dialogTrigger="statement">
-                        Generate Statement
-                    </button>
-                    <button class="tgt-button-full tgt-btn-white px-3 py-2 my-1 mr-3">
+                    </button> -->
+                    <button (click)="loadProfile(customer)" class="tgt-button-full tgt-btn-white px-3 py-2 my-1 mr-3" dialogTrigger="customerDet" [disableIfUnauth]="'update'">
                         Edit Profile
                     </button>
-                    <button class="tgt-button-full tgt-btn-red px-3 py-2 my-1 mr-3">
+                    <!-- <button class="tgt-button-full tgt-btn-red px-3 py-2 my-1 mr-3">
                         Delete
-                    </button>
+                    </button> -->
                 </div>
                 <div class="px-4 flex-fill d-flex">
                     <div id="contact" class="carousel slide align-self-center w-100" data-ride="carousel">
@@ -37,9 +34,13 @@
                                 <p class="mb-2">
                                     <i class="material-icons">mail</i><strong>Email: </strong>{{person?.email || 'N/A'}}
                                 </p>
-                                <button (click)="switchData(person, customer?.cust_id)" dialogTrigger="contactDet" class="tgt-button-full d-flex h-100 px-3 py-2 mr-2 float-left">Edit Contact Person</button>
+                                <button (click)="switchData(person, customer?.cust_id)" dialogTrigger="contactDet" class="tgt-button-full d-flex h-100 px-3 py-2 mr-2 float-left" [disableIfUnauth]="'update'">Edit Contact Person</button>
                             </div>
                         </div>
+                        <a class="carousel-control-prev w-auto" href="#contact" role="button" data-slide="prev" style="left: -45px;">
+                            <i id="next" class="material-icons text-white" aria-hidden="true">keyboard_arrow_left</i>
+                            <span class="sr-only">Prev</span>
+                        </a>
                         <a class="carousel-control-next w-auto" href="#contact" role="button" data-slide="next">
                             <i id="next" class="material-icons text-white" aria-hidden="true">keyboard_arrow_right</i>
                             <span class="sr-only">Next</span>
@@ -48,6 +49,65 @@
                 </div>
             </div>
         </div>
+
+        <app-dialog dialogID="customerDet" title="Edit Customer Profile" size="medium" accept="Submit" cancel="Cancel" (onAccept)="updateProfile()" [disabled]="editCustomerForm.valid">
+            <form [formGroup]="editCustomerForm">
+                <div class="row">
+                    <div class="col-12">
+                        <p>Edit the information below to modify the customer profile:</p>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="customerCode">Customer Code</label>
+                            <input formControlName="customerCode" type="text" name="customerCode" id="customerCode" class="form-control w-100">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="company_name">Customer Name</label>
+                            <input formControlName="company_name" type="text" name="company_name" id="company_name" class="form-control w-100">
+                        </div>
+                    </div>
+                    <div class="col-12">
+
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <input formControlName="address" type="text" name="address" id="address" class="form-control w-100">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select formControlName="category" name="category" id="category" class="form-control w-100">
+                                <option value="" selected disabled>Select a category</option>
+                                <option *ngFor="let cat of categories | async; index as i" value="{{cat.category_name}}">{{cat.abre}}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="sector">Sector</label>
+                            <select formControlName="sector" name="sector" id="sector" class="form-control w-100">
+                                <option value="" selected disabled>Select a sector</option>
+                                <option *ngFor="let sec of sectors | async; index as i" value="{{sec.cat_id}}">{{sec.category_name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="subsector">Subsector</label>
+                            <select formControlName="subsector" name="subsector" id="subsector" class="form-control w-100">
+                                <option value="" selected disabled>Select a subsector</option>
+                                <ng-container *ngFor="let subsec of subsectors | async; index as i">
+                                    <option *ngIf="subsec.upcat === editCustomerForm.value.sector" value="{{subsec.cat_id}}">{{subsec.category_name}}</option>
+                                </ng-container>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </app-dialog>
 
         <app-dialog dialogID="contactDet" title="Edit Contact Details" accept="Submit" cancel="Cancel" (onAccept)="submit()">
             <form [formGroup]="editContactForm">
@@ -95,7 +155,6 @@
         </app-dialog>  
     </div>
 
-
     <div class="col-12">
         <div class="mdc-tab-bar my-3" role="tablist" aria-label="Navigation">
             <div class="mdc-tab-scroller">
@@ -128,15 +187,6 @@
                             </span>
                             <span class="mdc-tab__ripple"></span>
                         </button>
-                        <button (click)="tabstatus = 'allocations'" class="mdc-tab" role="tab" aria-selected="false" tabindex="-1">
-                            <span class="mdc-tab__content">
-                                <span class="mdc-tab__text-label">Allocations</span>
-                            </span>
-                            <span class="mdc-tab-indicator">
-                                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
-                            </span>
-                            <span class="mdc-tab__ripple"></span>
-                        </button>
                         <button (click)="tabstatus = 'details'" class="mdc-tab" role="tab" aria-selected="false" tabindex="-1">
                             <span class="mdc-tab__content">
                                 <span class="mdc-tab__text-label">Details</span>
@@ -154,14 +204,17 @@
 </div>
 
 
-<div class="row">
-    <div class="col-8">
-        <div [dynamic]="tabstatus" [id]="(customer | async)?.customerCode"></div>
+<div *ngIf="customer | async as customer" class="row">
+    <div [class.col-8]="customer?.customerCode" [class.col-12]="!customer?.customerCode">
+        <div [dynamic]="tabstatus" [id]="customer"></div>
     </div>
-    <div class="col-4">
+    <div *ngIf="customer?.customerCode" class="col-4">
         <div *ngIf="balance | async as balance" class="mdc-card" style="min-height:370px;max-height: 370px;overflow-y:scroll;">
             <div class="p-3">
-                <h4 class="card-heading">Age Analysis</h4>
+                <h4 class="card-heading">
+                    Age Analysis
+                    <i *ngIf="user.usertype === 'Admin' || user.usertype === 'Accounting'" (click)="bindTerm(balance)" dialogTrigger="changeterm" class="point material-icons">mode_edit</i>
+                </h4>
                 <table cdk-table [dataSource]="balance?.records" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table m-0" style="font-size: 13px;" >
                     <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
                     <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
@@ -176,44 +229,55 @@
                         <td cdk-footer-cell *cdkFooterCellDef class="font-weight-bold" style="width: 50%;">TOTAL</td>
                     </ng-container>
                     <ng-container cdkColumnDef="balance">
-                        <th cdk-header-cell *cdkHeaderCellDef style="width: 50%;">Balance</th>
-                        <td cdk-cell *cdkCellDef="let row" class="text-left" style="width: 50%;">
-                            {{row.Outstanding !== 0 ? ('Rs. '+ (getAmt(row.Outstanding) | number:'1.2')) : '-'}}
+                        <th cdk-header-cell *cdkHeaderCellDef class="text-right" style="width: 50%;">Balance (Rs.)</th>
+                        <td cdk-cell *cdkCellDef="let row" class="text-right" style="width: 50%;">
+                            {{getAmt(row.Outstanding)}}
                         </td>
-                        <td cdk-footer-cell *cdkFooterCellDef class="font-weight-bold text-left" style="width: 50%;">{{('Rs. ' + (total | number:'1.2')) || '-'}}</td>
+                        <td cdk-footer-cell *cdkFooterCellDef class="font-weight-bold text-right" style="width: 50%;">{{((total | number:'1.2')) || '-'}}</td>
                     </ng-container>
                 </table>
             </div>
         </div>
     </div>
+    <ng-container *ngIf="customer?.customerCode">
+        <app-dialog dialogID="statement" title="Save Statement of Account" accept="OK" cancel="Cancel"></app-dialog>
+
+        <app-dialog dialogID="changeterm" title="Change Account Terms" accept="Submit" cancel="Cancel" (onAccept)="updateTerm()">
+            <form [formGroup]="changeTermForm">
+                <div class="form-group mb-0">
+                    <label for="term">New Account Term</label>
+                    <select formControlName="term" name="term" id="term" class="form-control w-100">
+                        <option value="" selected disabled>Select a new term</option>
+                        <option *ngFor="let term of terms; index as i" [value]="i">{{term}}</option>
+                    </select>
+                </div>
+            </form>
+        </app-dialog>
+        
+        <table *ngIf="statement | async as statement" class="d-none">
+            <thead>
+                <tr>
+                    <th>Invoice<br>Date</th>
+                    <th>Doc</th>
+                    <th>Ref No.</th>
+                    <th>Description</th>
+                    <th>Debit<br>(Rs)</th>
+                    <th>Credit<br>(Rs)</th>
+                    <th>Balance<br>(Rs)</th>
+                    <th>Cum - Bal<br>(Rs)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let st of statement; index as i;">
+                    <td>{{st.TxDate | date}}</td>
+                    <td>{{st.Reference}}</td>
+                    <td>{{st.Description}}</td>
+                    <td>{{st.Debit}}</td>
+                    <td>{{st.Credit}}</td>
+                    <td>{{st.Outstanding}}</td>
+                    <td>{{st.Debit}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </ng-container>
 </div>
-
-<app-dialog dialogID="statement" title="Save Statement of Account" accept="OK" cancel="Cancel"></app-dialog>
-
-<app-snackbar></app-snackbar>
-
-<table *ngIf="statement | async as statement" class="d-none">
-    <thead>
-        <tr>
-            <th>Invoice<br>Date</th>
-            <th>Doc</th>
-            <th>Ref No.</th>
-            <th>Description</th>
-            <th>Debit<br>(Rs)</th>
-            <th>Credit<br>(Rs)</th>
-            <th>Balance<br>(Rs)</th>
-            <th>Cum - Bal<br>(Rs)</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let st of statement; index as i;">
-            <td>{{st.TxDate | date}}</td>
-            <td>{{st.Reference}}</td>
-            <td>{{st.Description}}</td>
-            <td>{{st.Debit}}</td>
-            <td>{{st.Credit}}</td>
-            <td>{{st.Outstanding}}</td>
-            <td>{{st.Debit}}</td>
-        </tr>
-    </tbody>
-</table>

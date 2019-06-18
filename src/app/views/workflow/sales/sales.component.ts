@@ -1,17 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, DoCheck } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 
 import { WorkflowService } from '../../../common/services/workflow.service';
+import { QuestionControlService } from '../popup/utils/question-control.service';
 
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+import { AuthService } from 'src/app/common/services/auth.service';
+import { MaterialService } from 'src/app/common/services/material.service';
 
 @Component({
   selector: 'app-sales',
   templateUrl: './sales.component.html',
   styleUrls: ['./sales.component.scss']
 })
-export class SalesComponent implements OnInit {
+export class SalesComponent implements OnInit, DoCheck {
   dataSource$: Observable<any>;
   asc = true;
   clicked = 0;
@@ -30,16 +33,34 @@ export class SalesComponent implements OnInit {
   ];
   sortKey: any;
 
+  questions: any[];
+
   searchForm = this.fb.group({
     searchInput: ['']
   });
 
-  constructor(private fb: FormBuilder, private wf: WorkflowService) {
-    //
+  hasClass = false;
+
+  formData: any;
+  user: any;
+
+  constructor(
+    private auth: AuthService,
+    private fb: FormBuilder,
+    private mdc: MaterialService,
+    private wf: WorkflowService,
+    private qcs: QuestionControlService,
+    private cdRef: ChangeDetectorRef
+  ) {
+    this.auth.currentUser.subscribe(data => this.user = data);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.get();
+  }
+
+  ngDoCheck() {
+    this.cdRef.detectChanges();
   }
 
   trackByFn(index, item) {
@@ -55,6 +76,25 @@ export class SalesComponent implements OnInit {
       tap((data) => {
         this.loading = false;
       })
+    );
+  }
+
+  update() {
+    this.formData.user = this.user.user_id;
+    this.formData.status = +this.formData.status;
+    this.wf.changeStatus(this.formData).subscribe(
+      (data) => {
+        this.mdc.materialSnackBar(data);
+        console.log(data);
+      },
+      (err) => {
+        this.mdc.materialSnackBar(err.error);
+        console.log(err);
+      },
+      () => {
+        this.get();
+        setTimeout(() => this.formData.status = 0, 500);
+      }
     );
   }
 
@@ -125,6 +165,28 @@ export class SalesComponent implements OnInit {
         });
       })
     );
+  }
+
+  editWF($event, row) {
+    if ($event.target.classList.contains('bg-primary')) {
+      this.wf.retrieveProducts(row.workflow_id).subscribe(data => {
+        const newdata = data;
+        newdata.step = +$event.target.getAttribute('name');
+
+        this.questions = this.qcs.getQuestions(Number(row.status), newdata);
+      });
+      this.hasClass = true;
+    }
+  }
+
+  cancel() {
+    this.hasClass = false;
+    this.formData = null;
+    setTimeout(() => this.formData.status = 0, 500);
+  }
+
+  loadInfo($event: any) {
+    this.formData = $event;
   }
 
 }

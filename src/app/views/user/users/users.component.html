@@ -1,0 +1,190 @@
+<div class="row">
+  <div class="col-12">
+    <div class="mdc-card mb-3" style="overflow: hidden;">
+      <!-- Header Section of Card -->
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+        <div class="text-white flex-fill align-items-center">
+          <h3 class="mb-1">Target User List</h3>
+        </div>
+        <div class="align-items-center">
+          <button class="float-left tgt-button-full tgt-btn-white px-3 py-2 mr-3" dialogTrigger="newuser">
+            New User
+          </button>
+          <div [formGroup]="statusForm" class="float-right form-group h-100 mb-0">
+            <select (change)="change()" formControlName="status" name="status" id="status" class="form-control w-100">
+              <option [value]="0">Hidden</option>
+              <option [value]="1">Visible</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <ng-container *ngIf="users | async as users">
+        <!-- Beginning of data table -->
+        <table cdk-table [dataSource]="users?.records" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll" respHeight>
+          <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+          <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+  
+          <ng-container cdkColumnDef="name">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 20%">Name</th>
+            <td cdk-cell *cdkCellDef="let row" class="font-weight-bold" style="width: 20%">
+              {{row.sales_rep}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="init">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 7%">Rep Initial</th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 7%">
+              {{row.rep_initial | uppercase}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="dept">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 20%">Dept</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 20%">
+              {{row.dept}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="visible">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 15%">Visible</th>
+            <td cdk-cell *cdkCellDef="let row"  style="width: 15%">
+              {{getStatus(row.visible)}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="status">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 15%">Status</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 15%">
+              {{row.status}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="password">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 25%">Password</th>
+            <td cdk-cell *cdkCellDef="let row" class="" style="width: 25%">
+              <input (mouseover)="show($event)" (mouseleave)="hide($event)" type="password" name="password" class="form-control password point" value="{{row.password}}" readonly>
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="edit">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 5%"></th>
+            <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center" style="width: 5%">
+                <button (click)="assignUser(row)" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2 float-left" dialogTrigger="edituser">
+                  <i class="material-icons" style="line-height: 30px;">mode_edit</i>
+                </button>
+            </td>
+          </ng-container>
+        </table>
+      </ng-container>
+
+    </div>
+  </div>
+</div>
+
+<app-dialog dialogID="newuser" size="medium" title="Create New User" accept="Submit" cancel="Cancel" [disabled]="insertUserForm.valid" (onAccept)="create()">
+  <form [formGroup]="insertUserForm">
+    <div class="row">
+      <div class="col-9">
+        <div class="form-group">
+          <label for="sales_rep">User Name</label>
+          <input formControlName="sales_rep" type="text" name="sales_rep" id="sales_rep" class="form-control w-100" placeholder="Type in your username">
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="form-group">
+          <label for="rep_initial">User Initials</label>
+          <input formControlName="rep_initial" type="text" name="rep_initial" id="rep_initial" class="form-control w-100">
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-6">
+        <div class="form-group">
+          <label for="dept">Department</label>
+          <select formControlName="dept" name="dept" id="dept" class="form-control w-100">
+            <option value="" selected disabled>Select a department</option>
+            <option value="Admin">Admin</option>
+            <option value="Accounting">Accounting</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Sales">Sales</option>
+            <option value="Printing">Printing</option>
+            <option value="Delivery">Delivery</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-6">
+        <label for="visible">Visibility</label>
+        <select formControlName="visible" name="visible" id="visible" class="form-control w-100">
+          <option value="" selected disabled>Select an option</option>
+          <option [value]="1">Visible</option>
+          <option [value]="0">Hidden</option>
+        </select>
+      </div>
+    </div>
+    
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input formControlName="password" type="text" name="password" id="password" class="form-control w-100" placeholder="Type in password">
+    </div>
+  </form>
+</app-dialog>
+
+<app-dialog dialogID="edituser" size="medium" title="Edit User" accept="Submit" cancel="Cancel" [disabled]="updateUserForm.valid" (onAccept)="update()">
+  <form [formGroup]="updateUserForm">
+    <div class="row">
+      <div class="col-9">
+        <div class="form-group">
+          <label for="sales_rep">User Name</label>
+          <input formControlName="sales_rep" type="text" name="sales_rep" class="form-control w-100" placeholder="Type in your username">
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="form-group">
+          <label for="rep_initial">User Initials</label>
+          <input formControlName="rep_initial" type="text" name="rep_initial" class="form-control w-100">
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-6">
+        <div class="form-group">
+          <label for="dept">Department</label>
+          <select formControlName="dept" name="dept" class="form-control w-100">
+            <option value="" selected disabled>Select a department</option>
+            <option value="Admin">Admin</option>
+            <option value="Accounting">Accounting</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Sales">Sales</option>
+            <option value="Printing">Printing</option>
+            <option value="Delivery">Delivery</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-6">
+        <label for="visible">Visibility</label>
+        <select formControlName="visible" name="visible" class="form-control w-100">
+          <option value="" selected disabled>Select an option</option>
+          <option [value]="1">Visible</option>
+          <option [value]="0">Hidden</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select formControlName="status" name="status" id="status" class="form-control w-100">
+            <option value="" selected disabled>Select an option</option>
+            <option [value]="0">Visible</option>
+            <option [value]="1">Hidden</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input (mouseover)="show($event)" (mouseleave)="hide($event)" formControlName="password" type="password" name="password" class="form-control w-100" placeholder="Type in password">
+    </div>
+  </form>
+</app-dialog>

@@ -15,6 +15,7 @@ import { map, tap } from 'rxjs/operators';
   styleUrls: ['./push.component.scss']
 })
 export class PushComponent implements OnInit, OnDestroy {
+  loading: boolean;
   dataSource$: Observable<any>;
   subs = new Subscription();
   array: any = [];

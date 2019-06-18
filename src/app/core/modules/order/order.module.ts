@@ -10,15 +10,42 @@ import { AddComponent } from '../../../views/orders/add/add.component';
 import { EditComponent } from '../../../views/orders/edit/edit.component';
 import { ViewComponent } from '../../../views/orders/view/view.component';
 import { DialogModule } from 'src/app/common/utils/dialog/dialog.module';
+import { UtilsModule } from '../utils.module';
 
 const orderroutes: Routes = [
   {
     path: 'view',
-    component: ViewComponent
+    children: [
+      {
+        path: '',
+        component: ViewComponent,
+        data: {
+          title: 'View Invoices',
+          id: 3
+        }
+      },
+      {
+        path: ':id',
+        component: EditComponent,
+        data: {
+          title: 'Edit Invoice',
+          id: 3
+        }
+      }
+    ],
+    data: {
+      expectedRole: ['Admin'],
+      id: 3
+    }
   },
   {
     path: 'new',
-    component: AddComponent
+    component: AddComponent,
+    data: {
+      title: 'New Invoice',
+      expectedRole: ['Admin'],
+      id: 3
+    }
   }
 ];
 
@@ -29,7 +56,8 @@ const orderroutes: Routes = [
     RouterModule.forChild(orderroutes),
     FormsModule,
     ReactiveFormsModule,
-    DialogModule
+    DialogModule,
+    UtilsModule
   ],
   declarations: [
     AddComponent,

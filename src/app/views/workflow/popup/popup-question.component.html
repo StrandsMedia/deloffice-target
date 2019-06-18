@@ -1,0 +1,56 @@
+<div [formGroup]="form" class="form-group" [class.d-inline-flex]="question.controlType === 'multibox' && !question?.extra">
+    <ng-container *ngIf="question?.length > 0">
+        <ng-container *ngFor="let item of question; index as i;">
+            <div *ngIf="item.controlType === 'radio'; else textbox;" class="custom-control custom-radio custom-control-inline">
+                <input [formControlName]="item?.key" [name]="item?.key" [attr.id]="item.key + i" [type]="item.type" class="custom-control-input" [value]="item.value">
+                <label [attr.for]="item.key + i" class="custom-control-label">{{item.label}}</label>
+            </div>
+            <ng-template #textbox>
+                <input *ngIf="item.controlType === 'textbox'" [formControlName]="item?.key" [attr.placeholder]="item?.placeholder" class="form-control d-inline-flex w-25 mr-3" [attr.pattern]="item?.pattern ? item.pattern : null" [required]="item.required" type="text">
+                <select *ngIf="item.controlType === 'select'" [formControlName]="item?.key" [id]="item?.key" [name]="item?.key" class="form-control d-inline-flex w-25 mr-3">
+                    <option value="" disabled selected>Select a vehicle</option>
+                    <option *ngFor="let vehi of vehicle" value="Vehicle #{{vehi}}">Vehicle #{{vehi}}</option>
+                    <option value="pickup">Pickup</option>
+                </select>
+            </ng-template>
+        </ng-container>
+    </ng-container>
+    <div [ngSwitch]="question.controlType" [hidden]="question.key === 'workflow_id' || question.key === 'step'">
+        <ng-container *ngSwitchCase="'textbox'">
+            <label [attr.for]="question.key">{{question.label}}</label>
+            <input [formControlName]="question.key" [id]="question.key" [type]="question.type" class="form-control w-100">
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'multibox'">
+            <ng-container *ngIf="question?.extra; else noextra">
+                <ng-container [formArrayName]="question?.key">
+                    <ng-container *ngFor="let item of form?.controls[question?.key]?.controls; index as i;">
+                        <ng-container [ngSwitch]="i">
+                            <div *ngSwitchCase="0" class="custom-control custom-checkbox custom-control-inline">
+                                <input [formControlName]="i" type="checkbox" [name]="question.key" [id]="question.key" class="custom-control-input" [checked]="question?.value ? question?.value[0] : null">
+                                <label [attr.for]="question.key" class="custom-control-label">{{question.label}}</label>
+                            </div>
+                            <input *ngSwitchCase="1" [formControlName]="i" type="text" [name]="question.key" [id]="question.key" class="form-control w-25 d-inline-flex mr-3" [value]="question?.value ? question?.value[1] : null">
+                            <select *ngSwitchCase="2" [formControlName]="i" [name]="question.key" [id]="question.key" class="form-control w-25 d-inline-flex mr-3" [value]="question?.value ? question?.value[2] : null">
+                                <option value="A4">A4</option>
+                                <option value="A5">A5</option>
+                                <option value="A3">A3</option>
+                            </select>
+                            <select *ngSwitchCase="3" [formControlName]="i" [name]="question.key" [id]="question.key" class="form-control w-25 d-inline-flex mr-3">
+                                <option *ngFor="let paper of papers | async; index as i;" value="{{paper.paperBrand}}">{{paper.paperBrand}}</option>
+                            </select>
+                        </ng-container>
+                    </ng-container>
+                </ng-container>
+            </ng-container>
+            <ng-template #noextra>
+                <div class="custom-control custom-checkbox custom-control-inline">
+                    <input [formControlName]="question.key" type="checkbox" [name]="question.key" [id]="question.key" class="custom-control-input" [value]="question?.value">
+                    <label [attr.for]="question.key" class="custom-control-label">{{question.label}}</label>
+                </div>
+            </ng-template>
+
+        </ng-container>
+
+    </div>
+</div>

@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 
 import { MDCDrawer } from '@material/drawer';
+import { MDCList } from '@material/list';
 import { MDCTabBar } from '@material/tab-bar';
 import { MDCSnackbar, MDCSnackbarFoundation } from '@material/snackbar';
 
@@ -33,12 +34,18 @@ export class MaterialService {
   materialSnackBar(data) {
     if (this.platform.platformCheck) {
       const snackbar = new MDCSnackbar(document.querySelector('.mdc-snackbar'));
-      const dataObj = {
-        message: data.message,
-        actionText: 'Close'
-      };
+      snackbar.labelText = data.message;
+      snackbar.actionButtonText = null;
 
-      snackbar.show(dataObj);
+      snackbar.open();
+    }
+  }
+
+  materialList() {
+    if (this.platform.platformCheck) {
+      const list = new MDCList(document.querySelector('.mdc-list'));
+      list.singleSelection = true;
+      return list;
     }
   }
 

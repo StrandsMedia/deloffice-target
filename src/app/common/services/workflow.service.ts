@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
 import { of, timer, Observable } from 'rxjs';
-import { delay, switchMap } from 'rxjs/operators';
+import { delay, switchMap, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -99,6 +99,14 @@ export class WorkflowService {
     return this.http.post(this.url + 'workflow/deliveryArchive.php', info);
   }
 
+  readJob(id): Observable<any> {
+    return this.http.get(this.url + `workflow/readJob.php?id=${id}`);
+  }
+
+  readPaper(): Observable<any> {
+    return this.http.get(this.url + 'workflow/readPaper.php');
+  }
+
   readByCust(id: number): Observable<any> {
     return this.http.get(this.url + 'workflow/readByCust.php?s=' + id);
   }
@@ -109,5 +117,56 @@ export class WorkflowService {
 
   readUserData(info): Observable<any>  {
     return this.http.post(this.url + 'user/user_data.php', info);
+  }
+
+  readEvent(id: number): Observable<any>  {
+    return this.http.get(this.url + `workflow/readEvent.php?id=${id}`);
+  }
+
+  retrieveProducts(id): Observable<any> {
+    return this.http.get(this.url + `workflow/read_one.php?id=${id}`);
+  }
+
+  readSteps(): Observable<any> {
+    return this.http.get(this.url + 'workflow/readSteps.php');
+  }
+
+  duplicateCheck(invNum: string, id?: number): Observable<any> {
+    let url = this.url + `workflow/duplicateCheck.php?id=${invNum}`;
+
+    if (id) {
+      url = url + `&wf=${id}`;
+    }
+
+    return this.http.get(url);
+  }
+
+  searchInvoice(data): Observable<any> {
+    return this.http.get(this.url + 'workflow/validCheck.php?inv=' + data);
+  }
+
+  closeSession(info) {
+    return this.http.post(this.url + 'workflow/closeSession.php', info);
+  }
+
+  updateEvent(info): Observable<any> {
+    return this.http.post(this.url + `workflow/eventMods.php`, info);
+  }
+
+  overrideStep(info): Observable<any> {
+    return this.http.post(this.url + 'workflow/overrideStep.php', info);
+  }
+
+  changeStatus(info): Observable<any> {
+    return this.http.post(this.url + 'workflow/changeStatus.php', info);
+  }
+
+  getComplete(): Observable<any> {
+    return timer(0, 30000)
+    .pipe(
+      switchMap(t => {
+        return this.http.get(this.url + 'workflow/getCompletionReport.php');
+      })
+    );
   }
 }

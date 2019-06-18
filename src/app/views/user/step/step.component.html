@@ -1,0 +1,72 @@
+<div class="row">
+  <div class="col">
+    <div class="mdc-card mb-3" style="overflow: hidden;">
+      <!-- Header Section of Card -->
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+        <h3 class="m-0 text-white flex-fill align-items-center">
+          Invoice Checker / Jump Steps
+          <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
+        </h3>
+        <div class="w-25">
+          <form (ngSubmit)="search()" [formGroup]="searchInvoiceForm" class="form-group mb-0">
+            <input
+              formControlName="searchstring"
+              type="search"
+              name="searchstring"
+              id="searchstring"
+              class="form-control w-100"
+              placeholder="Type in search query"
+            >
+          </form>
+        </div>
+        <div *ngIf="user.usertype === 'Admin'">
+          <button 
+            *ngIf="datapresence && searchInvoiceForm.value.searchstring"
+            dialogTrigger="dialog"
+            class="tgt-button-full tgt-btn-white px-3 py-2 my-1 ml-3"
+            [disableIfUnauth]="'update'"
+          >
+            Override Step
+          </button>
+        </div>
+      </div>
+      <div *ngIf="dataSource$ | async as dt" class="d-flex">
+        <div class="card flex-fill">
+          <div class="card-body">
+            <h5 class="card-title">
+              {{dt.invoiceNo | uppercase}}
+              <span *ngIf="dt.InvNumber == dt.invoiceNo" class="badge badge-pill badge-success material-icons">done</span>
+            </h5>
+            <h6 class="card-subtitle mb-2 text-muted">
+              {{dt.Account + ' - ' || ''}}{{dt.company_name}}
+              <span *ngIf="dt.customerCode == dt.Account" class="badge badge-pill badge-success material-icons">done</span>
+            </h6>
+            <h6 class="card-subtitle mb-2 text-muted">
+              {{'Step: ' + dt.step}}
+            </h6>
+            <p class="card-text">
+              <strong>Products: </strong><br>
+              <ng-container *ngFor="let prod of dt?.products">{{(prod.Quantity | number:'1.0-0') + 'x ' + prod.Description_3 + ' ' + prod.Description_1 + ' ' + prod.Description_2}}<br></ng-container>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-dialog dialogID="dialog" title="Override Step" size="medium" accept="Submit" cancel="Cancel" (onAccept)="overrideStep()" (onCancel)="cancelForm()" [disabled]="changeStepForm.valid">
+  <form [formGroup]="changeStepForm">
+    <div class="form-group">
+      <label for="step">Step</label>
+      <select formControlName="step" name="step" id="step" class="form-control w-100">
+        <option value="" selected disabled>Select New Step</option>
+        <option *ngFor="let step of wfSteps | async; index as i;" value="{{step.step_id}}">{{step.step}}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="comment">Comment (optional)</label>
+      <input formControlName="comment" type="text" name="comment" id="comment" class="form-control w-100">
+    </div>
+  </form>
+</app-dialog>

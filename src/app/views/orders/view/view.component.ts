@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { MaterialService } from '../../../common/services/material.service';
 import { OrdersService } from '../../../common/services/orders.service';
@@ -7,15 +7,17 @@ import { chunkArray, image, invoiceLH, convertDate } from '../../../common/inter
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
-import { timer, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { timer, Observable, Subject } from 'rxjs';
+import { map, tap, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-view',
   templateUrl: './view.component.html',
   styleUrls: ['./view.component.scss']
 })
-export class ViewComponent implements OnInit {
+export class ViewComponent implements OnInit, OnDestroy {
+  private _notifier: Subject<boolean> = new Subject<boolean>();
+
   dataSource$: Observable<any>;
   state: States = 1;
   tabbar: any;
@@ -42,6 +44,10 @@ export class ViewComponent implements OnInit {
     this.get();
   }
 
+  ngOnDestroy() {
+    this._notifier.next(true);
+  }
+
   trackByFn(index, item) {
     return index;
   }
@@ -51,7 +57,6 @@ export class ViewComponent implements OnInit {
     return this.dataSource$ = this.order.getInvoices(this.state).pipe(
       map((docs: any) => docs.records),
       tap((v) => {
-        console.log(v);
         this.loading = !this.loading;
       })
     );
@@ -65,7 +70,8 @@ export class ViewComponent implements OnInit {
     timer(200).pipe(
       tap(v => {
         this.state = state;
-      })
+      }),
+      takeUntil(this._notifier)
     ).subscribe(() => this.get());
   }
 
