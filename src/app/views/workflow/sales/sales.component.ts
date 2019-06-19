@@ -16,7 +16,7 @@ import { map, tap } from 'rxjs/operators';
 })
 export class SalesComponent implements OnInit, DoCheck {
   public dataSource$: Observable<any>;
-  asc = true;
+  public asc = true;
   clicked = 0;
   public loading = false;
   public columns = [
