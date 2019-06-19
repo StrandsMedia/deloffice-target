@@ -48,24 +48,24 @@ export class ProformaComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    this.get();
+    // this.get();
   }
 
   trackByFn(index, item) {
     return index;
   }
 
-  get() {
-    this.loading = true;
-    return this.dataSource$ = this.wf.getWorkflow(1).pipe(
-      map((data: any) => {
-        return data.records;
-      }),
-      tap((data) => {
-        this.loading = false;
-      })
-    );
-  }
+  // get() {
+  //   this.loading = true;
+  //   return this.dataSource$ = this.wf.getWorkflow(1).pipe(
+  //     map((data: any) => {
+  //       return data.records;
+  //     }),
+  //     tap((data) => {
+  //       this.loading = false;
+  //     })
+  //   );
+  // }
 
   sortObs(key, direction) {
     let dir;
@@ -107,7 +107,7 @@ export class ProformaComponent implements OnInit {
       case 2:
         sortKey = $event.target.getAttribute('data-name');
         if (this.sortKey === sortKey) {
-          this.get();
+          // this.get();
           this.sortKey = '';
           this.clicked = 0;
         } else {

@@ -25,7 +25,7 @@ export class DeliveryComponent implements OnInit, DoCheck {
     'time',
     'company_name',
     'invoiced',
-    'goodsready',
+    // 'goodsready',
     'goodsalloc',
     'deliveryinprogress',
     'duration',
@@ -90,7 +90,7 @@ export class DeliveryComponent implements OnInit, DoCheck {
 
   get() {
     this.loading = true;
-    return this.dataSource$ = this.wf.getWorkflow(2).pipe(
+    return this.dataSource$ = this.wf.getWorkflow(5).pipe(
       map((data: any) => {
         if (data.records) {
           return data.records;

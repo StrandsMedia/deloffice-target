@@ -22,14 +22,27 @@ export class WorkflowService {
     switch (number) {
       case 1:
         data = {
-          range1: '1',
-          range2: '5'
+          case: 1
         };
         break;
       case 2:
         data = {
-          range1: '6',
-          range2: '9'
+          case: 2
+        };
+        break;
+      case 3:
+        data = {
+          case: 3
+        };
+        break;
+      case 4:
+        data = {
+          case: 4
+        };
+        break;
+      case 5:
+        data = {
+          case: 5
         };
         break;
     }
