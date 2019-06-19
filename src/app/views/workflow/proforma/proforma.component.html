@@ -1,3 +1,100 @@
-<p>
-  proforma works!
-</p>
+<div class="row">
+  <div class="col">
+    <div class="mdc-card mb-3" style="overflow: hidden;">
+      <!--Card Header-->
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+        <h3 class="m-0 text-white flex-fill align-items-center">
+          Proforma Workflow
+          <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
+        </h3>
+        <div>
+          <button (click)="get()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3">
+            Refresh List
+          </button>
+          <form (ngSubmit)="filter()" [formGroup]="searchForm" class="form-inline float-right m-1">
+            <input formControlName="searchInput" class="form-control p-3 mr-2" type="search" name="customersearch" id="customersearch" placeholder="Search for customers...">
+            <button type="submit" class="tgt-button-full tgt-btn-white">
+              <i class="material-icons" style="line-height: 24px;margin-top: 3px;">search</i>
+            </button>
+          </form>
+        </div>
+      </div>
+      <!--Data Table-->
+      <table cdk-table respHeight [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+        <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+        <tr cdk-row *cdkRowDef="let row; columns: columns" [ngClass]="{'table-warning': row.urgent == 1}"></tr>
+
+        <ng-container cdkColumnDef="workflow_id">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">#</th>
+          <td [routerLink]="['/workflow/event/' + row.workflow_id ]" cdk-cell *cdkCellDef="let row" class="text-center font-weight-bold point" style="width: 5%;">
+            {{row.workflow_id}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="date">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">Date</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 8%;">
+            {{row.time | date:'dd-MM-yyyy'}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="time">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;">Time</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 7%;">
+            {{row.time | date:'HH:mm:ss'}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="company_name">
+          <th (click)="sort($event)" cdk-header-cell *cdkHeaderCellDef data-name="company_name" style="width: 24%;">
+            Customer Name
+            <i *ngIf="sortKey === 'company_name'" class="material-icons">{{clicked === 1 ? 'arrow_drop_up': 'arrow_drop_down'}}</i>
+          </th>
+          <td routerLink="/customers/{{row.cust_id}}" cdk-cell *cdkCellDef="let row" class="font-weight-bold py-2 point" style="width: 24%;">
+            {{row.company_name}}
+          </td>
+        </ng-container>
+
+        <!--Workflow Rows-->
+        <ng-container cdkColumnDef="orderconfirm">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Order Confirmed</th>
+          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" class="text-center" name="4" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 3}" style="width: 10%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'">
+            {{row.orderNo | uppercase}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="profinprocess">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Proforma in process</th>
+          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 2}" style="width: 10%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="proftobeamended">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Proforma to be amended</th>
+          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 2}" style="width: 10%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="proftobecancelled">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Proforma to be cancelled</th>
+          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 2}" style="width: 10%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="creditcontrol">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Credit Control</th>
+          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 2}" style="width: 10%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="profprocessed">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Proforma processed</th>
+          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 2}" style="width: 10%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="duration">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">Duration</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 8%;">
+            {{row.time | daydiff}}
+          </td>
+        </ng-container>
+      </table>
+    </div>
+  </div>
+</div>
