@@ -62,16 +62,16 @@
       
         <!-- Workflow Rows -->
         <ng-container cdkColumnDef="inquiry">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Inquiry</th>
-          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row; index as i;" [ngClass]="{'bg-primary': row.status == 1}" style="width: 10%;" name="2" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 16%;">Inquiry</th>
+          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row; index as i;" [ngClass]="{'bg-primary': row.status == 1}" style="width: 16%;" name="2" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
         </ng-container>
         <ng-container cdkColumnDef="quotesent">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Quote Sent</th>
-          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 2}" style="width: 10%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 16%;">Quote Sent</th>
+          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 2}" style="width: 16%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
         </ng-container>
         <ng-container cdkColumnDef="orderconfirm">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Order Confirmed</th>
-          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" class="text-center" name="4" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 3}" style="width: 10%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 16%;">Order Confirmed</th>
+          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" class="text-center" name="4" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 3}" style="width: 16%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'">
             {{row.orderNo | uppercase}}
           </td>
         </ng-container>
@@ -97,8 +97,8 @@
         </ng-container>
       
         <ng-container cdkColumnDef="duration">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">Duration</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 8%;">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Duration</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 10%;">
             {{row.time | daydiff}}
           </td>
         </ng-container>

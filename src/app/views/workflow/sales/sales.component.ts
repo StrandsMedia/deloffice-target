@@ -27,8 +27,8 @@ export class SalesComponent implements OnInit, DoCheck {
     'inquiry',
     'quotesent',
     'orderconfirm',
-    'purchase',
-    'invoicing',
+    // 'purchase',
+    // 'invoicing',
     'duration'
   ];
   sortKey: any;
