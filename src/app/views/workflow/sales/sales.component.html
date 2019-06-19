@@ -4,7 +4,7 @@
       <!-- Header Section of Card -->
       <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
         <h3 class="m-0 text-white flex-fill align-items-center">
-          Sales Workflow
+          Marketing Workflow
           <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
         </h3>
         <div>
@@ -71,7 +71,7 @@
         </ng-container>
         <ng-container cdkColumnDef="orderconfirm">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 16%;">Order Confirmed</th>
-          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" class="text-center" name="4" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 3}" style="width: 16%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'">
+          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" class="text-center" name="4" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 3}" style="width: 16%;" [clickDisabled]="'update'">
             {{row.orderNo | uppercase}}
           </td>
         </ng-container>

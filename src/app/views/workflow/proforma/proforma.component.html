@@ -58,34 +58,36 @@
         <!--Workflow Rows-->
         <ng-container cdkColumnDef="orderconfirm">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Order Confirmed</th>
-          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" class="text-center" name="4" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 3}" style="width: 10%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'">
+          <td (click)="createDocument(row)" cdk-cell *cdkCellDef="let row" class="text-center" name="4" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 3 && !row.InvStatus}" style="width: 10%;" [clickDisabled]="'update'">
             {{row.orderNo | uppercase}}
           </td>
         </ng-container>
 
         <ng-container cdkColumnDef="profinprocess">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Proforma in process</th>
-          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 2}" style="width: 10%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
+          <td cdk-cell *cdkCellDef="let row" name="3" class="text-center" [ngClass]="{'text-white font-weight-bold bg-primary': row.status == 25 && row.InvStatus === 1 }" style="width: 10%;" [clickDisabled]="'update'">
+            {{row.invRef | uppercase}}
+          </td>
         </ng-container>
 
         <ng-container cdkColumnDef="proftobeamended">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Proforma to be amended</th>
-          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 2}" style="width: 10%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
+          <td cdk-cell *cdkCellDef="let row" name="3" class="text-center" [ngClass]="{'bg-primary': row.status == 25 && row.InvStatus === 2}" style="width: 10%;" [clickDisabled]="'update'"></td>
         </ng-container>
 
         <ng-container cdkColumnDef="proftobecancelled">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Proforma to be cancelled</th>
-          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 2}" style="width: 10%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
+          <td cdk-cell *cdkCellDef="let row" name="3" class="text-center" [ngClass]="{'bg-primary': row.status == 25 && row.InvStatus === 3}" style="width: 10%;" [clickDisabled]="'update'"></td>
         </ng-container>
 
         <ng-container cdkColumnDef="creditcontrol">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Credit Control</th>
-          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 2}" style="width: 10%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
+          <td cdk-cell *cdkCellDef="let row" name="3" class="text-center" [ngClass]="{'bg-primary': row.status == 25 && row.InvStatus === 4}" style="width: 10%;" [clickDisabled]="'update'"></td>
         </ng-container>
 
         <ng-container cdkColumnDef="profprocessed">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Proforma processed</th>
-          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 2}" style="width: 10%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
+          <td cdk-cell *cdkCellDef="let row" name="3" class="text-center" [ngClass]="{'bg-primary': row.status == 25 && row.InvStatus === 5}" style="width: 10%;" [clickDisabled]="'update'"></td>
         </ng-container>
 
         <ng-container cdkColumnDef="duration">
