@@ -70,7 +70,7 @@
           <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 2}" style="width: 10%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
         </ng-container>
         <ng-container cdkColumnDef="orderconfirm">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Order Confirm</th>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Order Confirmed</th>
           <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" class="text-center" name="4" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 3}" style="width: 10%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'">
             {{row.orderNo | uppercase}}
           </td>
