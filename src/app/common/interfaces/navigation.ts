@@ -73,31 +73,10 @@ export const Navigation: Nav = [
                 path: '/sessions',
             },
             {
-                name: 'Completion Report',
-                path: '/completion'
-            },
-            {
                 name: 'Delivery Archive',
                 path: '/delivery-archive',
                 icon: 'archive'
             },
-            {
-                name: 'Purchase Report',
-                path: '/purchase-report',
-            },
-            {
-                name: 'Credit Note Report',
-                path: '/credit-note-report',
-            },
-            {
-                name: 'Cancellation Report',
-                path: '/cancel-report',
-            },
-            {
-                name: 'User Report',
-                path: '/user-report',
-            },
-
         ]
     },
     {
@@ -162,4 +141,31 @@ export const Navigation: Nav = [
         path: '/tenders',
         icon: 'account_balance'
     },
+    {
+        name: 'Reports',
+        path: '/workflow',
+        icon: 'cached',
+        children: [
+            {
+                name: 'Purchase Report',
+                path: '/purchase-report',
+            },
+            {
+                name: 'Credit Note Report',
+                path: '/credit-note-report',
+            },
+            {
+                name: 'Cancellation Report',
+                path: '/cancel-report',
+            },
+            {
+                name: 'User Report',
+                path: '/user-report',
+            },
+            {
+                name: 'Completion Report',
+                path: '/completion'
+            },
+        ]
+    }
 ];

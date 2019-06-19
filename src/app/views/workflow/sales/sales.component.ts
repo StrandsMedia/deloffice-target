@@ -1,13 +1,13 @@
 import { Component, OnInit, ChangeDetectorRef, DoCheck } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
+import { AuthService } from '../../../common/services/auth.service';
+import { MaterialService } from '../../../common/services/material.service';
 import { WorkflowService } from '../../../common/services/workflow.service';
 import { QuestionControlService } from '../popup/utils/question-control.service';
 
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { AuthService } from 'src/app/common/services/auth.service';
-import { MaterialService } from 'src/app/common/services/material.service';
 
 @Component({
   selector: 'app-sales',
@@ -15,11 +15,11 @@ import { MaterialService } from 'src/app/common/services/material.service';
   styleUrls: ['./sales.component.scss']
 })
 export class SalesComponent implements OnInit, DoCheck {
-  dataSource$: Observable<any>;
+  public dataSource$: Observable<any>;
   asc = true;
   clicked = 0;
-  loading = false;
-  columns = [
+  public loading = false;
+  public columns = [
     'workflow_id',
     'date',
     'time',
@@ -35,14 +35,14 @@ export class SalesComponent implements OnInit, DoCheck {
 
   questions: any[];
 
-  searchForm = this.fb.group({
+  public searchForm: FormGroup = this.fb.group({
     searchInput: ['']
   });
 
-  hasClass = false;
+  public hasClass = false;
 
   formData: any;
-  user: any;
+  public user: any;
 
   constructor(
     private auth: AuthService,
