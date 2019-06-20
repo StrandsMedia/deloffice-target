@@ -53,6 +53,14 @@ const wfRoutes: Routes = [
     }
   },
   {
+    path: 'invoicing',
+    component: InvoicingComponent,
+    data: {
+      title: 'Invoicing Workflow',
+      id: 4
+    }
+  },
+  {
     path: 'delivery',
     component: DeliveryComponent,
     data: {
