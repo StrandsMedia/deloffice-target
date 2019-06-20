@@ -115,7 +115,7 @@ export class ProformaComponent implements OnInit {
       case 2:
         sortKey = $event.target.getAttribute('data-name');
         if (this.sortKey === sortKey) {
-          // this.get();
+          this.get();
           this.sortKey = '';
           this.clicked = 0;
         } else {
