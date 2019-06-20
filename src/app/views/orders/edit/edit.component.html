@@ -4,17 +4,17 @@
       <!-- Card Header -->
       <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
         <h3 class="m-0 text-white flex-fill align-items-center">
-          Edit Entry
+          Sales Order Entry
           <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
         </h3>
         <div>
           <button (click)="toggleView()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3">
             {{ view ? 'Master View' : 'Normal View' }}
           </button>
-          <button class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3">
+          <button (click)="viewPDF()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" [disabled]="arrLength <= 0">
             Preview Doc
           </button>
-          <button class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3">
+          <button class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1" [disabled]="arrLength <= 0">
             Save Doc
           </button>
           <!-- <button (click)="resetDoc()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1">
@@ -31,20 +31,21 @@
             <i class="material-icons" style="pointer-events:none" aria-hidden="true">close</i>
           </button> -->
         </div>
-        <button dialogTrigger="addnew" class="tgt-button-full tgt-btn-white h-100 px-3 py-2">
+        <button dialogTrigger="newprod" class="tgt-button-full tgt-btn-white h-100 px-3 py-2">
           Add Product
         </button>
       </div>
 
       <!-- Data Table -->
-      <table cdk-table [dataSource]="entries" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll" respHeight>
+      <table cdk-table [dataSource]="prodEnt$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll" respHeight>
         <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
         <tr
           cdk-row
           *cdkRowDef="let row; columns: columns"
           [ngClass]="{
             'table-danger': row.status === 'delete',
-            'table-success': row.status === 'new'
+            'table-success': row.status === 'new',
+            'table-danger': +row.qty >= +row.Qty_On_Hand
           }"
         ></tr>
         <tr cdk-footer-row *cdkFooterRowDef="columns"></tr>
@@ -111,7 +112,7 @@
             {{row.fExclPrice * row.qty | number:'1.2-2'}}
           </td>
           <td cdk-footer-cell *cdkFooterCellDef class="font-weight-bold text-right" style="width: 10%;" [hidden]="!view">
-            {{totalexcl | number:'1.2-2'}}
+            {{totalexcl() | number:'1.2-2'}}
           </td>
         </ng-container>
         <ng-container cdkColumnDef="vat">
@@ -120,7 +121,7 @@
             {{(row.fExclPrice * 0.15) * row.qty | number:'1.2-2'}}
           </td>
           <td cdk-footer-cell *cdkFooterCellDef style="width: 10%;" class="font-weight-bold text-right" [hidden]="!view">
-            {{vat | number:'1.2-2'}}
+            {{totalvat() | number:'1.2-2'}}
           </td>
         </ng-container>
         <ng-container cdkColumnDef="totalincl">
@@ -129,7 +130,7 @@
             {{(row.fExclPrice * 1.15) * row.qty | number:'1.2-2'}}
           </td>
           <td cdk-footer-cell *cdkFooterCellDef style="width: 10%;" class="font-weight-bold text-right" [hidden]="!view">
-            {{totalincl | number:'1.2-2'}}
+            {{totalincl() | number:'1.2-2'}}
           </td>
         </ng-container>
         <ng-container cdkColumnDef="edit">
@@ -174,7 +175,7 @@
             {{(row.fExclPrice - row.AveUCst) * row.qty | number:'1.2-2'}}
           </td>
           <td cdk-footer-cell *cdkFooterCellDef class="text-right font-weight-bold" style="width: 10%;" [hidden]="view">
-            {{totalprofit | number:'1.2-2'}}
+            {{totalprofit() | number:'1.2-2'}}
           </td>
         </ng-container>
         <ng-container cdkColumnDef="pprofit">
@@ -189,27 +190,116 @@
   </div>
 </div>
 
-<app-dialog dialogID="addnew" title="Add New Product" accept="Submit" cancel="Cancel" size="medium">
-  <form>
-    <form *ngIf="!addProdForm.value.p_id" [formGroup]="searchProdForm" class="d-flex position-relative">
-      <div class="form-group flex-fill mr-2">
-        <label for="prodsearch">Product Name</label>
-        <input (keyup)="searchProd()" formControlName="prodsearch" type="search" name="prodsearch" id="prodsearch" class="form-control w-100">
-        <ng-container *ngIf="prodResults | async as prodResults">
-          <div *ngIf="searchProdForm?.value?.prodsearch !== '' && prodResults.length > 0" id="search-ddown" class="my-2 position-absolute w-100">
-            <ul class="p-0 m-0">
-              <li *ngFor="let res of prodResults; index as i;">
-                  <a>{{res | json}}</a>
-              </li>
-            </ul>
-          </div>
-        </ng-container>
-      </div>
-    </form>
-    <div *ngIf="addProdForm.value.p_id" class="alert alert-info flex-fill">
-      <p class="mb-0">
-        <strong>Product Name: </strong> {{addProdForm?.value?.p_id}}
-      </p>
+<table id="maintable" class="d-none">
+  <thead>
+      <tr>
+          <th>Code</th>
+          <th>Description</th>
+          <th>Qty</th>
+          <th>Unit Price<br>MUR</th>
+          <th>Price Ex VAT<br>MUR</th>
+          <th>VAT Rate<br>%</th>
+          <th>VAT Amount<br>MUR</th>
+          <th>Total Amount<br>MUR</th>
+      </tr>
+  </thead>
+  <tbody>
+      <ng-container *ngFor="let prod of prodEnt$ | async; index as i; trackBy: trackByFn">
+          <tr>
+              <td>{{prod?.p_id}}</td>
+              <td>{{prod?.Description_1}}<br>{{prod?.Description_2}}<br>{{prod?.Description_3}}</td>
+              <td>{{prod?.qty}}</td>
+              <td>{{prod?.fExclPrice | number:'1.2-2'}}</td>
+              <td>{{prod?.fExclPrice * prod?.qty | number:'1.2-2'}}</td>
+              <td>{{prod?.TaxRate | number:'1.0-0'}} %</td>
+              <td>{{(prod?.TaxRate / 100) * (prod?.fExclPrice * prod?.qty) | number:'1.2-2'}}</td>
+              <td>{{(prod?.fExclPrice * prod?.qty) + ((prod?.TaxRate / 100) * (prod?.fExclPrice * prod?.qty)) | number:'1.2-2'}}</td>
+          </tr>
+      </ng-container>
+  </tbody>
+</table>
+
+<table id="totaltable" style="display: none;">
+  <tbody>
+      <tr class="last">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td class="bolder">
+              {{totalexcl() | number:'1.2-2'}}
+          </td>
+          <td></td>
+          <td class="bolder">
+              {{totalvat() | number:'1.2-2'}}
+          </td>
+          <td class="bolder">
+              {{totalincl() | number:'1.2-2'}}
+          </td>
+      </tr>
+  </tbody>
+</table>
+
+<table id="signtable" style="display: none;">
+  <thead>
+      <tr>
+          <th class="clear"></th>
+          <th>Prepared by</th>
+          <th>Delivered by</th>
+          <th>Received by</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Date</td>
+          <td></td>
+          <td></td>
+      </tr>
+      <tr>
+          <td>Name</td>
+          <td></td>
+          <td></td>
+      </tr>
+      <tr>
+          <td class="lilmore">Signature<br><br></td>
+          <td></td>
+          <td></td>
+      </tr>
+  </tbody>
+</table>
+
+<app-dialog
+  dialogID="newprod"
+  title="Add New Product"
+  size="medium"
+  accept="Add"
+  cancel="Cancel"
+  (onAccept)="addToTemp()"
+  (onCancel)="tempProd = null"
+  [disabled]="tempProd?.p_id"
+>
+  <form [formGroup]="searchProdForm">
+    <div class="form-group position-relative">
+      <label for="prodsearch">Search for Product</label>
+      <input (keydown)="searchProd()" formControlName="prodsearch" type="search" name="prodsearch" id="prodsearch" class="form-control w-100">
+    </div>
+    <div class="form-group">
+      <ng-container *ngFor="let prod of product$ | async">
+        <div
+          (click)="tempProd = prod"
+          class="alert-secondary alert px-4 py-3 pointer point"
+          [ngClass]="{
+            'alert-secondary': tempProd?.p_id != prod.p_id,
+            'alert-success': tempProd?.p_id == prod.p_id
+          }"
+        >
+          <p class="mb-0">
+            <strong>{{prod.p_id}}</strong> - {{prod.Description_1}} {{prod.Description_2}} {{prod.Description_3}}<br>
+            <strong>Qty: </strong>{{prod.Qty_On_Hand | number:'1.0-0'}}<br>
+            <strong>Cost Price: </strong>Rs. {{prod.AveUCst | number:'1.2-2'}}
+          </p>
+        </div>
+      </ng-container>
     </div>
   </form>
 </app-dialog>

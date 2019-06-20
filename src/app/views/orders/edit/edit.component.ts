@@ -9,6 +9,7 @@ import { MaterialService } from 'src/app/common/services/material.service';
 import { Observable, of, fromEvent, BehaviorSubject } from 'rxjs';
 import { tap, debounceTime, switchMap, map } from 'rxjs/operators';
 import { ProductService } from 'src/app/common/services/product.service';
+import { renderInvoice } from '../orders.utils';
 
 @Component({
   selector: 'app-edit',
@@ -17,15 +18,16 @@ import { ProductService } from 'src/app/common/services/product.service';
 })
 export class EditComponent implements OnInit {
   dataSource$: Observable<any>;
-  prodResults: Observable<any>;
+  product$: Observable<any>;
   loading = false;
   view = true;
-  totalexcl;
-  totalprofit;
-  vat;
-  totalincl;
 
   entries = [];
+  private _prodEntr$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
+  public prodEnt$: Observable<any> = this._prodEntr$.asObservable();
+  public tempProd: any;
+
+  private _tempData: any;
   stable = [];
 
   postData: any = {};
@@ -99,17 +101,17 @@ export class EditComponent implements OnInit {
       }),
       map((res: any) => res.records[0]),
       tap((res) => {
+        console.log(res);
+        this._tempData = res;
         this.searchProdForm.controls['cust_id'].setValue(res.cust_id);
         this.entries = res.entries;
-
-        this.stable = Array.from(this.entries);
 
         this.entries.forEach(entry => {
           entry.status = 'existing';
         });
 
-        console.log(this.searchProdForm.value);
-        this.calculateTotals(this.entries);
+        this._prodEntr$.next(this.entries);
+
         this.loading = !this.loading;
       })
     );
@@ -120,8 +122,8 @@ export class EditComponent implements OnInit {
   }
 
   searchProd() {
-    this.prodResults = this._prod.searchAdv(this.searchProdForm.value).pipe(
-      (res: any) => res.records
+    this.product$ = this._prod.searchAdv(this.searchProdForm.value).pipe(
+      map((res: any) => res.records)
     );
   }
 
@@ -131,18 +133,21 @@ export class EditComponent implements OnInit {
   }
 
   removeFromList(index) {
-    const entryStatus = this.entries[index]['status'];
+    const entries = this._prodEntr$.value;
+    const entryStatus = entries[index]['status'];
 
     switch (entryStatus) {
       case 'existing':
-        this.entries[index]['status'] = 'delete';
+        entries[index]['status'] = 'delete';
         break;
       case 'new':
-        this.entries.splice(index, 1);
+        entries.splice(index, 1);
         break;
       default:
-        this.entries[index]['status'] = 'existing';
+        entries[index]['status'] = 'existing';
     }
+
+    this._prodEntr$.next(entries);
   }
 
   toggleView() {
@@ -150,21 +155,78 @@ export class EditComponent implements OnInit {
   }
 
   updateVal(index, event) {
+    const entries = this._prodEntr$.value;
     let newval = event.target.value;
     const field = event.target.id;
     if (field === 'fExclPrice') {
       newval = parseFloat(newval).toFixed(2);
     }
-    this.entries[index][field] = newval;
+    entries[index][field] = newval;
 
-    this.calculateTotals(this.entries);
+    this._prodEntr$.next(entries);
   }
 
-  calculateTotals(data: any[]) {
-    this.totalexcl = data.reduce((acc,  cur) => acc + (+cur.fExclPrice * +cur.qty), 0);
-    this.vat = data.reduce((acc,  cur) => acc + ((+cur.fExclPrice * 0.15) * +cur.qty), 0);
-    this.totalincl = this.totalexcl + this.vat;
-    this.totalprofit = data.reduce((acc, cur) => acc + ((+cur.fExclPrice - +cur.AveUCst) * +cur.qty), 0);
+  addToTemp() {
+    const tempArray = this._prodEntr$.value;
+
+    if (!this._isInArr()) {
+      this.tempProd.qty = 1;
+      this.tempProd.fExclPrice2 = this.tempProd.fExclPrice;
+      this.tempProd.status = 'existing';
+      tempArray.unshift(this.tempProd);
+
+      this._prodEntr$.next(tempArray);
+    } else {
+      alert('Product already exists in document');
+    }
+
+    this.tempProd = null;
+  }
+
+  // Utils
+
+  private _isInArr(): boolean {
+    const tempArray: any[] = this._prodEntr$.value;
+    return tempArray.reduce((acc, curr) => {
+      if (curr.p_id == this.tempProd.p_id) {
+        return true;
+      } else {
+        return false;
+      }
+    }, false);
+  }
+
+  public totalexcl() {
+    const prodArr = this._prodEntr$.value;
+    return prodArr.reduce((acc, curr) => acc + (+curr.fExclPrice * +curr.qty), 0);
+  }
+
+  public totalvat() {
+    const prodArr = this._prodEntr$.value;
+    return prodArr.reduce((acc, curr) => acc + ((+curr.fExclPrice * 0.15) * +curr.qty), 0);
+  }
+
+  public totalincl() {
+    const prodArr = this._prodEntr$.value;
+    return prodArr.reduce((acc, curr) => acc + ((+curr.fExclPrice * (0.15 + 1)) * +curr.qty), 0);
+  }
+
+  public totalprofit() {
+    const prodArr = this._prodEntr$.value;
+    return prodArr.reduce((acc, curr) => acc + ((+curr.fExclPrice - +curr.AveUCst) * +curr.qty), 0);
+  }
+
+  public get arrLength(): number {
+    const prodArr = this._prodEntr$.value;
+    return prodArr.length;
+  }
+
+  // PDF Utils
+
+  viewPDF() {
+    console.log(this._tempData);
+    const pdf = renderInvoice(this._tempData);
+    pdf.output('dataurlnewwindow', { filename: 'newpdf.pdf' });
   }
 
 }

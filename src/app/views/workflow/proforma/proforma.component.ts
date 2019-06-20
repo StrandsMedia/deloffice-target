@@ -51,7 +51,7 @@ export class ProformaComponent implements OnInit {
     private qcs: QuestionControlService,
     private _router: Router,
     private cdRef: ChangeDetectorRef
-  ) { 
+  ) {
     this.auth.currentUser.subscribe(data => this.user = data);
    }
 
@@ -75,10 +75,12 @@ export class ProformaComponent implements OnInit {
     );
   }
 
+  filter() {}
+
   sortObs(key, direction) {
     let dir;
     direction ? dir = 'asc' : dir = 'desc';
-    return this.dataSource$ = this.wf.getWorkflow(1).pipe(
+    return this.dataSource$ = this.wf.getWorkflow(2).pipe(
       map((data: any) => data.records),
       map((records) => {
         return records.sort((a, b) => {
@@ -133,14 +135,14 @@ export class ProformaComponent implements OnInit {
       customerCode: row.customerCode,
       workflow_id: row.workflow_id,
       user: this.user.user_id
-    }
+    };
     console.log(object);
     this.order.createInvoice(object)
       .pipe(
         tap(id => {
-          this._router.navigate(['/order-entry/view/' + id])
+          this._router.navigate(['/order-entry/view/' + id]);
         })
-      ).subscribe()
+      ).subscribe();
   }
 
 }

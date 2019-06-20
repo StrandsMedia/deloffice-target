@@ -24,10 +24,10 @@ export const Navigation: Nav = [
         path: '/order-entry',
         icon: 'assignment',
         children: [
-            {
-                name: 'New Document',
-                path: '/new'
-            },
+            // {
+            //     name: 'New Document',
+            //     path: '/new'
+            // },
             {
                 name: 'View Documents',
                 path: '/view'
