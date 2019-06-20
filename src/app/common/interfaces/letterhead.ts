@@ -217,9 +217,14 @@ export const pageContent = function(data: any) {
     //
 };
 
-export function convertDate(inputFormat) {
+export function convertDate(inputFormat?) {
     function pad(s) { return (s < 10) ? '0' + s : s; }
-    const d = new Date(inputFormat);
+    let d: Date;
+    if (inputFormat) {
+      d = new Date(inputFormat);
+    } else {
+      d = new Date();
+    }
     return [pad(d.getDate()), pad(d.getMonth() + 1), d.getFullYear()].join('/');
 }
 
