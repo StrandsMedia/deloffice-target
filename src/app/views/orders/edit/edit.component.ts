@@ -145,6 +145,7 @@ export class EditComponent implements OnInit {
         break;
       default:
         entries[index]['status'] = 'existing';
+        break;
     }
 
     this._prodEntr$.next(entries);
@@ -172,7 +173,7 @@ export class EditComponent implements OnInit {
     if (!this._isInArr()) {
       this.tempProd.qty = 1;
       this.tempProd.fExclPrice2 = this.tempProd.fExclPrice;
-      this.tempProd.status = 'existing';
+      this.tempProd.status = 'new';
       tempArray.unshift(this.tempProd);
 
       this._prodEntr$.next(tempArray);
@@ -227,6 +228,26 @@ export class EditComponent implements OnInit {
     console.log(this._tempData);
     const pdf = renderInvoice(this._tempData);
     pdf.output('dataurlnewwindow', { filename: 'newpdf.pdf' });
+  }
+
+  savePDF() {
+    const prodArr = this._prodEntr$.value;
+    this._tempData.entries = prodArr;
+
+    console.log(this._tempData);
+
+    this._order.updateInvoice(this._tempData)
+    .subscribe(
+      (data) => {
+        this._mdc.materialSnackBar(data);
+      },
+      (err) => {
+        this._mdc.materialSnackBar(err.error);
+      },
+      () => {
+        this.get();
+      }
+    )
   }
 
 }

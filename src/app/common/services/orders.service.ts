@@ -26,4 +26,8 @@ export class OrdersService {
   getInvoice(id) {
     return this.http.get(this.url + 'orders/read_one.php?id=' + id);
   }
+
+  updateInvoice(data): Observable<any> {
+    return this.http.post<any>(this.url + 'orders/update_proforma.php', data);
+  }
 }

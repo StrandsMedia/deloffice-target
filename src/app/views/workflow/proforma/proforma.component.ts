@@ -130,19 +130,21 @@ export class ProformaComponent implements OnInit {
   }
 
   public createDocument(row) {
-    const object = {
-      company_name: row.company_name,
-      customerCode: row.customerCode,
-      workflow_id: row.workflow_id,
-      user: this.user.user_id
-    };
-    console.log(object);
-    this.order.createInvoice(object)
-      .pipe(
-        tap(id => {
-          this._router.navigate(['/order-entry/view/' + id]);
-        })
-      ).subscribe();
+    if (!row.InvStatus) {
+      const object = {
+        company_name: row.company_name,
+        customerCode: row.customerCode,
+        workflow_id: row.workflow_id,
+        user: this.user.user_id
+      };
+      console.log(object);
+      this.order.createInvoice(object)
+        .pipe(
+          tap(id => {
+            this._router.navigate(['/order-entry/view/' + id]);
+          })
+        ).subscribe();
+    }
   }
 
 }
