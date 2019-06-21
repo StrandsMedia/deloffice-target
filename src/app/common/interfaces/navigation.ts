@@ -58,11 +58,14 @@ export const Navigation: Nav = [
                 name: 'Invoicing Workflow',
                 path: '/invoicing',
                 icon: 'shopping_cart'
-            },
-            // {
-            //     name: 'Goods Preparation Workflow',
-            //     path: '/goods-preparation',
-            // },
+            }  
+        ]
+    },
+    {
+        name: 'Delivery',
+        path: '/workflow',
+        icon: 'local_shipping',
+        children: [
             {
                 name: 'Delivery Workflow',
                 path: '/delivery',
@@ -76,7 +79,7 @@ export const Navigation: Nav = [
                 name: 'Delivery Archive',
                 path: '/delivery-archive',
                 icon: 'archive'
-            },
+            }
         ]
     },
     {
