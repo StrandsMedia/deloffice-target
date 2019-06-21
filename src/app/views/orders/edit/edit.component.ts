@@ -204,12 +204,12 @@ export class EditComponent implements OnInit {
 
   public totalvat() {
     const prodArr = this._prodEntr$.value;
-    return prodArr.reduce((acc, curr) => acc + ((+curr.fExclPrice * 0.15) * +curr.qty), 0);
+    return prodArr.reduce((acc, curr) => acc + ((+curr.fExclPrice * +curr.TaxRate) * +curr.qty), 0);
   }
 
   public totalincl() {
     const prodArr = this._prodEntr$.value;
-    return prodArr.reduce((acc, curr) => acc + ((+curr.fExclPrice * (0.15 + 1)) * +curr.qty), 0);
+    return prodArr.reduce((acc, curr) => acc + ((+curr.fExclPrice * (+curr.TaxRate + 1)) * +curr.qty), 0);
   }
 
   public totalprofit() {

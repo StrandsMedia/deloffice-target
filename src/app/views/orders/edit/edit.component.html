@@ -118,7 +118,7 @@
         <ng-container cdkColumnDef="vat">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;" [hidden]="!view">VAT<br>Rs.</th>
           <td cdk-cell *cdkCellDef="let row" class="text-right table-active" style="width: 10%;" [hidden]="!view">
-            {{(row.fExclPrice * 0.15) * row.qty | number:'1.2-2'}}
+            {{(row.fExclPrice * (+row.TaxRate)) * row.qty | number:'1.2-2'}}
           </td>
           <td cdk-footer-cell *cdkFooterCellDef style="width: 10%;" class="font-weight-bold text-right" [hidden]="!view">
             {{totalvat() | number:'1.2-2'}}
@@ -127,7 +127,7 @@
         <ng-container cdkColumnDef="totalincl">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;" [hidden]="!view">Total Incl<br>Rs.</th>
           <td cdk-cell *cdkCellDef="let row" class="text-right table-active" style="width: 10%;" [hidden]="!view">
-            {{(row.fExclPrice * 1.15) * row.qty | number:'1.2-2'}}
+            {{(row.fExclPrice * (+row.TaxRate + 1.00)) * row.qty | number:'1.2-2'}}
           </td>
           <td cdk-footer-cell *cdkFooterCellDef style="width: 10%;" class="font-weight-bold text-right" [hidden]="!view">
             {{totalincl() | number:'1.2-2'}}
