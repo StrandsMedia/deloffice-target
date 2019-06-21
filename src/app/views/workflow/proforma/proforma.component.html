@@ -58,7 +58,7 @@
         <!--Workflow Rows-->
         <ng-container cdkColumnDef="orderconfirm">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Order Confirmed</th>
-          <td (click)="createDocument(row)" [style.pointer-events]="!row.InvStatus ? 'none' : null" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 3 && !row.InvStatus}" style="width: 10%;" [clickDisabled]="'update'">
+          <td (click)="tempRow = row" [style.pointer-events]="!row.InvStatus ? 'none' : null" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 3 && !row.InvStatus}" style="width: 10%;" [clickDisabled]="'update'" dialogTrigger="createprof">
             {{row.orderNo | uppercase}}
           </td>
         </ng-container>
@@ -100,3 +100,13 @@
     </div>
   </div>
 </div>
+
+<app-dialog 
+  dialogID="createprof"
+  title="Create Proforma Invoice?"
+  accept="Confirm"
+  cancel="Cancel"
+  (onAccept)="createDocument(tempRow)"
+>
+
+</app-dialog>

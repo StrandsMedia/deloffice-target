@@ -42,6 +42,8 @@ export class ProformaComponent implements OnInit {
     searchInput: ['']
   });
 
+  public tempRow: any;
+
   constructor(
     private auth: AuthService,
     private fb: FormBuilder,
