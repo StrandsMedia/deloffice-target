@@ -70,36 +70,36 @@
       
         <!-- Workflow Rows -->
         <ng-container cdkColumnDef="invoiced">
-          <th (click)="sort($event)" cdk-header-cell *cdkHeaderCellDef data-name="invoiceNo" style="width: 10%;">
+          <th (click)="sort($event)" cdk-header-cell *cdkHeaderCellDef data-name="invoiceNo" style="width: 13%;">
             Invoiced
             <i *ngIf="sortKey === 'invoiceNo'" class="material-icons">{{clicked === 1 ? 'arrow_drop_up': 'arrow_drop_down'}}</i>
           </th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 6}" style="width: 10%;" (click)="editWF($event, row)" name="5" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'">
+          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 6}" style="width: 13%;" (click)="editWF($event, row)" name="5" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'">
             {{row.invoiceNo | uppercase}}
           </td>
         </ng-container>
         <ng-container cdkColumnDef="goodsready">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Goods Ready</th>
-          <td cdk-cell *cdkCellDef="let row" [ngClass]="{'bg-primary': row.status == 7}" style="width: 10%;" (click)="editWF($event, row)" [dialogTrigger]="hasClass ? 'wfpopup' : null" name="8" [clickDisabled]="'update'"></td>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 13%;">Goods Ready</th>
+          <td cdk-cell *cdkCellDef="let row" [ngClass]="{'bg-primary': row.status == 7}" style="width: 13%;" (click)="editWF($event, row)" [dialogTrigger]="hasClass ? 'wfpopup' : null" name="8" [clickDisabled]="'update'"></td>
         </ng-container>
         <ng-container cdkColumnDef="goodsalloc">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Goods Allocated</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 9}" style="width: 10%;" (click)="editWF($event, row)" [dialogTrigger]="hasClass ? 'wfpopup' : null" name="9" [clickDisabled]="'update'">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 13%;">Goods Allocated</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 9}" style="width: 13%;" (click)="editWF($event, row)" [dialogTrigger]="hasClass ? 'wfpopup' : null" name="9" [clickDisabled]="'update'">
             {{row.status == 9 ? row.vehicleNo : null | uppercase}}
           </td>
         </ng-container>
         <ng-container cdkColumnDef="deliveryinprogress">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Delivery In Progress</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 8}" style="width: 10%;" (click)="editWF($event, row)" [dialogTrigger]="hasClass ? 'wfpopup' : null" name="9" [clickDisabled]="'update'">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 13%;">Delivery In Progress</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 8}" style="width: 13%;" (click)="editWF($event, row)" [dialogTrigger]="hasClass ? 'wfpopup' : null" name="9" [clickDisabled]="'update'">
             {{row.status == 8 ? row.vehicleNo : null | uppercase}}
           </td>
         </ng-container>
       
         <ng-container cdkColumnDef="duration">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">
             Duration
           </th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 7%;">
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 8%;">
             {{row.time | daydiff}}
           </td>
         </ng-container>
