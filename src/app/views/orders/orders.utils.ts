@@ -176,14 +176,15 @@ export function renderInvoice(inv): jsPDF {
                     bottom: 85,
                     right: 10,
                 },
-                // didParseCell: function(cell, data) {
-                //     const someEl = cell.raw;
-                //     if (cell.classList.contains('bolder')) {
-                //         cell.styles.textColor = [255, 255, 0];
-                //     } else {
-                //         cell.styles.textColor = [255, 0, 0];
-                //     }
-                // },
+                didParseCell: function(data) {
+                    const cell = data.cell;
+                    const someEl = cell.raw;
+                    if (cell.classList.contains('bolder')) {
+                        cell.styles.textColor = [255, 255, 0];
+                    } else {
+                        cell.styles.textColor = [255, 0, 0];
+                    }
+                },
                 // pageBreak: 'auto',
                 didDrawPage: function(data) {
                     pdf.line(355, 620, 400, 620);
@@ -201,12 +202,13 @@ export function renderInvoice(inv): jsPDF {
             });
             (pdf as any).autoTable({
                 html: '#signtable',
-                // didParseCell: function(cell, data) {
-                //     const tdElement = cell.raw;
-                //     if (tdElement.classList.contains('clear')) {
-                //         cell.styles.lineWidth = 0;
-                //     }
-                // },
+                didParseCell: function(data) {
+                    const cell = data.cell;
+                    const tdElement = cell.raw;
+                    if (tdElement.classList.contains('clear')) {
+                        cell.styles.lineWidth = 0;
+                    }
+                },
                 theme: 'grid',
                 styles: {
                     fontSize: 7.6,

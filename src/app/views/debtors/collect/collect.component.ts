@@ -5,7 +5,7 @@ import { AuthService } from 'src/app/common/services/auth.service';
 import { CustomerService } from 'src/app/common/services/customer.service';
 import { DebtorsService } from 'src/app/common/services/debtors.service';
 import { MaterialService } from '../../../common/services/material.service';
-import { chunkArray, image, dada } from 'src/app/common/interfaces/letterhead';
+import { chunkArray, image, dada, tableToJSPDFData } from 'src/app/common/interfaces/letterhead';
 
 import * as jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -243,18 +243,18 @@ export class CollectComponent implements OnInit, AfterViewInit {
   }
 
   printSummary() {
-    const firsttable: HTMLTableElement = <HTMLTableElement>document.getElementById('firsttable');
     const pdf = new jsPDF('l', 'pt', 'a4');
-    const firstres = (pdf as any).autoTableHtmlToJson(firsttable, true);
-    const result = chunkArray(firstres.rows, 16);
+    const firstres = tableToJSPDFData('#firsttable');
+    const result = chunkArray(firstres.body, 16);
     const title = 'DEBT COLLECTION - PRINT SUMMARY';
 
     for (let i = 0; i < result.length; i++) {
-      console.log(result[i]);
       if (i > 0) {
         pdf.addPage();
       }
-      (pdf as any).autoTable(firstres.columns, result[i], {
+      (pdf as any).autoTable({
+        head: firstres.head,
+        body: result[i],
         theme: 'grid',
         styles: {
           fontSize: 9.2,
@@ -266,14 +266,14 @@ export class CollectComponent implements OnInit, AfterViewInit {
           halign: 'left'
         },
         columnStyles: {
-          0: { columnWidth: 150 },
-          1: { columnWidth: 260 },
-          2: { columnWidth: 100 },
-          3: { columnWidth: 100 },
-          4: { columnWidth: 100 },
-          5: { columnWidth: 100 }
+          0: { cellWidth: 150 },
+          1: { cellWidth: 260 },
+          2: { cellWidth: 100 },
+          3: { cellWidth: 100 },
+          4: { cellWidth: 100 },
+          5: { cellWidth: 100 }
         },
-        headerStyles: {
+        headStyles: {
           fillColor: false,
           textColor: 0
         },
@@ -285,8 +285,8 @@ export class CollectComponent implements OnInit, AfterViewInit {
           bottom: 25,
           right: 15
         },
-        pageBreak: 'always',
-        addPageContent: function(data) {
+        // pageBreak: 'always',
+        didDrawPage: function(data) {
           pdf.addImage(image('DEL'), 'JPEG', 16, 18, 160, 33);
           pdf.text(title, 15, 67);
         }

@@ -3,10 +3,11 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 
 import { WorkflowService } from 'src/app/common/services/workflow.service';
-import { chunkArray, image, breakLine, breakLine2 } from 'src/app/common/interfaces/letterhead';
+import { chunkArray, image, breakLine, breakLine2, tableToJSPDFData } from 'src/app/common/interfaces/letterhead';
 
 import * as jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { Cell, CellHookData } from 'jspdf-autotable';
 
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -115,11 +116,13 @@ export class JobComponent implements OnInit {
 
   renderPDF(data) {
     const pdf = new jsPDF('l', 'pt', 'a4');
-    const maintable: HTMLTableElement = <HTMLTableElement>document.getElementById('maintable');
-    const papersum: HTMLTableElement = <HTMLTableElement>document.getElementById('papersum');
-    const mainres = (pdf as any).autoTableHtmlToJson(maintable, true);
-    const paperres = (pdf as any).autoTableHtmlToJson(papersum, true);
-    const result = chunkArray(mainres.rows, 8);
+    // const maintable: HTMLTableElement = <HTMLTableElement>document.getElementById('maintable');
+    // const papersum: HTMLTableElement = <HTMLTableElement>document.getElementById('papersum');
+    // const mainres = (pdf as any).autoTableHtmlToJson(maintable, true);
+    // const paperres = (pdf as any).autoTableHtmlToJson(papersum, true);
+
+    const mainres = tableToJSPDFData('#maintable');
+    const result = chunkArray(mainres.body, 8);
 
     let driver;
     let vehicle;
@@ -175,8 +178,9 @@ export class JobComponent implements OnInit {
       if (i > 0) {
         pdf.addPage();
       }
-      (pdf as any).autoTable(mainres.columns, result[i],
-        {
+      (pdf as any).autoTable({
+          head: mainres.head,
+          body: result[i],
           theme: 'grid',
           styles: {
             fontSize: 9.2,
@@ -188,13 +192,13 @@ export class JobComponent implements OnInit {
             halign: 'left'
           },
           columnStyles: {
-            0: { columnWidth: 25 },
-            1: { columnWidth: 150 },
-            2: { columnWidth: 75 },
-            3: { columnWidth: 100 },
-            4: { columnWidth: 260 }
+            0: { cellWidth: 25 },
+            1: { cellWidth: 150 },
+            2: { cellWidth: 75 },
+            3: { cellWidth: 100 },
+            4: { cellWidth: 260 }
           },
-          headerStyles: {
+          headStyles: {
             fillColor: false,
             textColor: 0,
           },
@@ -207,7 +211,7 @@ export class JobComponent implements OnInit {
             right: 15,
           },
           pageBreak: 'always',
-          addPageContent: function(dt) {
+          didDrawPage: function(dt) {
             pdf.addImage(img, 'JPEG', 16, 18, 160, 33);
             pdf.text(title, 15, 65);
             pdf.setFontSize(11.4);
@@ -228,15 +232,10 @@ export class JobComponent implements OnInit {
     }
     if (check) {
       pdf.addPage();
-      (pdf as any).autoTable(paperres.columns, paperres.rows,
-        {
-          drawCell: function(cell, dt) {
-            const rows = dt.table.rows;
-            if (dt.row.index === rows.length - 1) {
-              pdf.setFontType('bold');
-            }
-          },
-          createdCell: function(cell, dt) {
+      (pdf as any).autoTable({
+          html: '#papersum',
+          didParseCell: function(data: CellHookData) {
+            const cell = data.cell;
             const tdElement = cell.raw;
             if (tdElement.classList.contains('bolder')) {
               cell.styles.fontStyle = 'bold';
@@ -247,11 +246,16 @@ export class JobComponent implements OnInit {
             if (tdElement.classList.contains('text-right')) {
               cell.styles.halign = 'right';
             }
+
+            const rows = data.table.body;
+            if (data.row.index === rows.length - 1) {
+              pdf.setFontType('bold');
+            }
           },
           theme: 'grid',
           styles: {
             fontSize: 9.2,
-            columnWidth: 'auto',
+            cellWidth: 'auto',
             overflow: 'linebreak',
             lineColor: 100,
             lineWidth: 0.2,
@@ -259,9 +263,9 @@ export class JobComponent implements OnInit {
             valign: 'middle'
           },
           columnStyles: {
-            1: { columnWidth: 75 },
+            1: { cellWidth: 75 },
           },
-          headerStyles: {
+          headStyles: {
             fillColor: false,
             textColor: 0,
           },
@@ -273,8 +277,7 @@ export class JobComponent implements OnInit {
             bottom: 85,
             right: 15,
           },
-          pageBreak: 'auto',
-          addPageContent: function(dt) {
+          didDrawPage: function(dt) {
             pdf.addImage(img, 'JPEG', 16, 18, 160, 33);
             pdf.setFontSize(11.4);
             pdf.text('PAPER SUMMARY', 15, 64);

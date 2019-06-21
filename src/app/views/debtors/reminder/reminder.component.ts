@@ -10,7 +10,7 @@ import { MaterialService } from '../../../common/services/material.service';
 import { Message, signature } from './reminder.messages';
 
 import {
-  chunkArray, image, statementLH, convertDate, convertDate2, convertDateAlt, tableToJSON, dada, statementFT
+  chunkArray, image, statementLH, convertDate, convertDate2, convertDateAlt, tableToJSON, dada, statementFT, tableToJSPDFData
 } from '../../../common/interfaces/letterhead';
 
 import * as jsPDF from 'jspdf';
@@ -424,13 +424,10 @@ export class ReminderComponent implements OnInit, AfterViewInit, DoCheck {
 
   renderPDF() {
     const pdf: jsPDF = new jsPDF('p', 'pt', 'a4');
-    const statementtable = <HTMLTableElement>document.getElementById('statementtable');
-    const baltable = <HTMLTableElement>document.getElementById('baltable');
 
-    const stateres = (pdf as any).autoTableHtmlToJson(statementtable, true);
-    const balres = (pdf as any).autoTableHtmlToJson(baltable, true);
+    const stateres = tableToJSPDFData('#statementtable');
 
-    const result = chunkArray(stateres.rows, 20);
+    const result = chunkArray(stateres.body, 20);
     const width = pdf.internal.pageSize.getWidth() - 15;
 
     const totalPagesExp = '{total_pages_count_string}';
@@ -444,7 +441,9 @@ export class ReminderComponent implements OnInit, AfterViewInit, DoCheck {
       if (i > 0) {
         pdf.addPage();
       }
-      (pdf as any).autoTable(stateres.columns, result[i], {
+      (pdf as any).autoTable({
+        head: stateres.head,
+        body: result[i],
         theme: 'grid',
         styles: {
           fontSize: 7.5,
@@ -458,38 +457,38 @@ export class ReminderComponent implements OnInit, AfterViewInit, DoCheck {
         columnStyles: {
           0: {
             halign: 'left',
-            columnWidth: 55
+            cellWidth: 55
           },
           1: {
             halign: 'left',
-            columnWidth: 45
+            cellWidth: 45
           },
           2: {
             halign: 'left',
-            columnWidth: 95
+            cellWidth: 95
           },
           3: {
             halign: 'left',
-            columnWidth: 175
+            cellWidth: 175
           },
           4: {
             halign: 'center',
-            columnWidth: 48
+            cellWidth: 48
           },
           5: {
             halign: 'center',
-            columnWidth: 48
+            cellWidth: 48
           },
           6: {
             halign: 'center',
-            columnWidth: 48
+            cellWidth: 48
           },
           7: {
             halign: 'center',
-            columnWidth: 48
+            cellWidth: 48
           }
         },
-        headerStyles: {
+        headStyles: {
           fillColor: false,
           textColor: [23, 73, 144],
           fontStyle: 'normal',
@@ -506,7 +505,7 @@ export class ReminderComponent implements OnInit, AfterViewInit, DoCheck {
           right: 10,
         },
         pageBreak: 'always',
-        addPageContent: function(data) {
+        didDrawPage: function(data) {
           pdf.addImage(img, 'JPEG', 210, 22, 215, 44);
           pdf.setFontSize(8);
           pdf.setFontType('normal');
@@ -538,7 +537,8 @@ export class ReminderComponent implements OnInit, AfterViewInit, DoCheck {
           pdf.line(15, 255, width, 255);
         }
       });
-      (pdf as any).autoTable(balres.columns, balres.rows, {
+      (pdf as any).autoTable({
+        html: '#baltable',
         theme: 'grid',
         styles: {
           fontSize: 8,
@@ -572,7 +572,7 @@ export class ReminderComponent implements OnInit, AfterViewInit, DoCheck {
             halign: 'center'
           },
         },
-        headerStyles: {
+        headStyles: {
           fillColor: false,
           textColor: [0, 0, 0],
           fontStyle: 'bold',
@@ -589,7 +589,7 @@ export class ReminderComponent implements OnInit, AfterViewInit, DoCheck {
           right: 10,
         },
         pageBreak: 'always',
-        addPageContent: function(data) {
+        didDrawPage: function(data) {
           pdf.setFontSize(7.8);
           pdf.setFontType('bold');
           pdf.text('Terms And Conditions', 15, 745);
@@ -609,7 +609,7 @@ export class ReminderComponent implements OnInit, AfterViewInit, DoCheck {
       pdf.putTotalPages(totalPagesExp);
     }
 
-    if (statementtable && baltable) {
+    if (stateres) {
       return pdf;
     }
   }

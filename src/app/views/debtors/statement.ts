@@ -1,17 +1,14 @@
-import { chunkArray, image, statementLH, convertDate2, convertDateAlt, statementFT } from 'src/app/common/interfaces/letterhead';
+import { chunkArray, image, statementLH, convertDate2, convertDateAlt, statementFT, tableToJSPDFData } from 'src/app/common/interfaces/letterhead';
 
 import * as jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 export function renderPDF(custinfo, total?) {
     const pdf = new jsPDF('p', 'pt', 'a4');
-    const statementtable = <HTMLTableElement>document.getElementById('statementtable');
-    const baltable = <HTMLTableElement>document.getElementById('baltable');
 
-    const stateres = (pdf as any).autoTableHtmlToJson(statementtable, true);
-    const balres = (pdf as any).autoTableHtmlToJson(baltable, true);
+    const stateres = tableToJSPDFData('#statementtable');
 
-    const result = chunkArray(stateres.rows, 20);
+    const result = chunkArray(stateres.body, 20);
     const width = pdf.internal.pageSize.getWidth() - 15;
 
     const totalPagesExp = '{total_pages_count_string}';
@@ -24,7 +21,9 @@ export function renderPDF(custinfo, total?) {
       if (i > 0) {
         pdf.addPage();
       }
-      (pdf as any).autoTable(stateres.columns, result[i], {
+      (pdf as any).autoTable({
+        head: stateres.head,
+        body: result[i],
         theme: 'grid',
         styles: {
           fontSize: 7.5,
@@ -38,38 +37,38 @@ export function renderPDF(custinfo, total?) {
         columnStyles: {
           0: {
             halign: 'left',
-            columnWidth: 55
+            cellWidth: 55
           },
           1: {
             halign: 'left',
-            columnWidth: 45
+            cellWidth: 45
           },
           2: {
             halign: 'left',
-            columnWidth: 95
+            cellWidth: 95
           },
           3: {
             halign: 'left',
-            columnWidth: 175
+            cellWidth: 175
           },
           4: {
             halign: 'center',
-            columnWidth: 48
+            cellWidth: 48
           },
           5: {
             halign: 'center',
-            columnWidth: 48
+            cellWidth: 48
           },
           6: {
             halign: 'center',
-            columnWidth: 48
+            cellWidth: 48
           },
           7: {
             halign: 'center',
-            columnWidth: 48
+            cellWidth: 48
           }
         },
-        headerStyles: {
+        headStyles: {
           fillColor: false,
           textColor: [23, 73, 144],
           fontStyle: 'normal',
@@ -85,8 +84,8 @@ export function renderPDF(custinfo, total?) {
           bottom: 85,
           right: 10,
         },
-        pageBreak: 'always',
-        addPageContent: function(data) {
+        // pageBreak: 'always',
+        didDrawPage: function(data) {
           pdf.addImage(img, 'JPEG', 210, 22, 215, 44);
           pdf.setFontSize(8);
           pdf.setFontType('normal');
@@ -118,7 +117,8 @@ export function renderPDF(custinfo, total?) {
           pdf.line(15, 255, width, 255);
         }
       });
-      (pdf as any).autoTable(balres.columns, balres.rows, {
+      (pdf as any).autoTable({
+        html: '#baltable',
         theme: 'grid',
         styles: {
           fontSize: 8,
@@ -152,7 +152,7 @@ export function renderPDF(custinfo, total?) {
             halign: 'center'
           },
         },
-        headerStyles: {
+        headStyles: {
           fillColor: false,
           textColor: [0, 0, 0],
           fontStyle: 'bold',
@@ -162,14 +162,15 @@ export function renderPDF(custinfo, total?) {
         },
         tableWidth: 'auto',
         tableLineColor: 0,
+        startY: 690,
         margin: {
           top: 690,
           left: 10,
           bottom: 85,
           right: 10,
         },
-        pageBreak: 'always',
-        addPageContent: function(data) {
+        // pageBreak: 'always',
+        didDrawPage: function(data) {
           pdf.setFontSize(7.8);
           pdf.setFontType('bold');
           pdf.text('Terms And Conditions', 15, 745);
@@ -189,7 +190,7 @@ export function renderPDF(custinfo, total?) {
       pdf.putTotalPages(totalPagesExp);
     }
 
-    if (statementtable && baltable) {
+    if (stateres) {
       return pdf;
     }
 }
