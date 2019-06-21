@@ -1,0 +1,84 @@
+<div class="row">
+  <div class="col-12">
+    <div class="mdc-card mb-3" style="overflow: hidden;">
+      <!--Card Header-->
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+        <div class="text-white flex-fill align-items-center">
+          <h3 class="mb-1">Location List</h3>
+        </div>
+        <div class="align-items-center">
+          <button class="float-right tgt-button-full tgt-btn-white px-3 py-2 mr-3" dialogTrigger="newLocation">
+            New Location
+          </button>
+        </div>
+      </div>
+      <!--Data Table-->
+      <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+        <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+        <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+
+        <ng-container cdkColumnDef="locationId">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Location ID</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 20%;">
+            {{row.locationId}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="locationRef">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Location Reference</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 20%;">
+            {{row.locationRef}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="locationName">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Location Name</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 20%;">
+            {{row.locationName}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="createdAt">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Created on</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 20%;">
+            {{row.createdAt | date:'MMM d, y, H:mm:ss'}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="updatedAt">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Last updated at</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 20%;">
+            {{row.updatedAt | date:'MMM d, y, H:mm:ss'}}
+          </td>
+        </ng-container>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!--newLocation-->
+<app-dialog dialogID="newLocation" title="Add New Location To List" accept="Submit" cancel="Cancel" (onAccept)="addNew()">
+  <form [formGroup]="addForm">
+    <div class="row">
+      <div class="col-12">
+        <p>Fill in the form below and click on Submit to create a new location and add to list.</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-6">
+        <div class="form-group">
+          <label for="locationRef">Location Reference</label>
+          <input formControlName="locationRef" type="text" class="form-control" name="locationRef" id="locationRef">
+          <small id="brandHelp" class="form-text text-muted">The location reference</small>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="form-group">
+          <label for="locationName">Location Name</label>
+          <input formControlName="locationName" type="text" class="form-control" name="locationName" id="locationName">
+          <small id="refHelp" class="form-text text-muted">The location's name</small>
+        </div>
+      </div>
+    </div>
+  </form>
+</app-dialog>

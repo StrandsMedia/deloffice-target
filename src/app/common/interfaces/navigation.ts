@@ -79,6 +79,14 @@ export const Navigation: Nav = [
                 name: 'Delivery Archive',
                 path: '/delivery-archive',
                 icon: 'archive'
+            },
+            {
+                name: 'Routes',
+                path: '/routes'
+            },
+            {
+                name: 'Locations',
+                path: '/locations'
             }
         ]
     },

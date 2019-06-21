@@ -26,8 +26,24 @@ import { CompletionComponent } from '../../../views/workflow/completion/completi
 import { ProformaComponent } from '../../../views/workflow/proforma/proforma.component';
 import { GoodsPrepComponent } from '../../../views/workflow/goods-prep/goods-prep.component';
 import { InvoicingComponent } from '../../../views/workflow/invoicing/invoicing.component';
+import { RoutesComponent } from '../../../views/routes/routes.component';
+import { LocationsComponent } from '../../../views/locations/locations.component';
 
 const wfRoutes: Routes = [
+  {
+    path: 'routes',
+    component: RoutesComponent,
+    data: {
+      title: 'Routes'
+    }
+  },
+  {
+    path: 'locations',
+    component: LocationsComponent,
+    data: {
+      title: 'Locations'
+    }
+  },
   {
     path: 'marketing',
     component: SalesComponent,
@@ -162,6 +178,8 @@ const wfRoutes: Routes = [
     ProformaComponent,
     GoodsPrepComponent,
     InvoicingComponent,
+    RoutesComponent,
+    LocationsComponent
   ],
   imports: [
     CommonModule,

@@ -2,38 +2,38 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { FormBuilder } from '@angular/forms';
 
-import { AuthService } from 'src/app/common/services/auth.service';
+import { RoutesService } from 'src/app/common/services/routes.service';
 
 @Component({
-  selector: 'app-companies',
-  templateUrl: './companies.component.html',
-  styleUrls: ['./companies.component.scss']
+  selector: 'app-routes',
+  templateUrl: './routes.component.html',
+  styleUrls: ['./routes.component.scss']
 })
-export class CompaniesComponent implements OnInit {
+export class RoutesComponent implements OnInit {
   loading: boolean;
   dataSource$: Observable<any>;
-  company: Observable<any>;
+  route: Observable<any>;
 
   columns = [
-    'companyId',
-    'companyName',
-    'companyReference',
+    'routeId',
+    'routeRef',
+    'routeName',
     'createdAt',
     'updatedAt'
   ];
 
   public searchForm = this.fb.group({
-    company: ['']
+    route: ['']
   });
 
   public addForm = this.fb.group({
-    companyName: null,
-    companyReference: null
+    routeRef: null,
+    routeName: null
   });
 
   constructor(
     private fb: FormBuilder,
-    private auth: AuthService
+    private routes: RoutesService
   ) { }
 
   ngOnInit() {
@@ -45,11 +45,11 @@ export class CompaniesComponent implements OnInit {
   }
 
   get() {
-    return this.dataSource$ = this.auth.getCompany();
+    return this.dataSource$ = this.routes.getRoute();
   }
 
   addNew() {
-    this.auth.createCompany(this.addForm.value).subscribe(
+    this.routes.createRoute(this.addForm.value).subscribe(
       (data) => {
         console.log(data);
       },
