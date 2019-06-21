@@ -5,7 +5,7 @@ import { CustomerService } from 'src/app/common/services/customer.service';
 import { chunkArray, image, statementLH, convertDate2, convertDateAlt, statementFT } from 'src/app/common/interfaces/letterhead';
 import { renderPDF } from '../statement';
 
-import jsPDF from 'jspdf';
+import * as jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 import { Observable, of } from 'rxjs';

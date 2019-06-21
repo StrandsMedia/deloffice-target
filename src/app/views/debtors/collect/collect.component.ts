@@ -245,7 +245,7 @@ export class CollectComponent implements OnInit, AfterViewInit {
   printSummary() {
     const firsttable: HTMLTableElement = <HTMLTableElement>document.getElementById('firsttable');
     const pdf = new jsPDF('l', 'pt', 'a4');
-    const firstres = pdf.autoTableHtmlToJson(firsttable, true);
+    const firstres = (pdf as any).autoTableHtmlToJson(firsttable, true);
     const result = chunkArray(firstres.rows, 16);
     const title = 'DEBT COLLECTION - PRINT SUMMARY';
 
@@ -254,7 +254,7 @@ export class CollectComponent implements OnInit, AfterViewInit {
       if (i > 0) {
         pdf.addPage();
       }
-      pdf.autoTable(firstres.columns, result[i], {
+      (pdf as any).autoTable(firstres.columns, result[i], {
         theme: 'grid',
         styles: {
           fontSize: 9.2,

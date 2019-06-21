@@ -5,7 +5,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { WorkflowService } from 'src/app/common/services/workflow.service';
 import { chunkArray, image, breakLine, breakLine2 } from 'src/app/common/interfaces/letterhead';
 
-import jsPDF from 'jspdf';
+import * as jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 import { Observable } from 'rxjs';
@@ -117,8 +117,8 @@ export class JobComponent implements OnInit {
     const pdf = new jsPDF('l', 'pt', 'a4');
     const maintable: HTMLTableElement = <HTMLTableElement>document.getElementById('maintable');
     const papersum: HTMLTableElement = <HTMLTableElement>document.getElementById('papersum');
-    const mainres = pdf.autoTableHtmlToJson(maintable, true);
-    const paperres = pdf.autoTableHtmlToJson(papersum, true);
+    const mainres = (pdf as any).autoTableHtmlToJson(maintable, true);
+    const paperres = (pdf as any).autoTableHtmlToJson(papersum, true);
     const result = chunkArray(mainres.rows, 8);
 
     let driver;
@@ -175,7 +175,7 @@ export class JobComponent implements OnInit {
       if (i > 0) {
         pdf.addPage();
       }
-      pdf.autoTable(mainres.columns, result[i],
+      (pdf as any).autoTable(mainres.columns, result[i],
         {
           theme: 'grid',
           styles: {
@@ -228,7 +228,7 @@ export class JobComponent implements OnInit {
     }
     if (check) {
       pdf.addPage();
-      pdf.autoTable(paperres.columns, paperres.rows,
+      (pdf as any).autoTable(paperres.columns, paperres.rows,
         {
           drawCell: function(cell, dt) {
             const rows = dt.table.rows;

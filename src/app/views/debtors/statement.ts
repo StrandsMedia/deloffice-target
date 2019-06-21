@@ -1,6 +1,6 @@
 import { chunkArray, image, statementLH, convertDate2, convertDateAlt, statementFT } from 'src/app/common/interfaces/letterhead';
 
-import jsPDF from 'jspdf';
+import * as jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 export function renderPDF(custinfo, total?) {
@@ -8,8 +8,8 @@ export function renderPDF(custinfo, total?) {
     const statementtable = <HTMLTableElement>document.getElementById('statementtable');
     const baltable = <HTMLTableElement>document.getElementById('baltable');
 
-    const stateres = pdf.autoTableHtmlToJson(statementtable, true);
-    const balres = pdf.autoTableHtmlToJson(baltable, true);
+    const stateres = (pdf as any).autoTableHtmlToJson(statementtable, true);
+    const balres = (pdf as any).autoTableHtmlToJson(baltable, true);
 
     const result = chunkArray(stateres.rows, 20);
     const width = pdf.internal.pageSize.getWidth() - 15;
@@ -24,7 +24,7 @@ export function renderPDF(custinfo, total?) {
       if (i > 0) {
         pdf.addPage();
       }
-      pdf.autoTable(stateres.columns, result[i], {
+      (pdf as any).autoTable(stateres.columns, result[i], {
         theme: 'grid',
         styles: {
           fontSize: 7.5,
@@ -118,7 +118,7 @@ export function renderPDF(custinfo, total?) {
           pdf.line(15, 255, width, 255);
         }
       });
-      pdf.autoTable(balres.columns, balres.rows, {
+      (pdf as any).autoTable(balres.columns, balres.rows, {
         theme: 'grid',
         styles: {
           fontSize: 8,
