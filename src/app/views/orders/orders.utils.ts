@@ -3,17 +3,42 @@ import { chunkArray, image, invoiceLH, convertDate, tableToJSPDFData } from '../
 import * as jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
+import * as printJS from 'print-js';
+
+export function dataURItoBlob(dataURI) {
+    if (typeof dataURI !== 'string') {
+        throw new Error('Invalid argument: dataURI must be a string');
+    }
+    dataURI = dataURI.split(',');
+    let type = dataURI[0].split(':')[1].split(';')[0],
+        byteString = atob(dataURI[1]),
+        byteStringLength = byteString.length,
+        arrayBuffer = new ArrayBuffer(byteStringLength),
+        intArray = new Uint8Array(arrayBuffer);
+    for (let i = 0; i < byteStringLength; i++) {
+        intArray[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([intArray], {
+        type
+    });
+}
+
+export function printInv(inv: jsPDF) {
+    const datauri = (inv.output('datauristring') as string);
+    const pdfBlob = dataURItoBlob(datauri);
+    const url = URL.createObjectURL(pdfBlob);
+
+    printJS(url);
+}
+
 export function renderInvoice(inv): jsPDF {
     const pdf: jsPDF = new jsPDF('p', 'pt', 'a4');
 
     const mainres = tableToJSPDFData('#maintable');
 
     const result = chunkArray(mainres.body, 8);
-    console.log(result.length);
 
     const width = pdf.internal.pageSize.getWidth() - 15;
-
-    console.log(result);
 
     const totalPagesExp = '{total_pages_count_string}';
 
@@ -179,11 +204,11 @@ export function renderInvoice(inv): jsPDF {
                 didParseCell: function(data) {
                     const cell = data.cell;
                     const someEl = cell.raw;
-                    if (cell.classList.contains('bolder')) {
-                        cell.styles.textColor = [255, 255, 0];
-                    } else {
-                        cell.styles.textColor = [255, 0, 0];
-                    }
+                    // if (someEl.classList.contains('bolder')) {
+                    //     cell.styles.textColor = [255, 255, 0];
+                    // } else {
+                    //     cell.styles.textColor = [255, 0, 0];
+                    // }
                 },
                 // pageBreak: 'auto',
                 didDrawPage: function(data) {
@@ -202,13 +227,7 @@ export function renderInvoice(inv): jsPDF {
             });
             (pdf as any).autoTable({
                 html: '#signtable',
-                didParseCell: function(data) {
-                    const cell = data.cell;
-                    const tdElement = cell.raw;
-                    if (tdElement.classList.contains('clear')) {
-                        cell.styles.lineWidth = 0;
-                    }
-                },
+                
                 theme: 'grid',
                 styles: {
                     fontSize: 7.6,
@@ -250,7 +269,16 @@ export function renderInvoice(inv): jsPDF {
                     // tslint:disable-next-line:max-line-length
                     pdf.text('(5) In case of recovery through a solicitor, all fees, charges and commission, not exceeding 10% of amount due, are payable by the client', 15, 808);
                     pdf.text('(6) Only the original receipt, issued by DelOffice Ltd, will be accepted as proof of payment.', 15, 820);
-                }
+                },
+                didParseCell: function(data) {
+                    const cell = data.cell;
+                    const tdElement = cell.raw;
+                    if (tdElement) {
+                        if (tdElement.classList.contains('clear')) {
+                            cell.styles.lineWidth = 0;
+                        }
+                    }
+                },
             }
         );
     }

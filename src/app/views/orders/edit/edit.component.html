@@ -14,8 +14,12 @@
           <button (click)="viewPDF()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" [disabled]="arrLength <= 0">
             Preview Doc
           </button>
-          <button (click)="savePDF()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1" [disabled]="arrLength <= 0">
+          
+          <button (click)="savePDF()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" [disabled]="arrLength <= 0">
             Save Doc
+          </button>
+          <button dialogTrigger="process" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1" [disabled]="arrLength <= 0">
+            Save & Process Doc
           </button>
           <!-- <button (click)="resetDoc()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1">
             Reset Doc
@@ -267,6 +271,16 @@
       </tr>
   </tbody>
 </table>
+
+<app-dialog
+  dialogID="process"
+  title="Process Proforma Invoice"
+  size="small"
+  accept="Process"
+  cancel="Cancel"
+>
+
+</app-dialog>
 
 <app-dialog
   dialogID="newprod"
