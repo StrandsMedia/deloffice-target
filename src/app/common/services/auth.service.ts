@@ -164,4 +164,15 @@ export class AuthService {
   public killSession(id): Observable<any> {
     return this._http.get(this.url + 'user/pastel/kill.php?id=' + id);
   }
+
+  //Company
+  createCompany(info) {
+    return this._http.post(this.url + 'company/create.php', info);
+  }
+
+  getCompany(): Observable<any>{
+    return this._http.get(this.url + 'company/read.php').pipe(
+      map((company: any) => company.records)
+    ); 
+  }
 }

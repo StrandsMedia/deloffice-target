@@ -39,6 +39,7 @@ import { UsersComponent } from './views/user/users/users.component';
 import { StepComponent } from './views/user/step/step.component';
 import { SectorComponent } from './views/sector/sector.component';
 import { UserPermissionsComponent } from './views/user/user-permissions/user-permissions.component';
+import { CompaniesComponent } from './views/companies/companies.component';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,8 @@ import { UserPermissionsComponent } from './views/user/user-permissions/user-per
     UsersComponent,
     StepComponent,
     SectorComponent,
-    UserPermissionsComponent
+    UserPermissionsComponent,
+    CompaniesComponent
   ],
   entryComponents: [
     NewsComponent,

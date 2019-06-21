@@ -11,6 +11,7 @@ import { CommentsComponent } from './views/comments/comments.component';
 
 import { PrintingComponent } from './views/printing/printing.component';
 import { TendersComponent } from './views/tenders/tenders.component';
+import { CompaniesComponent } from './views/companies/companies.component';
 
 import { PastelComponent } from './views/user/pastel/pastel.component';
 import { UsersComponent } from './views/user/users/users.component';
@@ -133,6 +134,15 @@ const routes: Routes = [
           },
         ],
         canActivateChild: [RoleGuard]
+      },
+      {
+        path: 'companies',
+        component: CompaniesComponent,
+        data: {
+          title: 'Manage Companies',
+          expectedRole: ['Admin'],
+          id: 15
+        }
       }
     ],
     canActivate: [AuthGuard]
