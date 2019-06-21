@@ -122,6 +122,42 @@ export function tableToJSON(name) {
 
 }
 
+export function tableToJSPDFData(name: string) {
+  const table: HTMLTableElement = <HTMLTableElement>document.querySelector(name);
+
+  let group = [];
+  let data = []; // first row needs to be headers
+  let headers = [];
+  let footers = [];
+  // tslint:disable-next-line:prefer-for-of
+  for (let i = 0; i < table.rows[0].cells.length; i++) {
+    let htext = table.rows[0].cells[i].innerHTML;
+    htext = htext.replace(/\/\/n/g, '\n');
+    headers.push(htext);
+  }
+  // // go through cells
+  for (let i = 1; i < table.rows.length; i++) {
+    let tableRow = table.rows[i]; let rowData = [];
+    // tslint:disable-next-line:prefer-for-of
+    for (let j = 0; j < tableRow.cells.length; j++) {
+      if (tableRow.parentElement.tagName !== 'TFOOT') {
+        let text = tableRow.cells[j].innerHTML;
+        text = text.replace(/\/\/n/g, '\n');
+        rowData.push(text);
+      }
+    }
+    data.push(rowData);
+  }
+
+  if (table.rows[table.rows.length - 1].parentElement.tagName === 'TFOOT') {
+    for (let i = 0; i < table.rows[table.rows.length - 1].cells.length; i++) {
+      footers.push(table.rows[table.rows.length - 1].cells[i].innerHTML);
+    }
+  }
+
+  return { head: [ headers ], body: data, foot: [ footers ] };
+}
+
 export function breakLine(string) {
     if (string !== null) {
         const formattedString = string.split(', ').join('\n');

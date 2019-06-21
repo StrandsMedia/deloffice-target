@@ -196,18 +196,18 @@
           <th>Code</th>
           <th>Description</th>
           <th>Qty</th>
-          <th>Unit Price<br>MUR</th>
-          <th>Price Ex VAT<br>MUR</th>
-          <th>VAT Rate<br>%</th>
-          <th>VAT Amount<br>MUR</th>
-          <th>Total Amount<br>MUR</th>
+          <th>Unit Price//nMUR</th>
+          <th>Price Ex VAT//nMUR</th>
+          <th>VAT Rate//n%</th>
+          <th>VAT Amount//nMUR</th>
+          <th>Total Amount//nMUR</th>
       </tr>
   </thead>
   <tbody>
       <ng-container *ngFor="let prod of prodEnt$ | async; index as i; trackBy: trackByFn">
           <tr>
               <td>{{prod?.p_id}}</td>
-              <td>{{prod?.Description_1}}<br>{{prod?.Description_2}}<br>{{prod?.Description_3}}</td>
+              <td>{{prod?.Description_1}}//n{{prod?.Description_2}}//n{{prod?.Description_3}}</td>
               <td>{{prod?.qty}}</td>
               <td>{{prod?.fExclPrice | number:'1.2-2'}}</td>
               <td>{{prod?.fExclPrice * prod?.qty | number:'1.2-2'}}</td>

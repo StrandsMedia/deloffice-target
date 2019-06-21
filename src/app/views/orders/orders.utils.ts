@@ -1,21 +1,19 @@
-import { chunkArray, image, invoiceLH, convertDate } from '../../common/interfaces/letterhead';
+import { chunkArray, image, invoiceLH, convertDate, tableToJSPDFData } from '../../common/interfaces/letterhead';
 
 import * as jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 export function renderInvoice(inv): jsPDF {
     const pdf: jsPDF = new jsPDF('p', 'pt', 'a4');
-    const maintable = <HTMLTableElement>document.getElementById('maintable');
-    const signtable = <HTMLTableElement>document.getElementById('signtable');
-    const totaltable = <HTMLTableElement>document.getElementById('totaltable');
 
-    const mainres = (pdf as any).autoTableHtmlToJson(maintable, true);
-    const signres = (pdf as any).autoTableHtmlToJson(signtable, true);
-    const totalres = (pdf as any).autoTableHtmlToJson(totaltable, true);
+    const mainres = tableToJSPDFData('#maintable');
 
-    const result = chunkArray(mainres.rows, 8);
+    const result = chunkArray(mainres.body, 8);
+    console.log(result.length);
 
     const width = pdf.internal.pageSize.getWidth() - 15;
+
+    console.log(result);
 
     const totalPagesExp = '{total_pages_count_string}';
 
@@ -23,7 +21,9 @@ export function renderInvoice(inv): jsPDF {
         if (i > 0) {
             pdf.addPage();
         }
-        (pdf as any).autoTable(mainres.columns, result[i], {
+        (pdf as any).autoTable({
+            head: mainres.head,
+            body: result[i],
             theme: 'grid',
             styles: {
                 fontSize: 9,
@@ -37,38 +37,38 @@ export function renderInvoice(inv): jsPDF {
             columnStyles: {
                 0: {
                     halign: 'left',
-                    columnWidth: 60
+                    cellWidth: 60
                 },
                 1: {
                     halign: 'left',
-                    columnWidth: 200
+                    cellWidth: 180
                 },
                 2: {
                     halign: 'left',
-                    columnWidth: 35
+                    cellWidth: 35
                 },
                 3: {
                     halign: 'center',
-                    columnWidth: 55
+                    cellWidth: 55
                 },
                 4: {
                     halign: 'center',
-                    columnWidth: 55
+                    cellWidth: 55
                 },
                 5: {
                     halign: 'center',
-                    columnWidth: 55
+                    cellWidth: 55
                 },
                 6: {
                     halign: 'center',
-                    columnWidth: 55
+                    cellWidth: 55
                 },
                 7: {
                     halign: 'center',
-                    columnWidth: 65
+                    cellWidth: 65
                 }
             },
-            headerStyles: {
+            headStyles: {
                 fillColor: false,
                 textColor: [23, 73, 144],
                 fontStyle: 'normal',
@@ -84,8 +84,8 @@ export function renderInvoice(inv): jsPDF {
                 bottom: 85,
                 right: 10,
             },
-            pageBreak: 'always',
-            addPageContent: function(data) {
+            // pageBreak: 'always',
+            didDrawPage: function(data) {
                 pdf.addImage(image('DEL'), 'JPEG', 210, 22, 215, 44);
                 pdf.setFontSize(8);
                 pdf.setFontType('normal');
@@ -116,7 +116,8 @@ export function renderInvoice(inv): jsPDF {
                 pdf.line(15, 645, width, 645);
             }
             });
-            (pdf as any).autoTable(totalres.columns, totalres.rows, {
+            (pdf as any).autoTable({
+                html: '#totaltable',
                 theme: 'grid',
                 styles: {
                     fontSize: 9,
@@ -128,42 +129,42 @@ export function renderInvoice(inv): jsPDF {
                     halign: 'left',
                     fontStyle: 'bold'
                 },
-                headerStyles: {
+                headStyles: {
                     fillColor: false,
                     fontStyle: 'bold'
                 },
                 columnStyles: {
                     0: {
                         halign: 'left',
-                        columnWidth: 60
+                        cellWidth: 60
                     },
                     1: {
                         halign: 'left',
-                        columnWidth: 200
+                        cellWidth: 180
                     },
                     2: {
                         halign: 'left',
-                        columnWidth: 35
+                        cellWidth: 35
                     },
                     3: {
-                        halign: 'right',
-                        columnWidth: 55
+                        halign: 'center',
+                        cellWidth: 55
                     },
                     4: {
-                        halign: 'right',
-                        columnWidth: 55
+                        halign: 'center',
+                        cellWidth: 55
                     },
                     5: {
-                        halign: 'right',
-                        columnWidth: 55
+                        halign: 'center',
+                        cellWidth: 55
                     },
                     6: {
-                        halign: 'right',
-                        columnWidth: 55
+                        halign: 'center',
+                        cellWidth: 55
                     },
                     7: {
-                        halign: 'right',
-                        columnWidth: 65
+                        halign: 'center',
+                        cellWidth: 65
                     }
                 },
                 tableWidth: 'auto',
@@ -175,16 +176,16 @@ export function renderInvoice(inv): jsPDF {
                     bottom: 85,
                     right: 10,
                 },
-                createdCell: function(cell, data) {
-                    const someEl = cell.raw;
-                    if (someEl.classList.contains('bolder')) {
-                        cell.styles.textColor = [255, 255, 0];
-                    } else {
-                        cell.styles.textColor = [255, 0, 0];
-                    }
-                },
-                pageBreak: 'auto',
-                addPageContent: function(data) {
+                // didParseCell: function(cell, data) {
+                //     const someEl = cell.raw;
+                //     if (cell.classList.contains('bolder')) {
+                //         cell.styles.textColor = [255, 255, 0];
+                //     } else {
+                //         cell.styles.textColor = [255, 0, 0];
+                //     }
+                // },
+                // pageBreak: 'auto',
+                didDrawPage: function(data) {
                     pdf.line(355, 620, 400, 620);
                     pdf.line(460, 620, 505, 620);
                     pdf.line(520, 620, 565, 620);
@@ -198,18 +199,18 @@ export function renderInvoice(inv): jsPDF {
                     pdf.line(520, 640, 565, 640);
                 }
             });
-            (pdf as any).autoTable(signres.columns, signres.rows,
-            {
-                drawHeaderCell: function(cell, data) {
-                    const tdElement = cell.raw;
-                    if (tdElement.classList.contains('clear')) {
-                        cell.styles.lineWidth = 0;
-                    }
-                },
+            (pdf as any).autoTable({
+                html: '#signtable',
+                // didParseCell: function(cell, data) {
+                //     const tdElement = cell.raw;
+                //     if (tdElement.classList.contains('clear')) {
+                //         cell.styles.lineWidth = 0;
+                //     }
+                // },
                 theme: 'grid',
                 styles: {
                     fontSize: 7.6,
-                    columnWidth: 'auto',
+                    cellWidth: 'auto',
                     overflow: 'linebreak',
                     lineColor: 100,
                     lineWidth: 0.2,
@@ -218,7 +219,7 @@ export function renderInvoice(inv): jsPDF {
                 },
                 columnStyles: {
                 },
-                headerStyles: {
+                headStyles: {
                     fillColor: false,
                     textColor: 0,
                     halign: 'center',
@@ -234,7 +235,7 @@ export function renderInvoice(inv): jsPDF {
                     right: 15,
                 },
                 pageBreak: 'auto',
-                addPageContent: function(data) {
+                didDrawPage: function(data) {
                     pdf.setFontSize(7.8);
                     pdf.setFontType('bold');
                     pdf.text('Terms And Conditions', 15, 745);
