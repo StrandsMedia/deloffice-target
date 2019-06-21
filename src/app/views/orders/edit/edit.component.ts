@@ -9,7 +9,7 @@ import { MaterialService } from 'src/app/common/services/material.service';
 import { Observable, of, fromEvent, BehaviorSubject } from 'rxjs';
 import { tap, debounceTime, switchMap, map } from 'rxjs/operators';
 import { ProductService } from 'src/app/common/services/product.service';
-import { renderInvoice } from '../orders.utils';
+import { renderInvoice, printInv } from '../orders.utils';
 
 @Component({
   selector: 'app-edit',
@@ -101,7 +101,6 @@ export class EditComponent implements OnInit {
       }),
       map((res: any) => res.records[0]),
       tap((res) => {
-        console.log(res);
         this._tempData = res;
         this.searchProdForm.controls['cust_id'].setValue(res.cust_id);
         this.entries = res.entries;
@@ -128,7 +127,6 @@ export class EditComponent implements OnInit {
   }
 
   resetDoc() {
-    console.log(this.stable);
     this.entries = this.stable;
   }
 
@@ -225,16 +223,14 @@ export class EditComponent implements OnInit {
   // PDF Utils
 
   viewPDF() {
-    console.log(this._tempData);
     const pdf = renderInvoice(this._tempData);
-    pdf.output('dataurlnewwindow', { filename: 'newpdf.pdf' });
+    // pdf.output('dataurlnewwindow', { filename: 'newpdf.pdf' });
+    printInv(pdf);
   }
 
   savePDF() {
     const prodArr = this._prodEntr$.value;
     this._tempData.entries = prodArr;
-
-    console.log(this._tempData);
 
     this._order.updateInvoice(this._tempData)
     .subscribe(

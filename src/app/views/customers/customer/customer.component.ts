@@ -70,6 +70,11 @@ export class CustomerComponent implements OnInit, AfterViewInit {
     customerCode: null,
     company_name: [null, Validators.required],
     address: null,
+    address2: null,
+    address3: null,
+    location: null,
+    location2: null,
+    location3: null,
     category: null,
     sector: [''],
     subsector: ['']
@@ -152,7 +157,7 @@ export class CustomerComponent implements OnInit, AfterViewInit {
   }
 
   switchData(person, id) {
-    this.editContactForm.setValue({
+    this.editContactForm.patchValue({
       contact_person: person.contact_person,
       email: person.email,
       tel: person.tel,
@@ -165,7 +170,7 @@ export class CustomerComponent implements OnInit, AfterViewInit {
   }
 
   loadProfile(customer) {
-    this.editCustomerForm.setValue({
+    this.editCustomerForm.patchValue({
       cust_id: customer.cust_id,
       company_name: customer.company_name,
       customerCode: customer.customerCode,

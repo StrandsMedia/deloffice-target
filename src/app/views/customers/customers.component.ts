@@ -38,6 +38,7 @@ export class CustomersComponent implements OnInit {
     customerCode: [''],
     company_name: ['', Validators.required],
     address: [''],
+    location: [null],
     category: [''],
     sector: [''],
     subsector: [''],
