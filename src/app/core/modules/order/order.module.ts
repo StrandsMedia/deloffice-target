@@ -11,6 +11,7 @@ import { EditComponent } from '../../../views/orders/edit/edit.component';
 import { ViewComponent } from '../../../views/orders/view/view.component';
 import { DialogModule } from 'src/app/common/utils/dialog/dialog.module';
 import { UtilsModule } from '../utils.module';
+import { ViewGPComponent } from '../../../views/orders/view-gp/view-gp.component';
 
 const orderroutes: Routes = [
   {
@@ -25,13 +26,22 @@ const orderroutes: Routes = [
         }
       },
       {
+        path: ':id/gp',
+        component: ViewGPComponent,
+        data: {
+          title: 'Goods Preparation List',
+          id: 3
+        }
+      },
+      {
         path: ':id',
         component: EditComponent,
         data: {
           title: 'Edit Invoice',
           id: 3
         }
-      }
+      },
+     
     ],
     data: {
       expectedRole: ['Admin'],
@@ -62,7 +72,8 @@ const orderroutes: Routes = [
   declarations: [
     AddComponent,
     EditComponent,
-    ViewComponent
+    ViewComponent,
+    ViewGPComponent
   ]
 })
 export class OrderModule { }

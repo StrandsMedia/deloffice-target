@@ -65,7 +65,7 @@
 
         <ng-container cdkColumnDef="profinprocess">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Proforma in process</th>
-          <td routerLink="/order-entry/view/{{row.invoice_id}}" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'text-white font-weight-bold bg-primary': row.status == 25 && row.InvStatus === 1 }" style="width: 10%;" [clickDisabled]="'update'">
+          <td [routerLink]="row.InvStatus == 1 ? '/order-entry/view/' + row.invoice_id : null" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'text-white font-weight-bold bg-primary': row.status == 25 && row.InvStatus === 1 }" style="width: 10%;" [clickDisabled]="'update'">
             {{row.invRef | uppercase}}
           </td>
         </ng-container>
@@ -87,7 +87,7 @@
 
         <ng-container cdkColumnDef="profprocessed">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Proforma processed</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 25 && row.InvStatus === 5}" style="width: 10%;" [clickDisabled]="'update'"></td>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 26 && row.InvStatus === 5}" style="width: 10%;" [clickDisabled]="'update'"></td>
         </ng-container>
 
         <ng-container cdkColumnDef="duration">
