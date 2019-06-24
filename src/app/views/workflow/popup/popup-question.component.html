@@ -18,11 +18,11 @@
     <div [ngSwitch]="question.controlType" [hidden]="question.key === 'workflow_id' || question.key === 'step'">
         <ng-container *ngSwitchCase="'textbox'">
             <label [attr.for]="question.key">{{question.label}}</label>
-            <input [formControlName]="question.key" [id]="question.key" [type]="question.type" class="form-control w-100">
+            <input [formControlName]="question.key" [id]="question.key" [type]="question?.type" class="form-control w-100">
         </ng-container>
 
         <ng-container *ngSwitchCase="'multibox'">
-            <ng-container *ngIf="question?.extra; else noextra">
+            <!-- <ng-container *ngIf="question?.extra; else noextra">
                 <ng-container [formArrayName]="question?.key">
                     <ng-container *ngFor="let item of form?.controls[question?.key]?.controls; index as i;">
                         <ng-container [ngSwitch]="i">
@@ -48,7 +48,7 @@
                     <input [formControlName]="question.key" type="checkbox" [name]="question.key" [id]="question.key" class="custom-control-input" [value]="question?.value">
                     <label [attr.for]="question.key" class="custom-control-label">{{question.label}}</label>
                 </div>
-            </ng-template>
+            </ng-template> -->
 
         </ng-container>
 

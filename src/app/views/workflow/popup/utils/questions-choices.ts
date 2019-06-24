@@ -19,7 +19,7 @@ export const QuestionChoices = [
     },
     {
         value: 3,
-        name: 'Order',
+        name: 'Order Confirmed',
         status: [0, 2],
         order: 3
     },
@@ -32,7 +32,7 @@ export const QuestionChoices = [
     {
         value: 5,
         name: 'Invoicing',
-        status: [0, 3, 4],
+        status: [3, 4],
         order: 5
     },
     {

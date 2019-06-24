@@ -133,15 +133,15 @@ export class QuestionControlService {
 
         questions.push(choices);
 
-        this.prod.forEach((prod) => {
-            questions.push(new MultiboxQuestion({
-                key: prod.id,
-                label: prod.name,
-                status: [0, 2, 5, 16],
-                extra: prod.maxi,
-                value: data[prod.id]
-            }));
-        });
+        // this.prod.forEach((prod) => {
+        //     questions.push(new MultiboxQuestion({
+        //         key: prod.id,
+        //         label: prod.name,
+        //         status: [0, 2, 5, 16],
+        //         extra: prod.maxi,
+        //         value: data[prod.id]
+        //     }));
+        // });
 
         questions.push(new TextboxQuestion({
             key: 'note',

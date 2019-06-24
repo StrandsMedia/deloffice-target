@@ -10,6 +10,7 @@ export class QuestionBase<T> {
     extra?: boolean;
     pattern?: string;
     length?: number;
+    type?: string;
 
     constructor(options: {
         value?: T,
