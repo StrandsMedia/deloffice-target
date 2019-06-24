@@ -236,7 +236,11 @@ export class EditComponent implements OnInit {
   savePDF() {
     const prodArr = this._prodEntr$.value;
     this._tempData.entries = prodArr;
+    this._tempData.TotalExcl = this.totalexcl();
+    this._tempData.TotalTax = this.totalvat();
+    this._tempData.TotalIncl = this.totalincl();
 
+    console.log(this._tempData);
     this._order.updateInvoice(this._tempData)
     .subscribe(
       (data) => {
@@ -255,6 +259,9 @@ export class EditComponent implements OnInit {
     const prodArr = this._prodEntr$.value;
     this._tempData.entries = prodArr;
     this._tempData.status = this.editForm.value.option;
+    this._tempData.TotalExcl = this.totalexcl();
+    this._tempData.TotalTax = this.totalvat();
+    this._tempData.TotalIncl = this.totalincl();
 
     this._order.processInvoice(this._tempData)
     .subscribe(
