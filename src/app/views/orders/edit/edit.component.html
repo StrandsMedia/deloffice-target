@@ -278,13 +278,14 @@
   size="small"
   accept="Process"
   cancel="Cancel"
+  (onAccept)="processPDF()"
 >
   <form [formGroup]="editForm">
     <div class="row">
       <div class="col-12">
         <div class="form-group">
           <label for="option">Option</label>
-          <select class="form-control w-100" name="option" id="option">
+          <select formControlName="option" class="form-control w-100" name="option" id="option">
             <option value="confirm">Confirm</option>
             <option value="cancel">Cancel</option>
           </select>

@@ -89,7 +89,8 @@ export class EditComponent implements OnInit {
     private _mdc: MaterialService,
     private _order: OrdersService,
     private _prod: ProductService,
-    private _route: ActivatedRoute
+    private _route: ActivatedRoute,
+    private _router: Router
   ) { }
 
   ngOnInit() {
@@ -265,10 +266,8 @@ export class EditComponent implements OnInit {
       },
       () => {
         this.get();
+        this._router.navigate(['/workflow/proforma']);
       }
     )
   }
-
-  
-
 }
