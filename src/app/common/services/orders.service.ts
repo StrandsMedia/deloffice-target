@@ -30,4 +30,8 @@ export class OrdersService {
   updateInvoice(data): Observable<any> {
     return this.http.post<any>(this.url + 'orders/update_proforma.php', data);
   }
+
+  processInvoice(data): Observable<any> {
+    return this.http.post<any>(this.url + 'orders/process_proforma.php', data);
+  }
 }

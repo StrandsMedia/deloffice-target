@@ -92,13 +92,22 @@
                                 <div class="col-4">
                                     <div class="form-group">
                                         <small>Location 1</small>
-                                        <select formControlName="location" name="location" id="location" class="form-control w-100 mb-2"></select>
+                                        <select formControlName="location" name="location" id="location" class="form-control w-100 mb-2">
+                                            <option value="" disabled selected>Select a Location</option>
+                                            <option *ngFor="let loc of locations | async; index as i" value="{{loc.locationId}}">{{loc.locationName}}</option>
+                                        </select>
             
                                         <small>Location 2</small>
-                                        <select formControlName="location2" name="location2" id="location2" class="form-control w-100 mb-2"></select>
+                                        <select formControlName="location2" name="location2" id="location2" class="form-control w-100 mb-2">
+                                            <option value="" disabled selected>Select a Location</option>
+                                            <option *ngFor="let loc of locations | async; index as i" value="{{loc.locationId}}">{{loc.locationName}}</option>
+                                        </select>
             
                                         <small>Location 3</small>
-                                        <select formControlName="location3" name="location3" id="location3" class="form-control w-100"></select>
+                                        <select formControlName="location3" name="location3" id="location3" class="form-control w-100">
+                                            <option value="" disabled selected>Select a Location</option>
+                                            <option *ngFor="let loc of locations | async; index as i" value="{{loc.locationId}}">{{loc.locationName}}</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>

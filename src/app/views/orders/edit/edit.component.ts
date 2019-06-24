@@ -79,6 +79,10 @@ export class EditComponent implements OnInit {
     pricecat: null
   });
 
+  public editForm: FormGroup = this._fb.group({
+    option: null
+  });
+
   constructor(
     private _cust: CustomerService,
     private _fb: FormBuilder,
@@ -245,5 +249,26 @@ export class EditComponent implements OnInit {
       }
     )
   }
+
+  processPDF() {
+    const prodArr = this._prodEntr$.value;
+    this._tempData.entries = prodArr;
+    this._tempData.status = this.editForm.value.option;
+
+    this._order.processInvoice(this._tempData)
+    .subscribe(
+      (data) => {
+        this._mdc.materialSnackBar(data);
+      },
+      (err) => {
+        this._mdc.materialSnackBar(err.error);
+      },
+      () => {
+        this.get();
+      }
+    )
+  }
+
+  
 
 }

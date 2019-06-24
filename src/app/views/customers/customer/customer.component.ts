@@ -6,6 +6,7 @@ import { AuthService } from 'src/app/common/services/auth.service';
 import { CategoryService } from 'src/app/common/services/category.service';
 import { CustomerService } from 'src/app/common/services/customer.service';
 import { MaterialService } from 'src/app/common/services/material.service';
+import { RoutesService } from 'src/app/common/services/routes.service';
 
 import { Subscription, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
@@ -21,6 +22,7 @@ export class CustomerComponent implements OnInit, AfterViewInit {
   customer: Observable<any>;
   balance: Observable<any>;
   statement: Observable<any>;
+  locations: Observable<any>;
 
   categories: Observable<Category>;
   sectors: Observable<Sector>;
@@ -93,7 +95,8 @@ export class CustomerComponent implements OnInit, AfterViewInit {
     private router: Router,
     private mdc: MaterialService,
     private fb: FormBuilder,
-    private title: TitleService
+    private title: TitleService,
+    private routes: RoutesService
   ) {
     auth.currentUser.subscribe(data => this.user = data);
   }
@@ -103,6 +106,7 @@ export class CustomerComponent implements OnInit, AfterViewInit {
     this.categories = this.cat.getCategory();
     this.sectors = this.cat.getSector();
     this.subsectors = this.cat.getSubsector();
+    this.locations = this.routes.getLocation();
   }
 
   ngAfterViewInit() {
