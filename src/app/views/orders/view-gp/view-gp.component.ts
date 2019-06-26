@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { ActivatedRoute, Params } from '@angular/router';
 
+import { AuthService } from '../../../common/services/auth.service';
 import { OrdersService } from '../../../common/services/orders.service';
 import { MaterialService } from '../../../common/services/material.service';
 
@@ -22,6 +23,7 @@ export class ViewGPComponent implements OnInit {
   private _prodEntr$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
   public prodEnt$: Observable<any> = this._prodEntr$.asObservable();
   public tempProd: any;
+  private _user: any;
 
   private _tempData: any;
 
@@ -31,25 +33,32 @@ export class ViewGPComponent implements OnInit {
     'brand',
     'qty',
     'confirm',
-    'verify'
+    'verify',
+    'transfer'
   ];
 
   public confirm: boolean = true;
   public verify: boolean = false;
 
+  public requestForm: FormGroup = this._fb.group({
+    transfer: ['purchase', Validators.required]
+  });
+
   constructor(
+    private _auth: AuthService,
     private _fb: FormBuilder,
     private _mdc: MaterialService,
     private _order: OrdersService,
     private _route: ActivatedRoute
-  ) { }
+  ) {
+    this._auth.currentUser.subscribe(data => this._user = data);
+  }
 
   ngOnInit() {
     this.get();
     this.invoice$ = this.invoice$.pipe(
       tap((res) => {
         const condition = (res.entries as any[]).every(item => item.checked == 1);
-        console.log(condition);
 
         if (!condition) {
           this.confirm = true;
@@ -102,6 +111,34 @@ export class ViewGPComponent implements OnInit {
     .subscribe(
       (data) => {
         this._mdc.materialSnackBar(data);
+      },
+      (err) => {
+        this._mdc.materialSnackBar(err.error);
+      },
+      () => {
+        this.get();
+      }
+    )
+  }
+
+  public sendRequest() {
+    const data = {
+      user: this._user.user_id,
+      invoice_id: this._tempData.invoice_id,
+      entryType: this.requestForm.value.transfer,
+      p_id: this.tempProd.p_id,
+      debit: this.tempProd.qty,
+      credit: 0,
+      outstd: this.tempProd.qty,
+      invlineid: this.tempProd.invlineid,
+      workflow_id: this._tempData.workflow_id
+    }
+
+    console.log(data);
+    this._order.sendReqTransfer(data)
+    .subscribe(
+      (dt) => {
+        this._mdc.materialSnackBar(dt);
       },
       (err) => {
         this._mdc.materialSnackBar(err.error);

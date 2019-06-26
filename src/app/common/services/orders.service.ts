@@ -35,6 +35,12 @@ export class OrdersService {
     return this.http.post<any>(this.url + 'orders/process_proforma.php', data);
   }
 
+  // Goods Preparation
+
+  sendReqTransfer(info): Observable<any> {
+    return this.http.post<any>(this.url + 'purgatory/create.php', info);
+  }
+
   markChecked(id): Observable<any> {
     return this.http.get(this.url + 'orders/markChecked.php?id=' + id);
   }
