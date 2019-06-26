@@ -31,9 +31,7 @@
           cdk-row
           *cdkRowDef="let row; columns: columns"
           [ngClass]="{
-            'table-danger': row.status === 'delete',
-            'table-success': row.status === 'new',
-            'table-danger': +row.qty >= +row.Qty_On_Hand
+            'table-danger': row.purgatory == true
           }"
         ></tr>
 

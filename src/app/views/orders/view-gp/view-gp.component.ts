@@ -72,6 +72,7 @@ export class ViewGPComponent implements OnInit {
   }
 
   get() {
+    this.loading = true;
     return this.invoice$ = this._route.params.pipe(
       map(params => params.id),
       switchMap(params => {
@@ -82,7 +83,7 @@ export class ViewGPComponent implements OnInit {
         this._tempData = res;
         
         this._prodEntr$.next(res.entries);
-        this.loading = !this.loading;
+        this.loading = false;
       })
     );
   }

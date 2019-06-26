@@ -12,6 +12,7 @@ import { ViewComponent } from '../../../views/orders/view/view.component';
 import { DialogModule } from 'src/app/common/utils/dialog/dialog.module';
 import { UtilsModule } from '../utils.module';
 import { ViewGPComponent } from '../../../views/orders/view-gp/view-gp.component';
+import { PurgatoryComponent } from '../../../views/purgatory/purgatory.component';
 
 const orderroutes: Routes = [
   {
@@ -73,7 +74,8 @@ const orderroutes: Routes = [
     AddComponent,
     EditComponent,
     ViewComponent,
-    ViewGPComponent
+    ViewGPComponent,
+    PurgatoryComponent
   ]
 })
 export class OrderModule { }
