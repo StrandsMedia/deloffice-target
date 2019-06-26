@@ -1,12 +1,22 @@
 <div class="row">
-  <div *ngIf="dataSource$ | async as data" class="col-12">
+  <div *ngIf="invoice$ | async as data" class="col-12">
     <div class="mdc-card mb-3" style="overflow: hidden;">
       <!--Card Header-->
-      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
-        <h3 class="m-0 text-white flex-fill align-items-center">
-          View Goods Preparation
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 justify-content-between align-items-center">
+        <div class="flex-fill align-items-center">
+          <h3 class="m-0 text-white">
+            View Goods Preparation
+          </h3>
           <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
-        </h3>
+        </div>
+        <div>
+          <!-- <button (click)="toggleConfirmMode()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3">
+            Confirm Mode
+          </button>
+          <button (click)="toggleVerifyMode()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1">
+            Verify Mode
+          </button> -->
+        </div>
       </div>
       <!--Card Sub-Header-->
       <div id="card-subheader" class="py-3 px-4 d-flex justify-content-between">
@@ -26,41 +36,52 @@
             'table-danger': +row.qty >= +row.Qty_On_Hand
           }"
         ></tr>
-        <tr cdk-footer-row *cdkFooterRowDef="columns"></tr>
 
         <ng-container cdkColumnDef="p_id">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Item Code</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center font-weight-bold" style="width: 10%;">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Item Code</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center font-weight-bold" style="width: 20%; font-size: 18px;">
             {{row.p_id}}
           </td>
-          <td cdk-footer-cell *cdkFooterCellDef style="width: 10%;"></td>
         </ng-container>
 
         <ng-container cdkColumnDef="des">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Description</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-left" style="width: 25%;">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 48%;">Description</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-left" style="width: 48%; font-size: 18px;">
             {{row.Description_1}}<br>{{row.Description_2}}
           </td>
-          <td cdk-footer-cell *cdkFooterCellDef style="width: 25%;"></td>
         </ng-container>
 
         <ng-container cdkColumnDef="brand">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Brand</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-left" style="width: 9%;">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Brand</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-left" style="width: 20%; font-size: 18px;">
             {{row.Description_3}}
           </td>
-          <td cdk-footer-cell *cdkFooterCellDef style="width: 9%;"></td>
         </ng-container>
 
         <ng-container cdkColumnDef="qty">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">Qty</th>
-          <td cdk-cell *cdkCellDef="let row; index as i;" class="d-flex p-0"  style="width: 5%;">
-            <input (change)="updateVal(i, $event)" type="number" name="qty" id="qty" value="{{row.qty}}" class="no-border w-100 text-right">
+          <td cdk-cell *cdkCellDef="let row; index as i;" class="text-center" style="width: 5%; font-size: 18px;">
+            {{row.qty}}
           </td>
-          <td cdk-footer-cell *cdkFooterCellDef style="width: 5%;"></td>
         </ng-container>
 
-        
+        <ng-container cdkColumnDef="confirm">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;" [hidden]="!confirm">Confirm</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 7%;" class="p-0" [hidden]="!confirm">
+            <button (click)="markChecked(row.invlineid)" type="button" class="tgt-button-full bg-primary" style="margin: 5px auto;">
+              <i class="material-icons" style="line-height: 24px;margin-top: 3px;">done</i>
+            </button>
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="verify">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;" [hidden]="!verify">Verify</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 7%;" class="p-0" [hidden]="!verify">
+            <button (click)="markVerified(row.invlineid)" type="button" class="tgt-button-full bg-primary" style="margin: 5px auto;">
+              <i class="material-icons" style="line-height: 24px;margin-top: 3px;">done_all</i>
+            </button>
+          </td>
+        </ng-container>
       </table>
     </div>
   </div>

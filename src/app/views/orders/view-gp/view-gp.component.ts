@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
 import { ActivatedRoute, Params } from '@angular/router';
 
 import { OrdersService } from '../../../common/services/orders.service';
+import { MaterialService } from '../../../common/services/material.service';
 
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap, switchMap, map } from 'rxjs/operators';
@@ -12,10 +15,7 @@ import { tap, switchMap, map } from 'rxjs/operators';
   styleUrls: ['./view-gp.component.scss']
 })
 export class ViewGPComponent implements OnInit {
-  // Hello Coosoom ^_^ !
-
-  // You need to use an Observable to put the data inside it
-  loading = false;
+  loading = true;
   public invoice$: Observable<any>;
 
   entries = [];
@@ -25,7 +25,6 @@ export class ViewGPComponent implements OnInit {
 
   private _tempData: any;
 
-  // You will also need columns for your table
   public columns = [
     'p_id',
     'des',
@@ -35,22 +34,36 @@ export class ViewGPComponent implements OnInit {
     'verify'
   ];
 
-  // public confirm: boolean;
-  // public verify: boolean;
+  public confirm: boolean = true;
+  public verify: boolean = false;
 
   constructor(
+    private _fb: FormBuilder,
+    private _mdc: MaterialService,
     private _order: OrdersService,
     private _route: ActivatedRoute
   ) { }
 
   ngOnInit() {
     this.get();
+    this.invoice$ = this.invoice$.pipe(
+      tap((res) => {
+        const condition = (res.entries as any[]).every(item => item.checked == 1);
+        console.log(condition);
+
+        if (!condition) {
+          this.confirm = true;
+          this.verify = false;
+        } else {
+          this.confirm = false;
+          this.verify = true;
+        }
+      })
+    );
   }
 
-  // You need a getter function for the data
   get() {
-    // Use the observable to assign it to the data from the service
-    this.invoice$ = this._route.params.pipe(
+    return this.invoice$ = this._route.params.pipe(
       map(params => params.id),
       switchMap(params => {
         return this._order.getInvoice(+params);
@@ -58,15 +71,8 @@ export class ViewGPComponent implements OnInit {
       map((res: any) => res.records[0]),
       tap((res) => {
         this._tempData = res;
-        //this.searchProdForm.controls['cust_id'].setValue(res.cust_id);
-        this.entries = res.entries;
-
-        this.entries.forEach(entry => {
-          entry.status = 'existing';
-        });
-
-        this._prodEntr$.next(this.entries);
-
+        
+        this._prodEntr$.next(res.entries);
         this.loading = !this.loading;
       })
     );
@@ -76,11 +82,33 @@ export class ViewGPComponent implements OnInit {
     return index;
   }
 
-  // public toggleConfirmMode() {
-  //   this.confirm = !this.confirm;
-  // }
+  public markChecked(id) {
+    this._order.markChecked(id)
+    .subscribe(
+      (data) => {
+        this._mdc.materialSnackBar(data);
+      },
+      (err) => {
+        this._mdc.materialSnackBar(err.error);
+      },
+      () => {
+        this.get();
+      }
+    )
+  }
 
-  // public toggleVerifyMode() {
-  //   this.confirm = !this.confirm;
-  // }
+  public markVerified(id) {
+    this._order.markVerified(id)
+    .subscribe(
+      (data) => {
+        this._mdc.materialSnackBar(data);
+      },
+      (err) => {
+        this._mdc.materialSnackBar(err.error);
+      },
+      () => {
+        this.get();
+      }
+    )
+  }
 }

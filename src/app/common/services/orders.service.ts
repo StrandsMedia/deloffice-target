@@ -34,4 +34,12 @@ export class OrdersService {
   processInvoice(data): Observable<any> {
     return this.http.post<any>(this.url + 'orders/process_proforma.php', data);
   }
+
+  markChecked(id): Observable<any> {
+    return this.http.get(this.url + 'orders/markChecked.php?id=' + id);
+  }
+
+  markVerified(id): Observable<any> {
+    return this.http.get(this.url + 'orders/markVerified.php?id=' + id);
+  }
 }
