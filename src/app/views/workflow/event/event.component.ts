@@ -35,14 +35,14 @@ export class EventComponent implements OnInit, DoCheck {
   ];
 
 
-  public deliveryForm = this.fb.group({
+  public deliveryForm = this._fb.group({
     workflow_id: this.id,
     instructions: null,
     step: 5,
     user: null
   });
 
-  public purchaseForm = this.fb.group({
+  public purchaseForm = this._fb.group({
     workflow_id: this.id,
     instructions: null,
     step: 6,
@@ -54,14 +54,14 @@ export class EventComponent implements OnInit, DoCheck {
   questions: any;
 
   constructor(
-    private auth: AuthService,
-    private cdRef: ChangeDetectorRef,
-    private fb: FormBuilder,
-    private route: ActivatedRoute,
-    private qcs: QuestionControlService,
-    private wf: WorkflowService
+    private _auth: AuthService,
+    private _cdRef: ChangeDetectorRef,
+    private _fb: FormBuilder,
+    private _route: ActivatedRoute,
+    private _qcs: QuestionControlService,
+    private _wf: WorkflowService
   ) {
-    this.auth.currentUser.subscribe(data => {
+    this._auth.currentUser.subscribe(data => {
       if (data) {
         return this.user = data;
       }
@@ -70,7 +70,7 @@ export class EventComponent implements OnInit, DoCheck {
 
   ngOnInit() {
     this.get();
-    this.changeInvoiceForm = this.fb.group({
+    this.changeInvoiceForm = this._fb.group({
       workflow_id: null,
       invoiceNo: [
         null,
@@ -79,7 +79,7 @@ export class EventComponent implements OnInit, DoCheck {
           Validators.pattern(/(([iI][nN][vV])+([0-9]{6})|([sS][oO])+([0-9]{5}))/g),
         ],
         [
-          doubleChecker(this.wf, this.id)
+          doubleChecker(this._wf, this.id)
         ]
     ],
       step: 4,
@@ -92,17 +92,17 @@ export class EventComponent implements OnInit, DoCheck {
   }
 
   ngDoCheck() {
-    this.cdRef.detectChanges();
+    this._cdRef.detectChanges();
   }
 
   get invoiceNo() { return this.changeInvoiceForm.get('invoiceNo') as any; }
 
   get() {
-    this.route.params.forEach((params: Params) => {
+    this._route.params.forEach((params: Params) => {
       this.id = +params['id'];
       let prev = 'oops';
       let first = 'oops';
-      this.event = this.wf.readEvent(+params['id']).pipe(
+      this.event = this._wf.readEvent(+params['id']).pipe(
         map(res => res[0]),
         map(res => {
           if (res) {
@@ -140,7 +140,7 @@ export class EventComponent implements OnInit, DoCheck {
     };
 
     if (confirm(`Do you want to move workflow event #${id} to Goods Ready ?`)) {
-      this.wf.updateEvent(object).subscribe(
+      this._wf.updateEvent(object).subscribe(
         (data) => {
           this.response = data;
         },
@@ -159,7 +159,7 @@ export class EventComponent implements OnInit, DoCheck {
 
   changeInvNum(id) {
     this.changeInvoiceForm.controls['workflow_id'].setValue(id);
-    this.wf.updateEvent(this.changeInvoiceForm.value).subscribe(
+    this._wf.updateEvent(this.changeInvoiceForm.value).subscribe(
       (data) => {
         this.response = data;
       },
@@ -187,7 +187,7 @@ export class EventComponent implements OnInit, DoCheck {
       object.step = 3;
     }
 
-    this.wf.updateEvent(object).subscribe(
+    this._wf.updateEvent(object).subscribe(
       (data) => {
         this.response = data;
       },
@@ -202,7 +202,7 @@ export class EventComponent implements OnInit, DoCheck {
   }
 
   changeInstructions(form: FormGroup) {
-    this.wf.updateEvent(form.value).subscribe(
+    this._wf.updateEvent(form.value).subscribe(
       (data) => {
         this.response = data;
       },
@@ -217,11 +217,11 @@ export class EventComponent implements OnInit, DoCheck {
   }
 
   editWF(row) {
-    this.wf.retrieveProducts(row).subscribe(data => {
+    this._wf.retrieveProducts(row).subscribe(data => {
       const newdata = data;
       newdata.step = 16;
 
-      this.questions = this.qcs.getQuestions(Number(16), newdata);
+      this.questions = this._qcs.getQuestions(Number(16), newdata);
     });
   }
 
@@ -229,7 +229,7 @@ export class EventComponent implements OnInit, DoCheck {
     this.formData.workflow_id = id;
     this.formData.user = this.user.user_id;
     this.formData.step = 16;
-    this.wf.changeStatus(this.formData).subscribe(
+    this._wf.changeStatus(this.formData).subscribe(
       (data) => {
         console.log(data);
       },
