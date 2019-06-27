@@ -42,6 +42,14 @@ const orderroutes: Routes = [
           id: 3
         }
       },
+      {
+        path: ':id/purgatory',
+        component: PurgatoryComponent,
+        data: {
+          title: 'Pending Products Management',
+          id: 3
+        }
+      },
      
     ],
     data: {

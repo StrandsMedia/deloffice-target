@@ -41,6 +41,10 @@ export class OrdersService {
     return this.http.post<any>(this.url + 'purgatory/create.php', info);
   }
 
+  getPurgatory() {
+    
+  }
+
   markChecked(id): Observable<any> {
     return this.http.get(this.url + 'orders/markChecked.php?id=' + id);
   }

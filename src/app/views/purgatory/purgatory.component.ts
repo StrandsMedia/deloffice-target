@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
+import { OrdersService } from '../../common/services/orders.service';
+
 @Component({
   selector: 'app-purgatory',
   templateUrl: './purgatory.component.html',
@@ -7,9 +9,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PurgatoryComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private _order: OrdersService
+  ) { }
 
   ngOnInit() {
+
   }
 
+  get() {
+
+  }
+
+  public trackByFn(index, item) {
+    return index;
+  }
 }
