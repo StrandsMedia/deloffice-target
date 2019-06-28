@@ -28,3 +28,7 @@ table.tgt-table {
 td.bg-primary:hover {
     cursor: pointer;
 }
+
+td.not-allowed {
+    cursor: not-allowed !important;
+}

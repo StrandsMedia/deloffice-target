@@ -65,7 +65,7 @@
             </td>
           </ng-container>
           <ng-container cdkColumnDef="invoicing">
-            <th cdk-header-cell *cdkHeaderCellDef style="width: 16%;">Invoicing (Sent To Pastel)</th>
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 16%;">Invoicing<br>(Sent To Pastel)</th>
             <td cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 5}" style="width: 16%;" [clickDisabled]="'update'"></td>
           </ng-container>
           <ng-container cdkColumnDef="invoiced">

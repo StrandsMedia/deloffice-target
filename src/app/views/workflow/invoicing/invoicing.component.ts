@@ -47,6 +47,7 @@ export class InvoicingComponent implements OnInit {
 
   ngOnInit() {
     this.get();
+    // this.refresh();
   }
 
   trackByFn(index, item) {
@@ -83,5 +84,12 @@ export class InvoicingComponent implements OnInit {
     if ($event.target.classList.contains('bg-primary')) {
       this.hasClass = true;
     }
+  }
+
+  refresh() {
+    this.loading = true;
+    setTimeout(() => {
+      this.loading = false;
+    }, 3000);
   }
 }
