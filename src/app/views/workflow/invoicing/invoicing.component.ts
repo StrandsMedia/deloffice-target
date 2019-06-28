@@ -18,10 +18,20 @@ export class InvoicingComponent implements OnInit {
   clicked = 0;
   public loading = false;
   sortKey: any;
-  questions: any[];
   public hasClass = false;
   formData: any;
   public user: any;
+
+  public columns = [
+    'workflow_id',
+    'date',
+    'time',
+    'company_name',
+    'goodsready',
+    'invoicing',
+    'invoiced',
+    'duration'
+  ];
 
   public searchForm: FormGroup = this.fb.group({
     searchInput: ['']
@@ -66,5 +76,12 @@ export class InvoicingComponent implements OnInit {
         });
       })
     );
+  }
+
+  editWF($event) {
+    console.log(this.hasClass);
+    if ($event.target.classList.contains('bg-primary')) {
+      this.hasClass = true;
+    }
   }
 }

@@ -221,7 +221,7 @@ export class CollectComponent implements OnInit, AfterViewInit {
   }
 
   public parseDeliveryPay(value: string) {
-    if (value === '0') {
+    if (value == '0') {
       return 'No';
     }
     return 'Yes';

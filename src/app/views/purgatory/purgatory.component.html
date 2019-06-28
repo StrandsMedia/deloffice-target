@@ -2,12 +2,35 @@
   <div class="col-12">
     <div class="mdc-card mb-3">
       <!--Card Header-->
-      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center" style="border-radius: 4px;">
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center justify-content-between" style="border-radius: 4px;">
+        <div>
           <h3 class="m-0 text-white flex-fill align-items-center">
             Pending Products Management
-            <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
           </h3>
+          <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
+        </div>
+        <div class="d-flex flex-row align-items-center">
+          <div class="form-group my-1 mr-3" style="width: 200px;">
+            <select name="purgatory" id="purgatory" class="form-control w-100" style="height: 37px;">
+              <option [value]="1">Purchase</option>
+              <option [value]="2">Transfer</option>
+              <option [value]="3">Production</option>
+            </select>
+          </div>
+          <button class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1">
+            New Entry
+          </button>
+        </div>
       </div>
+      <!-- Data table -->
+      <table class="table table-hover table-bordered tgt-table tgt-scroll" respHeight>
+        <thead>
+          
+        </thead>
+        <tbody>
+
+        </tbody>
+      </table>
 
     </div>
   </div>

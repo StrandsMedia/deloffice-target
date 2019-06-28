@@ -62,6 +62,18 @@ export const Navigation: Nav = [
         ]
     },
     {
+        name: 'Goods Preparation',
+        path: '/order-entry',
+        icon: 'local_mall',
+        children: [
+            {
+                name: 'Pending Products Management',
+                path: '/purgatory',
+                icon: 'local_mall'
+            }
+        ]
+    },
+    {
         name: 'Delivery',
         path: '/workflow',
         icon: 'local_shipping',

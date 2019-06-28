@@ -8,6 +8,7 @@ import { OrdersService } from '../../common/services/orders.service';
   styleUrls: ['./purgatory.component.scss']
 })
 export class PurgatoryComponent implements OnInit {
+  public loading: boolean;
 
   constructor(
     private _order: OrdersService
