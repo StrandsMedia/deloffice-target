@@ -85,7 +85,7 @@
 
         <ng-container cdkColumnDef="goodsreadytbi">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Goods ready to be invoiced</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 7 && !row.InvStatus}" style="width: 10%;" [clickDisabled]="'update'"></td>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 7}" style="width: 10%;" [clickDisabled]="'update'"></td>
         </ng-container>
 
         <ng-container cdkColumnDef="duration">

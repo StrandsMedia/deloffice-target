@@ -119,7 +119,7 @@ export class ViewGPComponent implements OnInit {
             user: this._user.user_id,
             step: 3
           }
-          this._router.navigate(['/workflow/goods-preparation']);
+          setTimeout(() => this._router.navigate(['/workflow/goods-preparation']), 3000)
           return this._order.changeStatus(postData);
         } else {
           return of(data);
@@ -146,10 +146,10 @@ export class ViewGPComponent implements OnInit {
         return this.get().pipe(take(1));
       }),
       switchMap(data => {
-        // console.log(data);
+        //console.log(data);
         const entries = data.entries;
         const condition = entries.every(item => item.verified == 1);
-        // console.log(condition);
+        //console.log(condition);
         if (condition) {
           const postData = {
             invoice_id: this._id,
@@ -157,7 +157,8 @@ export class ViewGPComponent implements OnInit {
             user: this._user.user_id,
             step: 4
           }
-          this._router.navigate(['/workflow/goods-preparation']);
+          setTimeout(() => this._router.navigate(['/workflow/goods-preparation']), 3000)
+          
           return this._order.changeStatus(postData);
           
         } else {
