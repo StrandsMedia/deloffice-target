@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 
 import { AuthService } from '../../../common/services/auth.service';
 import { OrdersService } from '../../../common/services/orders.service';
 import { MaterialService } from '../../../common/services/material.service';
 
-import { Observable, BehaviorSubject } from 'rxjs';
-import { tap, switchMap, map } from 'rxjs/operators';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+import { tap, switchMap, map, take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-view-gp',
@@ -24,8 +24,10 @@ export class ViewGPComponent implements OnInit {
   public prodEnt$: Observable<any> = this._prodEntr$.asObservable();
   public tempProd: any;
   private _user: any;
+  private _id: number;
 
   private _tempData: any;
+  public amendStatus = false;
 
   public columns = [
     'p_id',
@@ -49,7 +51,8 @@ export class ViewGPComponent implements OnInit {
     private _fb: FormBuilder,
     private _mdc: MaterialService,
     private _order: OrdersService,
-    private _route: ActivatedRoute
+    private _route: ActivatedRoute,
+    private _router: Router
   ) {
     this._auth.currentUser.subscribe(data => this._user = data);
   }
@@ -67,8 +70,13 @@ export class ViewGPComponent implements OnInit {
           this.confirm = false;
           this.verify = true;
         }
+
+        if (res.InvStatus == 2) {
+          this.amendStatus = true;
+        }
       })
     );
+
   }
 
   get() {
@@ -76,6 +84,7 @@ export class ViewGPComponent implements OnInit {
     return this.invoice$ = this._route.params.pipe(
       map(params => params.id),
       switchMap(params => {
+        this._id = +params;
         return this._order.getInvoice(+params);
       }),
       map((res: any) => res.records[0]),
@@ -92,8 +101,31 @@ export class ViewGPComponent implements OnInit {
     return index;
   }
 
-  public markChecked(id) {
+  public markChecked(id) {    
     this._order.markChecked(id)
+    .pipe(
+      switchMap(data => {
+        return this.get().pipe(take(1));
+      }),
+      switchMap(data => {
+        // console.log(data);
+        const entries = data.entries;
+        const condition = entries.every(item => item.checked == 1);
+        // console.log(condition);
+        if (condition) {
+          const postData = {
+            invoice_id: this._id,
+            workflow_id: this._tempData.workflow_id,
+            user: this._user.user_id,
+            step: 3
+          }
+          this._router.navigate(['/workflow/goods-preparation']);
+          return this._order.changeStatus(postData);
+        } else {
+          return of(data);
+        }
+      })
+    )
     .subscribe(
       (data) => {
         this._mdc.materialSnackBar(data);
@@ -102,13 +134,37 @@ export class ViewGPComponent implements OnInit {
         this._mdc.materialSnackBar(err.error);
       },
       () => {
-        this.get();
+
       }
     )
   }
 
   public markVerified(id) {
     this._order.markVerified(id)
+    .pipe(
+      switchMap(data => {
+        return this.get().pipe(take(1));
+      }),
+      switchMap(data => {
+        // console.log(data);
+        const entries = data.entries;
+        const condition = entries.every(item => item.verified == 1);
+        // console.log(condition);
+        if (condition) {
+          const postData = {
+            invoice_id: this._id,
+            workflow_id: this._tempData.workflow_id,
+            user: this._user.user_id,
+            step: 4
+          }
+          this._router.navigate(['/workflow/goods-preparation']);
+          return this._order.changeStatus(postData);
+          
+        } else {
+          return of(data);
+        }
+      })
+    )
     .subscribe(
       (data) => {
         this._mdc.materialSnackBar(data);
@@ -117,7 +173,7 @@ export class ViewGPComponent implements OnInit {
         this._mdc.materialSnackBar(err.error);
       },
       () => {
-        this.get();
+        
       }
     )
   }
@@ -146,6 +202,30 @@ export class ViewGPComponent implements OnInit {
       },
       () => {
         this.get();
+      }
+    )
+  }
+
+  public sendForAmendment(): void {
+    const data = {
+      invoice_id: this._id,
+      workflow_id: this._tempData.workflow_id,
+      user: this._user.user_id,
+      step: 2
+    };
+
+    this._order.changeStatus(data)
+    .subscribe(
+      (data) => {
+        this._mdc.materialSnackBar(data);
+      },
+      (err) => {
+        this._mdc.materialSnackBar(err.error);
+      },
+      () => {
+        this.get();
+        this.amendStatus = true;
+        this._router.navigate(['/workflow/goods-preparation']);
       }
     )
   }

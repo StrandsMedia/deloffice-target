@@ -41,16 +41,7 @@ const orderroutes: Routes = [
           title: 'Edit Invoice',
           id: 3
         }
-      },
-      {
-        path: ':id/purgatory',
-        component: PurgatoryComponent,
-        data: {
-          title: 'Pending Products Management',
-          id: 3
-        }
-      },
-     
+      },     
     ],
     data: {
       expectedRole: ['Admin'],
@@ -65,7 +56,15 @@ const orderroutes: Routes = [
       expectedRole: ['Admin'],
       id: 3
     }
-  }
+  },
+  {
+    path: 'purgatory',
+    component: PurgatoryComponent,
+    data: {
+      title: 'Pending Products Management',
+      id: 3
+    }
+  },
 ];
 
 @NgModule({

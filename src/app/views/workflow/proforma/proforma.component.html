@@ -72,7 +72,7 @@
 
         <ng-container cdkColumnDef="proftobeamended">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Proforma to be amended</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 25 && row.InvStatus === 2}" style="width: 10%;" [clickDisabled]="'update'"></td>
+          <td [routerLink]="row.status == 26 && row.InvStatus === 2 ? '/order-entry/view/' + row.invoice_id : null" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 26 && row.InvStatus === 2}" style="width: 10%;" [clickDisabled]="'update'"></td>
         </ng-container>
 
         <ng-container cdkColumnDef="proftobecancelled">

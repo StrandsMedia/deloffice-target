@@ -137,10 +137,11 @@ export class ProformaComponent implements OnInit {
         company_name: row.company_name,
         customerCode: row.customerCode,
         workflow_id: row.workflow_id,
-        user: this.user.user_id
+        user: this.user.user_id,
+        step: 1
       };
       console.log(object);
-      this.order.createInvoice(object)
+      this.order.changeStatus(object)
         .pipe(
           tap(id => {
             this._router.navigate(['/order-entry/view/' + id]);

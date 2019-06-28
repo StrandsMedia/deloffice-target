@@ -15,9 +15,9 @@ export class OrdersService {
 
   constructor(private http: HttpClient) { }
 
-  createInvoice(data): Observable<any> {
-    return this.http.post<any>(this.url + 'orders/create_proforma.php', data);
-  }
+  // createInvoice(data): Observable<any> {
+  //   return this.http.post<any>(this.url + 'orders/create_proforma.php', data);
+  // }
 
   getInvoices(data): Observable<any> {
     return this.http.post(this.url + 'orders/read.php', {'status': data});
@@ -42,8 +42,24 @@ export class OrdersService {
   }
 
   getPurgatory() {
-    
+
   }
+
+  // sendForAmendment(info): Observable<any> {
+  //   return this.http.post<any>(this.url + 'orders/amend_proforma.php', info);
+  // }
+
+  changeStatus(info): Observable<any> {
+    return this.http.post<any>(this.url + 'orders/changeStatus.php', info);
+  }
+
+  // toBeChecked(info): Observable<any> {
+  //   return this.http.post<any>(this.url + 'orders/toBeChecked.php', info);
+  // }
+
+  // toBeReady(info): Observable<any> {
+  //   return this.http.post<any>(this.url + 'orders/toBeReady.php', info);
+  // }
 
   markChecked(id): Observable<any> {
     return this.http.get(this.url + 'orders/markChecked.php?id=' + id);
