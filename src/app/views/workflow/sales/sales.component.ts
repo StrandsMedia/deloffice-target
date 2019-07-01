@@ -24,6 +24,7 @@ export class SalesComponent implements OnInit, DoCheck {
     'date',
     'time',
     'company_name',
+    'company',
     'inquiry',
     'quotesent',
     'orderconfirm',

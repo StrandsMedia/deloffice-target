@@ -27,6 +27,7 @@ export class GoodsPrepComponent implements OnInit {
     'date',
     'time',
     'company_name',
+    'company',
     'goodstbprep',
     'goodsinprep',
     'goodsawaitingamend',

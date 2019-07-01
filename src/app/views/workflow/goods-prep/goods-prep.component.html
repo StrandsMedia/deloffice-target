@@ -34,7 +34,7 @@
         <ng-container cdkColumnDef="date">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">Date</th>
           <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 8%;">
-            {{row.time | date:'dd-MM-yyyy'}}
+            {{row.time | date:'dd-MM-yy'}}
           </td>
         </ng-container>
 
@@ -55,37 +55,44 @@
           </td>
         </ng-container>
 
+        <ng-container cdkColumnDef="company">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 6%;">Company</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center" style="width: 6%;">
+            DEL
+          </td>
+        </ng-container>
+
         <!--Workflow Rows-->
         <ng-container cdkColumnDef="goodstbprep">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Goods to be prepared</th>
-          <td [routerLink]="row.status == 26 && row.InvStatus === 5 ? '/order-entry/view/' + row.invoice_id + '/gp' : null" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 26 && row.InvStatus === 5}" style="width: 10%;" [clickDisabled]="'update'">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Goods to be prepared</th>
+          <td [routerLink]="row.status == 26 && row.InvStatus === 5 ? '/order-entry/view/' + row.invoice_id + '/gp' : null" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 26 && row.InvStatus === 5}" style="width: 9%;" [clickDisabled]="'update'">
             {{row.invRef | uppercase}}
           </td>
         </ng-container>
 
         <ng-container cdkColumnDef="goodsinprep">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Goods in preparation</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 26 && row.InvStatus === 6}" style="width: 10%;" [clickDisabled]="'update'"></td>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Goods in preparation</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 26 && row.InvStatus === 6}" style="width: 9%;" [clickDisabled]="'update'"></td>
         </ng-container>
 
         <ng-container cdkColumnDef="goodsawaitingamend">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Goods awaiting amendments</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 26 && row.InvStatus === 2}" style="width: 10%;" [clickDisabled]="'update'"></td>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Goods awaiting amendments</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 26 && row.InvStatus === 2}" style="width: 9%;" [clickDisabled]="'update'"></td>
         </ng-container>
 
         <ng-container cdkColumnDef="goodsawaitingtrans">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Goods awaiting transfer/purchase</th>
-          <td [routerLink]="row.status == 26 && row.InvStatus === 7 ? '/order-entry/purgatory' : null" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 26 && row.InvStatus === 7}" style="width: 10%;" [clickDisabled]="'update'"></td>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Goods awaiting transfer/purchase</th>
+          <td [routerLink]="row.status == 26 && row.InvStatus === 7 ? '/order-entry/purgatory' : null" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 26 && row.InvStatus === 7}" style="width: 9%;" [clickDisabled]="'update'"></td>
         </ng-container>
 
         <ng-container cdkColumnDef="goodstbchecked">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Goods to be checked</th>
-          <td [routerLink]="row.status == 26 && row.InvStatus === 8 ? '/order-entry/view/' + row.invoice_id + '/gp' : null" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 26 && row.InvStatus === 8}" style="width: 10%;" [clickDisabled]="'update'"></td>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Goods to be checked</th>
+          <td [routerLink]="row.status == 26 && row.InvStatus === 8 ? '/order-entry/view/' + row.invoice_id + '/gp' : null" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 26 && row.InvStatus === 8}" style="width: 9%;" [clickDisabled]="'update'"></td>
         </ng-container>
 
         <ng-container cdkColumnDef="goodsreadytbi">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Goods ready to be invoiced</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 7}" style="width: 10%;" [clickDisabled]="'update'"></td>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Goods ready to be invoiced</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 7}" style="width: 9%;" [clickDisabled]="'update'"></td>
         </ng-container>
 
         <ng-container cdkColumnDef="duration">

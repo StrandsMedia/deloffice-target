@@ -35,7 +35,7 @@
           <ng-container cdkColumnDef="date">
             <th cdk-header-cell *cdkHeaderCellDef style="width: 8%;">Date</th>
             <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 8%;">
-              {{row.time | date:'dd-MM-yyyy'}}
+              {{row.time | date:'dd-MM-yy'}}
             </td>
           </ng-container>
   
@@ -56,21 +56,28 @@
             </td>
           </ng-container>
 
+          <ng-container cdkColumnDef="company">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 6%;">Company</th>
+            <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center" style="width: 6%;">
+              DEL
+            </td>
+          </ng-container>
+
           <!-- Workflow Rows -->
 
           <ng-container cdkColumnDef="goodsready">
-            <th cdk-header-cell *cdkHeaderCellDef style="width: 16%;">Goods Ready<br>to be Invoiced</th>
-            <td (click)="editWF($event)" cdk-cell *cdkCellDef="let row; index as i;" [ngClass]="{'bg-primary': row.status == 7}" style="width: 16%;" name="2" [dialogTrigger]="hasClass ? 'pastel' : null" [class.disabled]="row.status != 7" [clickDisabled]="'update'">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 14%;">Goods Ready<br>to be Invoiced</th>
+            <td (click)="editWF($event)" cdk-cell *cdkCellDef="let row; index as i;" [ngClass]="{'bg-primary': row.status == 7}" style="width: 14%;" name="2" [dialogTrigger]="hasClass ? 'pastel' : null" [class.disabled]="row.status != 7" [clickDisabled]="'update'">
               {{row.invRef | uppercase}}
             </td>
           </ng-container>
           <ng-container cdkColumnDef="invoicing">
-            <th cdk-header-cell *cdkHeaderCellDef style="width: 16%;">Invoicing<br>(Sent To Pastel)</th>
-            <td cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 5}" style="width: 16%;" [clickDisabled]="'update'"></td>
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 14%;">Invoicing<br>(Sent To Pastel)</th>
+            <td cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 5}" style="width: 14%;" [clickDisabled]="'update'"></td>
           </ng-container>
           <ng-container cdkColumnDef="invoiced">
-            <th cdk-header-cell *cdkHeaderCellDef style="width: 16%;">Invoiced</th>
-            <td cdk-cell *cdkCellDef="let row" class="text-center" name="4" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 6}" style="width: 16%;" [clickDisabled]="'update'">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 14%;">Invoiced</th>
+            <td cdk-cell *cdkCellDef="let row" class="text-center" name="4" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 6}" style="width: 14%;" [clickDisabled]="'update'">
               {{row.invoiceNo | uppercase}}
             </td>
           </ng-container>

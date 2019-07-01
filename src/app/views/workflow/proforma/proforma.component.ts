@@ -27,6 +27,7 @@ export class ProformaComponent implements OnInit {
     'date',
     'time',
     'company_name',
+    'company',
     'orderconfirm',
     'profinprocess',
     'proftobeamended',

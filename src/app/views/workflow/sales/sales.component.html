@@ -59,19 +59,26 @@
             {{row.company_name}}
           </td>
         </ng-container>
+
+        <ng-container cdkColumnDef="company">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 6%;">Company</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center" style="width: 6%;">
+            DEL
+          </td>
+        </ng-container>
       
         <!-- Workflow Rows -->
         <ng-container cdkColumnDef="inquiry">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 16%;">Inquiry</th>
-          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row; index as i;" [ngClass]="{'bg-primary': row.status == 1}" style="width: 16%;" name="2" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 14%;">Inquiry</th>
+          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row; index as i;" [ngClass]="{'bg-primary': row.status == 1}" style="width: 14%;" name="2" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
         </ng-container>
         <ng-container cdkColumnDef="quotesent">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 16%;">Quote Sent</th>
-          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 2}" style="width: 16%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 14%;">Quote Sent</th>
+          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 2}" style="width: 14%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
         </ng-container>
         <ng-container cdkColumnDef="orderconfirm">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 16%;">Order Confirmed</th>
-          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" class="text-center not-allowed" name="4" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 3}" style="width: 16%;" [clickDisabled]="'update'">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 14%;">Order Confirmed</th>
+          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" class="text-center not-allowed" name="4" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 3}" style="width: 14%;" [clickDisabled]="'update'">
             {{row.orderNo | uppercase}}
           </td>
         </ng-container>

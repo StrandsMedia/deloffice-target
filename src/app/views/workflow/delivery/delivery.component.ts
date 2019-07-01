@@ -24,6 +24,7 @@ export class DeliveryComponent implements OnInit, DoCheck {
     'date',
     'time',
     'company_name',
+    'company',
     'invoiced',
     // 'goodsready',
     'goodsalloc',

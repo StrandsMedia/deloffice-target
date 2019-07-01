@@ -1,8 +1,8 @@
 <div class="row">
   <div class="col-12">
-    <div class="mdc-card mb-3">
+    <div class="mdc-card mb-3" style="overflow: hidden;">
       <!--Card Header-->
-      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center justify-content-between" style="border-radius: 4px;">
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center justify-content-between">
         <div>
           <h3 class="m-0 text-white flex-fill align-items-center">
             Pending Products Management
@@ -25,10 +25,22 @@
       <!-- Data table -->
       <table class="table table-hover table-bordered tgt-table tgt-scroll" respHeight>
         <thead>
-          
+          <tr>
+            <th>Product Code</th>
+            <th>Product Name</th>
+            <th>Product Brand</th>
+            <th>Qty</th>
+            <th>Created At</th>
+          </tr>
         </thead>
         <tbody>
-
+          <tr>
+            <td class="font-weight-bold">OA021000</td>
+            <td>Multipurpose Paper A4</td>
+            <td>JK Copier</td>
+            <td>{{1000 | number:'1.0-0'}}</td>
+            <td></td>
+          </tr>
         </tbody>
       </table>
 

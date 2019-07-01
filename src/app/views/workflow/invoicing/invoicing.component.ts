@@ -27,6 +27,7 @@ export class InvoicingComponent implements OnInit {
     'date',
     'time',
     'company_name',
+    'company',
     'goodsready',
     'invoicing',
     'invoiced',

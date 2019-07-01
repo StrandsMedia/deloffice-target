@@ -67,24 +67,31 @@
             {{row.company_name}}
           </td>
         </ng-container>
+
+        <ng-container cdkColumnDef="company">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 6%;">Company</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center" style="width: 6%;">
+            DEL
+          </td>
+        </ng-container>
       
         <!-- Workflow Rows -->
         <ng-container cdkColumnDef="invoiced">
-          <th (click)="sort($event)" cdk-header-cell *cdkHeaderCellDef data-name="invoiceNo" style="width: 13%;">
+          <th (click)="sort($event)" cdk-header-cell *cdkHeaderCellDef data-name="invoiceNo" style="width: 11%;">
             Invoiced
             <i *ngIf="sortKey === 'invoiceNo'" class="material-icons">{{clicked === 1 ? 'arrow_drop_up': 'arrow_drop_down'}}</i>
           </th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 6}" style="width: 13%;" (click)="editWF($event, row)" name="5" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'">
+          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 6}" style="width: 11%;" (click)="editWF($event, row)" name="5" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'">
             {{row.invoiceNo | uppercase}}
           </td>
         </ng-container>
         <ng-container cdkColumnDef="goodsready">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 13%;">Goods Ready</th>
-          <td cdk-cell *cdkCellDef="let row" [ngClass]="{'bg-primary': row.status == 7}" style="width: 13%;" (click)="editWF($event, row)" [dialogTrigger]="hasClass ? 'wfpopup' : null" name="8" [clickDisabled]="'update'"></td>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 11%;">Goods Ready</th>
+          <td cdk-cell *cdkCellDef="let row" [ngClass]="{'bg-primary': row.status == 7}" style="width: 11%;" (click)="editWF($event, row)" [dialogTrigger]="hasClass ? 'wfpopup' : null" name="8" [clickDisabled]="'update'"></td>
         </ng-container>
         <ng-container cdkColumnDef="goodsalloc">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 13%;">Goods Allocated</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 9}" style="width: 13%;" (click)="editWF($event, row)" [dialogTrigger]="hasClass ? 'wfpopup' : null" name="9" [clickDisabled]="'update'">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 11%;">Goods Allocated</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 9}" style="width: 11%;" (click)="editWF($event, row)" [dialogTrigger]="hasClass ? 'wfpopup' : null" name="9" [clickDisabled]="'update'">
             {{row.status == 9 ? row.vehicleNo : null | uppercase}}
           </td>
         </ng-container>
