@@ -132,8 +132,8 @@ export class WorkflowService {
     return this.http.post(this.url + 'user/user_data.php', info);
   }
 
-  readEvent(id: number): Observable<any>  {
-    return this.http.get(this.url + `workflow/readEvent.php?id=${id}`);
+  readEvent(id: number, data: number): Observable<any>  {
+    return this.http.get(this.url + `workflow/readEvent.php?id=${id}&d=${data}`);
   }
 
   retrieveProducts(id): Observable<any> {

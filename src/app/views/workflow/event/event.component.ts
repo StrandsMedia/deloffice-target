@@ -1,13 +1,13 @@
 import { Component, OnInit, DoCheck, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params,  } from '@angular/router';
 
 import { WorkflowService } from 'src/app/common/services/workflow.service';
 import { AuthService } from 'src/app/common/services/auth.service';
 import { QuestionControlService } from '../popup/utils/question-control.service';
 
-import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { Observable, combineLatest } from 'rxjs';
+import { map, tap, switchMap } from 'rxjs/operators';
 import { doubleChecker } from 'src/app/common/utils/unique.validator';
 
 @Component({
@@ -16,7 +16,7 @@ import { doubleChecker } from 'src/app/common/utils/unique.validator';
   styleUrls: ['./event.component.scss']
 })
 export class EventComponent implements OnInit, DoCheck {
-  event: Observable<any>;
+  event$: Observable<any>;
   id: number;
   user;
   public loading: boolean;
@@ -98,38 +98,39 @@ export class EventComponent implements OnInit, DoCheck {
   get invoiceNo() { return this.changeInvoiceForm.get('invoiceNo') as any; }
 
   get() {
-    this._route.params.forEach((params: Params) => {
-      this.id = +params['id'];
-      let prev = 'oops';
-      let first = 'oops';
-      this.event = this._wf.readEvent(+params['id']).pipe(
-        map(res => res[0]),
-        map(res => {
-          if (res) {
-            res['history'].map(hist => {
-              hist['prev'] = prev;
-              hist['first'] = first;
+    let prev = 'oops';
+    let first = 'oops';
+    this.event$ = combineLatest(this._route.params, this._route.queryParams).pipe(
+      switchMap(([params, queryParams]) => {
+        this.id = +params['id'];
+        return this._wf.readEvent(+params['id'], +queryParams['data']);
+      }),
+      map(res => res[0]),
+      map(res => {
+        if (res) {
+          res['history'].map(hist => {
+            hist['prev'] = prev;
+            hist['first'] = first;
 
-              prev = hist['time'];
-              if (!first || first === 'oops') {
-                first = hist['time'];
-              }
+            prev = hist['time'];
+            if (!first || first === 'oops') {
+              first = hist['time'];
+            }
 
-              return hist;
-            });
-          }
-          return res;
-        }),
-        tap((info) => {
-          if (info) {
-            this.deliveryForm.setValue({ workflow_id : +params['id'], instructions: info.dinstr, user: this.user.user_id, step: 5 });
-            this.purchaseForm.setValue({ workflow_id : +params['id'], instructions: info.pinstr, user: this.user.user_id, step: 6 });
-            this.changeInvoiceForm.controls['user'].setValue(this.user.user_id);
-            this.changeInvoiceForm.controls['invoiceNo'].setValue(info.invoiceNo);
-          }
-        })
-      );
-    });
+            return hist;
+          });
+        }
+        return res;
+      }),
+      tap((info) => {
+        if (info) {
+          this.deliveryForm.setValue({ workflow_id : this.id, instructions: info.dinstr, user: this.user.user_id, step: 5 });
+          this.purchaseForm.setValue({ workflow_id : this.id, instructions: info.pinstr, user: this.user.user_id, step: 6 });
+          this.changeInvoiceForm.controls['user'].setValue(this.user.user_id);
+          this.changeInvoiceForm.controls['invoiceNo'].setValue(info.invoiceNo);
+        }
+      })
+    );
   }
 
   moveToGReady(id: number) {
