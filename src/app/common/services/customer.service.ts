@@ -34,8 +34,8 @@ export class CustomerService {
     return this.http.get(url);
   }
 
-  getCustomer(id): Observable<any> {
-    return this.http.get(this.url + 'customers/read_one.php' + `?id=${id}`);
+  getCustomer(id, data?): Observable<any> {
+    return this.http.get(this.url + 'customers/read_one.php' + `?id=${id}&d=${data}`);
   }
 
   getStatus(id): Observable<any> {

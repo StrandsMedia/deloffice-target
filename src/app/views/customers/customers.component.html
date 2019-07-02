@@ -24,15 +24,22 @@
       
         <ng-container cdkColumnDef="cust_id">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">#</th>
-          <td [routerLink]="['/customers/' + row.cust_id]" cdk-cell *cdkCellDef="let row" class="font-weight-bold point text-center" style="width: 5%;">
+          <td [routerLink]="['/customers/' + row.cust_id]" [queryParams]="{ data: row.data }" cdk-cell *cdkCellDef="let row" class="font-weight-bold point text-center" style="width: 5%;">
             {{row.cust_id}}
           </td>
         </ng-container>
       
         <ng-container cdkColumnDef="company_name">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Customer Name</th>
-          <td [routerLink]="['/customers/' + row.cust_id]" cdk-cell *cdkCellDef="let row" class="font-weight-bold point" style="width: 25%;">
+          <td [routerLink]="['/customers/' + row.cust_id]" [queryParams]="{ data: row.data }" cdk-cell *cdkCellDef="let row" class="font-weight-bold point" style="width: 25%;">
             {{row.company_name}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="company">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Company</th>
+          <td [routerLink]="['/customers/' + row.cust_id]" [queryParams]="{ data: row.data }" cdk-cell *cdkCellDef="let row" class="font-weight-bold point" style="width: 25%;">
+            {{row.company}}
           </td>
         </ng-container>
       
@@ -68,7 +75,7 @@
         <ng-container cdkColumnDef="operations">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 6%;"></th>
           <td cdk-cell *cdkCellDef="let row" style="width: 6%;">
-            <button [routerLink]="['/customers/' + row.cust_id ]" class="tgt-button-full d-flex h-100 px-3 py-2 mr-2 float-left">View</button>
+            <button [routerLink]="['/customers/' + row.cust_id ]" [queryParams]="{ data: row.data }" class="tgt-button-full d-flex h-100 px-3 py-2 mr-2 float-left">View</button>
             <!-- <app-btn (click)="delete(row.cust_id)" (clickEd)="clickHandler($event)" [data]="response">Delete</app-btn> -->
           </td>
         </ng-container>
@@ -85,18 +92,25 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-5">
+      <div class="col-4">
         <div class="form-group">
           <label for="customerCode">Customer Code</label>
           <input formControlName="customerCode" type="text" class="form-control" name="customerCode" id="customerCode">
           <small id="codeHelp" class="form-text text-muted">This code has to match the ref. number on Pastel</small>
         </div>
       </div>
-      <div class="col-7">
+      <div class="col-4">
         <div class="form-group">
           <label for="company_name">Customer Name</label>
           <input formControlName="company_name" type="text" class="form-control" name="company_name" id="company_name">
           <small id="nameHelp" class="form-text text-muted">Fill in this field with the customer's name in proper form.</small>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="form-group">
+          <label for="company">Company</label>
+          <input formControlName="company" type="text" class="form-control" name="company" id="company">
+          <small id="companyHelp" class="form-text text-muted">Fill in this field with the company in proper form.</small>
         </div>
       </div>
     </div>

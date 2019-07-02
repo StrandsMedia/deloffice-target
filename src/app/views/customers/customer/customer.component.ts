@@ -8,8 +8,8 @@ import { CustomerService } from 'src/app/common/services/customer.service';
 import { MaterialService } from 'src/app/common/services/material.service';
 import { RoutesService } from 'src/app/common/services/routes.service';
 
-import { Subscription, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { Subscription, Observable, combineLatest } from 'rxjs';
+import { map, tap, switchMap } from 'rxjs/operators';
 import { TitleService } from 'src/app/common/services/title.service';
 
 @Component({
@@ -33,6 +33,9 @@ export class CustomerComponent implements OnInit, AfterViewInit {
   total = 0;
   baltotal = 0;
   user: any;
+
+  id: number;
+  data: number;
 
   public tabs = [
     'Jobs',
@@ -114,37 +117,38 @@ export class CustomerComponent implements OnInit, AfterViewInit {
   }
 
   get() {
-    this.route.params.forEach((params: Params) => {
-      this.customer = this.cust.getCustomer(+params['id']).pipe(
-        tap((data) => {
-          this.title.swapTitle(data.company_name);
-        }),
-        map((data: any) => {
-          if (data.customerCode) {
-            this.balance = this.cust.getBalance(data.customerCode).pipe(
-              map((bal) => {
-                this.total = bal['records'].reduce((acc, curr) => acc + +curr.Outstanding, 0);
-                return bal;
-              })
-            );
+    this.customer = combineLatest(this.route.params, this.route.queryParams).pipe(
+      switchMap(([params, queryParams]) => {
+        return this.cust.getCustomer(+params['id'], +queryParams['data']);
+      }),
+      tap((data: any) => {
+        this.title.swapTitle(data.company_name);
+      }),
+      map((data: any) => {
+        if (data.customerCode) {
+          this.balance = this.cust.getBalance(data.customerCode).pipe(
+            map((bal) => {
+              this.total = bal['records'].reduce((acc, curr) => acc + +curr.Outstanding, 0);
+              return bal;
+            })
+          );
 
-            this.statement = this.cust.getStatement(data.customerCode).pipe(
-              map((allocs: any) => {
-                if (allocs) {
-                  return allocs.records;
-                }
-              }),
-              map((allocs) => {
-                if (allocs) {
-                  this.baltotal = allocs.reduce((acc, curr) => acc + +curr.Outstanding, 0);
-                }
-              })
-            );
-          }
-          return data;
-        })
-      );
-    });
+          this.statement = this.cust.getStatement(data.customerCode).pipe(
+            map((allocs: any) => {
+              if (allocs) {
+                return allocs.records;
+              }
+            }),
+            map((allocs) => {
+              if (allocs) {
+                this.baltotal = allocs.reduce((acc, curr) => acc + +curr.Outstanding, 0);
+              }
+            })
+          );
+        }
+        return data;
+      })
+    );
   }
 
   initTab() {

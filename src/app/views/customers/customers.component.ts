@@ -23,6 +23,7 @@ export class CustomersComponent implements OnInit {
   columns = [
     'cust_id',
     'company_name',
+    'company',
     'contact_person',
     'contact_number',
     'notes',
@@ -37,6 +38,7 @@ export class CustomersComponent implements OnInit {
   public addForm = this.fb.group({
     customerCode: [''],
     company_name: ['', Validators.required],
+    company: [''],
     address: [''],
     location: [null],
     category: [''],

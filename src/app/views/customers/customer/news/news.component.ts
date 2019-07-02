@@ -9,8 +9,8 @@ import { TendersService } from 'src/app/common/services/tenders.service';
 import { AuthService } from 'src/app/common/services/auth.service';
 import { QuestionControlService } from 'src/app/views/workflow/popup/utils/question-control.service';
 
-import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { Observable, combineLatest } from 'rxjs';
+import { map, tap, switchMap } from 'rxjs/operators';
 import { MaterialService } from 'src/app/common/services/material.service';
 
 @Component({
@@ -21,7 +21,7 @@ import { MaterialService } from 'src/app/common/services/material.service';
 export class NewsComponent implements OnInit, DoCheck {
   @Input() data: any;
   formData: any;
-  entries: Observable<any>;
+  entries$: Observable<any>;
   searchResults: Observable<any>;
   user: any;
 
@@ -147,9 +147,11 @@ export class NewsComponent implements OnInit, DoCheck {
   }
 
   get() {
-    this.route.params.forEach((params: Params) => {
-      this.entries = this.wf.readByCust(+params['id']);
-    });
+    this.entries$ = combineLatest(this.route.params, this.route.queryParams).pipe(
+      switchMap(([params, queryParams]) => {
+        return this.wf.readByCust(+params['id'], +queryParams['data']);
+      })
+    );
   }
 
   trackByFn(item, index) {

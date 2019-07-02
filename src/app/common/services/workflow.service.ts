@@ -120,8 +120,8 @@ export class WorkflowService {
     return this.http.get(this.url + 'workflow/readPaper.php');
   }
 
-  readByCust(id: number): Observable<any> {
-    return this.http.get(this.url + 'workflow/readByCust.php?s=' + id);
+  readByCust(id: number, data: number): Observable<any> {
+    return this.http.get(this.url + 'workflow/readByCust.php?s=' + id + `&d=${data}`);
   }
 
   readByStatus(status: number): Observable<any>  {
