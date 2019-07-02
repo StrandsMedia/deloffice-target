@@ -3,7 +3,7 @@
         <div class="mdc-card py-3" style="padding: 25px;">
             <div class="d-flex">
                 <div id="company" class="pr-4" style="border-right: 1px solid #eee;">
-                    <h4>{{customer?.customerCode ? customer?.customerCode + ' - ' : null}}{{customer?.company_name}}</h4>
+                    <h4>{{customer?.customerCode ? customer?.customerCode + ' - ' : null}}{{customer?.company_name}} ({{customer?.company}})</h4>
                     <p class="mb-2" style="font-size: 15px;"><strong>{{customer?.address || '-'}}</strong></p>
                     <p class="mb-2"><strong>Sector: </strong>{{customer?.sector_name || '-'}}</p>
                     <p class="mb-2"><strong>Subsector: </strong>{{customer?.subsector_name || '-'}}</p>

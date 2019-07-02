@@ -61,6 +61,7 @@ export class CustomerComponent implements OnInit, AfterViewInit {
   ];
 
   public editContactForm = this.fb.group({
+    data: null,
     contact_person: null,
     email: null,
     tel: null,
@@ -71,6 +72,7 @@ export class CustomerComponent implements OnInit, AfterViewInit {
   });
 
   public editCustomerForm: FormGroup = this.fb.group({
+    data: null,
     cust_id: [null, Validators.required],
     customerCode: null,
     company_name: [null, Validators.required],
@@ -88,6 +90,7 @@ export class CustomerComponent implements OnInit, AfterViewInit {
   public changeTermForm: FormGroup = this.fb.group({
     term: ['', Validators.required],
     DCLink: [null, Validators.required],
+    data: null
   });
 
   constructor(
@@ -119,21 +122,28 @@ export class CustomerComponent implements OnInit, AfterViewInit {
   get() {
     this.customer = combineLatest(this.route.params, this.route.queryParams).pipe(
       switchMap(([params, queryParams]) => {
-        return this.cust.getCustomer(+params['id'], +queryParams['data']);
+        if (queryParams['data']) {
+          return this.cust.getCustomer(+params['id'], +queryParams['data']);
+        } else {
+          return this.cust.getCustomer(+params['id'], 1);
+        }
       }),
       tap((data: any) => {
         this.title.swapTitle(data.company_name);
+        this.changeTermForm.controls['data'].setValue(data.data);
+        this.editCustomerForm.controls['data'].setValue(data.data);
+        this.editContactForm.controls['data'].setValue(data.data);
       }),
       map((data: any) => {
         if (data.customerCode) {
-          this.balance = this.cust.getBalance(data.customerCode).pipe(
+          this.balance = this.cust.getBalance(data.customerCode, data.data).pipe(
             map((bal) => {
               this.total = bal['records'].reduce((acc, curr) => acc + +curr.Outstanding, 0);
               return bal;
             })
           );
 
-          this.statement = this.cust.getStatement(data.customerCode).pipe(
+          this.statement = this.cust.getStatement(data.customerCode, data.data).pipe(
             map((allocs: any) => {
               if (allocs) {
                 return allocs.records;

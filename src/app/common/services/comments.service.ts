@@ -75,7 +75,7 @@ export class CommentsService {
    * @param {number} user - Optional: Fetch comment by user
    * @param {number} cust - Optional: Fetch comment by customer id
    */
-  getComments(number: number, user?: number, cust?: number): Observable<any> {
+  getComments(number: number, user?: number, cust?: number, data?: number): Observable<any> {
     let url = this.url + 'comments/read.php';
     switch (number) {
       case 1:
@@ -100,12 +100,12 @@ export class CommentsService {
     }
     if (cust) {
       if (number === 1) {
-        url = url + '&c=' + cust;
+        url = url + '&c=' + cust + '&d=' + data;
       } else {
         if (user) {
-          url = url + '&c=' + cust;
+          url = url + '&c=' + cust + '&d=' + data;
         } else {
-          url = url + '?c=' + cust;
+          url = url + '?c=' + cust + '&d=' + data;
         }
       }
     }

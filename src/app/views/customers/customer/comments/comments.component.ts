@@ -6,8 +6,8 @@ import { dada } from 'src/app/common/interfaces/letterhead';
 
 import { CommentsService } from 'src/app/common/services/comments.service';
 
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, combineLatest } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { AuthService } from 'src/app/common/services/auth.service';
 import { MaterialService } from 'src/app/common/services/material.service';
 
@@ -53,7 +53,7 @@ export class CommsComponent implements OnInit {
 
   get() {
     this.route.params.forEach((params: Params) => {
-      this.comments = this.cmt.getComments(this.status, 0, +params['id']).pipe(
+      this.comments = this.cmt.getComments(this.status, 0, +params['id'], this.data.data).pipe(
         map((comments: any) => comments.records)
       );
       this.cdRef.detectChanges();
