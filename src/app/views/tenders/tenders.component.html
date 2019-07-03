@@ -42,8 +42,8 @@
             Customer Name
             <i *ngIf="sortKey === 'company_name'" class="material-icons">{{clicked === 1 ? 'arrow_drop_up': 'arrow_drop_down'}}</i>
           </th>
-          <td routerLink="/customers/{{row.cust_id}}" cdk-cell *cdkCellDef="let row" class="font-weight-bold py-2 point" style="width: 16%;">
-            {{row.company_name}}
+          <td routerLink="/customers/{{row.cust_id}}" [queryParams]="{ data: row.data }" cdk-cell *cdkCellDef="let row" class="font-weight-bold py-2 point" style="width: 16%;">
+            {{row.company_name}} 
           </td>
         </ng-container>
 

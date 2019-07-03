@@ -100,7 +100,8 @@ export class NewsComponent implements OnInit, DoCheck {
     deliverydate: null,
     dimensions: null,
     ppunit: null,
-    company_name: null
+    company_name: null,
+    data: 1
   });
 
   public newTenderForm = this.fb.group({
@@ -116,7 +117,8 @@ export class NewsComponent implements OnInit, DoCheck {
     price_quoted: null,
     attachment: null,
     comments: null,
-    company_name: null
+    company_name: null,
+    data: 1
   });
   questions: any[];
 
