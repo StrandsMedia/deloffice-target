@@ -4,17 +4,18 @@
             Jobs
         </h4>
         <div>
-            <button (click)="setCust()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" dialogTrigger="newprint" [disableIfUnauth]="'create'">
-                New Printing
-            </button> 
-            <button (click)="setCust2()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" dialogTrigger="newtender" [disableIfUnauth]="'create'">
-                New Tender
-            </button> 
-            <button (click)="newWF()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1" dialogTrigger="newworkflow" [disableIfUnauth]="'create'">
-                New Workflow
-            </button> 
+          <button (click)="setCust()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" dialogTrigger="newprint" [disableIfUnauth]="'create'">
+            New Printing
+          </button> 
+          <button (click)="setCust2()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" dialogTrigger="newtender" [disableIfUnauth]="'create'">
+            New Tender
+          </button> 
+          <button (click)="newWF()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1" dialogTrigger="newworkflow" [disableIfUnauth]="'create'">
+            New Workflow
+          </button>            
         </div>
     </div>
+    <!--  -->
     <div style="min-height:300px;max-height:300px;overflow-y:scroll;">
         <!--  Null -->
         <ng-container *ngIf="entries?.workflow?.length === 0 && entries?.printing?.length === 0 && entries?.tenders?.length === 0">

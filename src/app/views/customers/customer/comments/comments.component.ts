@@ -29,7 +29,8 @@ export class CommsComponent implements OnInit {
     date: null,
     comment: [null, Validators.required],
     step: [this.status, Validators.required],
-    cust_id: [null, Validators.required]
+    cust_id: [null, Validators.required],
+    data: 1
   });
 
   constructor(
@@ -57,7 +58,10 @@ export class CommsComponent implements OnInit {
         return this.cmt.getComments(this.status, 0, +params['id'], this.data.data)
       }),
       map((cmts) => cmts.records),
-      tap(cmts => this.cdRef.detectChanges())
+      tap(cmts => {
+        this.cdRef.detectChanges()
+        this.newCmtForm.controls['data'].setValue(this.data.data)
+      })
     )
   }
 

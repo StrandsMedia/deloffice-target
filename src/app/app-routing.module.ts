@@ -9,7 +9,7 @@ import { CustomerComponent } from './views/customers/customer/customer.component
 import { AuthGuard } from './common/guards/auth.guard';
 import { CommentsComponent } from './views/comments/comments.component';
 
-import { PrintingComponent } from './views/printing/printing.component';
+// import { PrintingComponent } from './views/printing/printing.component';
 import { TendersComponent } from './views/tenders/tenders.component';
 import { CompaniesComponent } from './views/companies/companies.component';
 
@@ -63,11 +63,7 @@ const routes: Routes = [
       },
       {
         path: 'printing',
-        component: PrintingComponent,
-        data: {
-          title: 'Printing',
-          id: 6
-        }
+        loadChildren: () => import('./core/modules/printing/printing.module').then(m => m.PrintingModule)
       },
       {
         path: 'products',

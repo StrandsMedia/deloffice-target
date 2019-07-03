@@ -6,6 +6,23 @@ import { environment } from '../../../environments/environment';
 import { of, timer, Observable } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 
+interface Printer {
+  printerId: number;
+  printerName: string;
+  active: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface InkReport {
+  reportId: number;
+  printerId: number;
+  printerName?: string;
+  inkChangedType: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -25,5 +42,25 @@ export class PrintingService {
 
   updatePrinting(info): Observable<any> {
     return this.http.post(this.url + 'printing/update.php', info);
+  }
+
+  // Printers
+
+  createPrinter(info: Printer): Observable<any> {
+    return this.http.post<Printer>(this.url + 'printing/printers/create.php', info);
+  }
+
+  getPrinters(): Observable<Printer[]> {
+    return this.http.get<Printer[]>(this.url + 'printing/printers/read.php');
+  }
+
+  // Ink Report
+
+  createEntries(info: InkReport): Observable<any> {
+    return this.http.post<InkReport>(this.url + 'printing/ink_report/create.php', info);
+  }
+  
+  getEntries(): Observable<InkReport[]> {
+    return this.http.get<InkReport[]>(this.url + 'printing/ink_report/read.php');
   }
 }

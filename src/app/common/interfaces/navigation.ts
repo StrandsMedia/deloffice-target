@@ -140,7 +140,21 @@ export const Navigation: Nav = [
     {
         name: 'Printing',
         path: '/printing',
-        icon: 'print'
+        icon: 'print',
+        children: [
+            {
+                name: 'Printing Overview',
+                path: '/overview',
+            },
+            {
+                name: 'Printers',
+                path: '/printers',
+            },
+            {
+                name: 'Ink Usage Report',
+                path: '/ink-report',
+            },
+        ]
     },
     {
         name: 'Products',

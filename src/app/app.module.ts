@@ -20,7 +20,7 @@ import { BtnModule } from './common/utils/btn/btn.module';
 import { CustomerComponent } from './views/customers/customer/customer.component';
 
 import { CommentsComponent } from './views/comments/comments.component';
-import { PrintingComponent } from './views/printing/printing.component';
+// import { PrintingComponent } from './views/printing/printing.component';
 import { ProductsComponent } from './views/products/products.component';
 import { TendersComponent } from './views/tenders/tenders.component';
 
@@ -51,7 +51,7 @@ import { CompaniesComponent } from './views/companies/companies.component';
     CustomersComponent,
     CustomerComponent,
     CommentsComponent,
-    PrintingComponent,
+    // PrintingComponent,
     TendersComponent,
     NewsComponent,
     PricingComponent,
