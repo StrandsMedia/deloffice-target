@@ -4,12 +4,12 @@ import { ActivatedRoute, Router, Params } from '@angular/router';
 
 import { dada } from 'src/app/common/interfaces/letterhead';
 
+import { AuthService } from 'src/app/common/services/auth.service';
 import { CommentsService } from 'src/app/common/services/comments.service';
+import { MaterialService } from 'src/app/common/services/material.service';
 
 import { Observable, combineLatest } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
-import { AuthService } from 'src/app/common/services/auth.service';
-import { MaterialService } from 'src/app/common/services/material.service';
+import { map, switchMap, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-comms',
@@ -52,12 +52,13 @@ export class CommsComponent implements OnInit {
   }
 
   get() {
-    this.route.params.forEach((params: Params) => {
-      this.comments = this.cmt.getComments(this.status, 0, +params['id'], this.data.data).pipe(
-        map((comments: any) => comments.records)
-      );
-      this.cdRef.detectChanges();
-    });
+    this.comments = this.route.params.pipe(
+      switchMap((params: Params) => {
+        return this.cmt.getComments(this.status, 0, +params['id'], this.data.data)
+      }),
+      map((cmts) => cmts.records),
+      tap(cmts => this.cdRef.detectChanges())
+    )
   }
 
   trackByFn(index, item) {

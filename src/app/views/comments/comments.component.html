@@ -45,7 +45,7 @@
           <form (ngSubmit)="searchByUser()" [formGroup]="filterForm" class="form-inline float-right m-1">
             <select formControlName="user" class="form-control p-3 mr-2" name="user" id="user">
               <option value="" selected disabled>Select a user</option>
-              <option *ngFor="let user of users | async as user" [value]="user.sales_id">{{user.sales_rep}}</option>
+              <option *ngFor="let user of users | async as user" [value]="user?.sales_id">{{user?.sales_rep}}</option>
             </select>
             <button type="submit" class="tgt-button-full tgt-btn-white">
               <i class="material-icons" style="line-height: 24px;margin-top: 3px;">search</i>

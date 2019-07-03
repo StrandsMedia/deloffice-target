@@ -29,6 +29,7 @@ export class CommentsComponent implements OnInit {
     'cd_id',
     'date',
     'customer',
+    'company',
     'comment',
     'sales_rep'
   ];
