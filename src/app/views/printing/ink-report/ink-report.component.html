@@ -1,3 +1,94 @@
-<p>
-  ink-report works!
-</p>
+<div class="row">
+  <div class="col-12">
+    <div class="mdc-card mb-3" style="overflow: hidden;">
+      <!--Card Header-->
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+        <div class="text-white flex-fill align-items-center">
+          <h3 class="mb-1">Ink Report</h3>
+        </div>
+        <div class="align-items-center">
+          <button class="float-right tgt-button-full tgt-btn-white px-3 py-2 mr-3" dialogTrigger="newEntry">
+            New Entry
+          </button>
+        </div>
+      </div>
+      <!--Data Table-->
+      <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+        <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+        <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+
+        <ng-container cdkColumnDef="reportId">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Report ID</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 20%;">
+            {{row.reportId}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="printerId">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Printer</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 20%;">
+            {{row.printerId}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="inkChangedType">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Ink Changed Type</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 20%;">
+            {{row.inkChangedType}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="createdAt">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Created on</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 20%;">
+            {{row.createdAt | date:'MMM d, y, H:mm:ss'}}
+          </td>
+        </ng-container>
+  
+        <ng-container cdkColumnDef="updatedAt">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Last updated at</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 20%;">
+            {{row.updatedAt | date:'MMM d, y, H:mm:ss'}}
+          </td>
+        </ng-container>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!--newEntry-->
+<app-dialog dialogID="newEntry" title="Add New Entry To Ink Report" accept="Submit" cancel="Cancel" (onAccept)="addNew()">
+  <form [formGroup]="addForm">
+    <div class="row">
+      <div class="col-12">
+        <p>Fill in the form below and click on Submit to create a new entry for the ink report.</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="form-group">
+          <label for="createdAt">Antedate Entry (Only fill if necessary)</label>
+          <input formControlName="createdAt" type="date" name="createdAt" id="createdAt" class="form-control">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-6">
+        <div class="form-group">
+          <label for="printerId">Printer</label>
+          <select formControlName="printerId" name="printerId" id="printerId" class="form-control">
+            <option value="" disabled selected>Select a Printer</option>
+            <option *ngFor="let printer of printers | async; index as i" value="{{printer.printerId}}">{{printer.printerName}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="form-group">
+          <label for="inkChangedType">Type of Ink Changed</label>
+          <input formControlName="inkChangedType" type="text" class="form-control" name="inkChangedType" id="inkChangedType">
+          <small id="changeHelp" class="form-text text-muted">The type of ink changed</small>
+        </div>
+      </div>
+    </div>
+  </form>
+</app-dialog>

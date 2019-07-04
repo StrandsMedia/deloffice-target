@@ -50,8 +50,8 @@ export class PrintingService {
     return this.http.post<Printer>(this.url + 'printing/printers/create.php', info);
   }
 
-  getPrinters(): Observable<Printer[]> {
-    return this.http.get<Printer[]>(this.url + 'printing/printers/read.php');
+  getPrinters(): Observable<{ records: Printer[]}> {
+    return this.http.get<any>(this.url + 'printing/printers/read.php');
   }
 
   // Ink Report
@@ -60,7 +60,7 @@ export class PrintingService {
     return this.http.post<InkReport>(this.url + 'printing/ink_report/create.php', info);
   }
   
-  getEntries(): Observable<InkReport[]> {
-    return this.http.get<InkReport[]>(this.url + 'printing/ink_report/read.php');
+  getEntries(): Observable<{ records: InkReport[]}> {
+    return this.http.get<any>(this.url + 'printing/ink_report/read.php');
   }
 }
