@@ -31,6 +31,8 @@ export class CustomersComponent implements OnInit {
     'operations'
   ];
 
+  public data = 0;
+
   public searchForm = this.fb.group({
     search: ['']
   });
@@ -103,6 +105,16 @@ export class CustomersComponent implements OnInit {
     return this.dataSource$ = this.cust.getCustomers(this.searchForm.value.search).pipe(
       map(customers => customers.records)
     );
+  }
+
+  searchData() {
+    if (this.data == 0) {
+      this.get();
+    } else {
+      return this.dataSource$ = this.cust.getCustomers(null, this.data).pipe(
+        map(customers => customers.records)
+      );
+    }
   }
 
   cancel() {

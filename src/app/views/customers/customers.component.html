@@ -2,9 +2,17 @@
   <div class="col-12">
     <div class="mdc-card mb-3" style="overflow: hidden;">
       <!-- Header Section of Card -->
-      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
-        <h3 class="m-0 text-white flex-fill align-items-center">Customer List</h3>
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center justify-content-between">
         <div>
+          <h3 class="m-0 text-white align-items-center">Customer List</h3>
+        </div>
+        <div>
+          <select (change)="searchData()" [(ngModel)]="data" name="data" id="data" class="form-control my-1 mr-3" style="float:left;width:200px;height: 37px;">
+            <option [value]="0" selected disabled>All</option>
+            <option [value]="1">DelOffice Ltd</option>
+            <option [value]="2">Roll n Sheet Ltd</option>
+            <option [value]="3">Print n Pack Ltd</option>
+          </select>
           <button dialogTrigger="dialog" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3" [disableIfUnauth]="'create'">Add Customer</button>
           <button (click)="get()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3">
             Refresh List
