@@ -70,4 +70,8 @@ export class InkReportComponent implements OnInit {
       }
     );
   }
+
+  sendEmail() {
+    
+  }
 }

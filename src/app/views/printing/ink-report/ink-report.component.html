@@ -7,8 +7,11 @@
           <h3 class="mb-1">Ink Report</h3>
         </div>
         <div class="align-items-center">
-          <button class="float-right tgt-button-full tgt-btn-white px-3 py-2 mr-3" dialogTrigger="newEntry">
+          <button class="tgt-button-full tgt-btn-white px-3 py-2 mr-3" dialogTrigger="newEntry">
             New Entry
+          </button>
+          <button (click)="sendEmail()" class="tgt-button-full tgt-btn-white px-3 py-2">
+            Send Email
           </button>
         </div>
       </div>
@@ -27,7 +30,7 @@
         <ng-container cdkColumnDef="printerId">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Printer</th>
           <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 20%;">
-            {{row.printerId}}
+            {{row.printerName}}
           </td>
         </ng-container>
 
@@ -85,7 +88,14 @@
       <div class="col-6">
         <div class="form-group">
           <label for="inkChangedType">Type of Ink Changed</label>
-          <input formControlName="inkChangedType" type="text" class="form-control" name="inkChangedType" id="inkChangedType">
+          <select formControlName="inkChangedType" name="inkChangedType" id="inkChangedType" class="form-control">
+            <option value="" disabled selected>Select Ink Type</option>
+            <option value="Cyan">Cyan</option>
+            <option value="Magenta">Magenta</option>
+            <option value="Yellow">Yellow</option>
+            <option value="Black">Black</option>
+            <option value="Maintenance Box">Maintenance Box</option>
+          </select>
           <small id="changeHelp" class="form-text text-muted">The type of ink changed</small>
         </div>
       </div>
