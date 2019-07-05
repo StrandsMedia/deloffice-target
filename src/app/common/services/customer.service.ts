@@ -28,9 +28,20 @@ export class CustomerService {
 
   // Read
 
-  getCustomers(keyword?): Observable<any> {
+  getCustomers(keyword?, data?): Observable<any> {
     let url = this.url + 'customers/read.php';
-    keyword ? url = url + '?s=' + keyword : url = url;
+    if (keyword) {
+      url = url + '?s=' + keyword
+
+      if (data) {
+        url = url + '&d=' + data
+      }
+    }
+
+    if (data) {
+      url = url + '?d=' + data
+    }
+    
     return this.http.get(url);
   }
 
