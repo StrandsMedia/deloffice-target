@@ -230,6 +230,7 @@ export class NewsComponent implements OnInit, DoCheck {
     this.formData.user = this.user.user_id;
     this.formData.status = +this.formData.status;
     this.formData.cust_id = this.data.cust_id;
+    this.formData.data = this.data.data;
     console.log(this.formData);
     this.wf.changeStatus(this.formData).subscribe(
       (data) => {

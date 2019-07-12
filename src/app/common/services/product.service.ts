@@ -82,6 +82,10 @@ export class ProductService {
     return this.http.post(this._url + 'products/search_adv.php', info);
   }
 
+  searchOneAdv(info): Observable<any> {
+    return this.http.post(this._url + 'products/search_one.php', info);
+  }
+
   updateProd(info): Observable<any> {
     return this.http.post(this._url + 'products/updateProd.php', info);
   }

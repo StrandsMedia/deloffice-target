@@ -35,7 +35,7 @@
             <ng-container cdkColumnDef="date">
               <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">Date</th>
               <td cdk-cell *cdkCellDef="let row; index as i;" class="text-center" style="width: 5%;">
-                {{row.createdAt | date}}
+                {{row.createdAt | date:'dd.MM.yy'}}
               </td>
             </ng-container>
 

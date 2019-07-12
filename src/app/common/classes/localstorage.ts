@@ -15,7 +15,6 @@ export interface ILocalStorage<T> {
     remove(key: string): void;
 }
 
-@Injectable({ providedIn: 'root' })
 export class LocalStorage<T> implements ILocalStorage<T> {
     protected subjects: {[key: string]: BehaviorSubject<any>} = {};
     private _key: string;
@@ -24,7 +23,7 @@ export class LocalStorage<T> implements ILocalStorage<T> {
         this._key = key;
     }
 
-    select(key: string, defaultValue: any = null): Observable<T> {
+    select(key: string = this._key, defaultValue: any = null): Observable<T> {
         if (this.subjects.hasOwnProperty(key)) {
             return this.subjects[key];
         }
@@ -40,7 +39,7 @@ export class LocalStorage<T> implements ILocalStorage<T> {
         return this.subjects[key] = new BehaviorSubject(value);
     }
 
-    set(key: string, value: any): void {
+    set(key: string = this._key, value: any): void {
         window.localStorage.setItem(key, JSON.stringify(value));
 
         if (this.subjects.hasOwnProperty(key)) {
@@ -48,7 +47,7 @@ export class LocalStorage<T> implements ILocalStorage<T> {
         }
     }
 
-    remove(key: string): void {
+    remove(key: string = this._key): void {
         window.localStorage.removeItem(key);
 
         if (this.subjects.hasOwnProperty(key)) {

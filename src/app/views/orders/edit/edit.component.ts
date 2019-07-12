@@ -19,6 +19,7 @@ import { renderInvoice, printInv } from '../orders.utils';
 export class EditComponent implements OnInit {
   dataSource$: Observable<any>;
   product$: Observable<any>;
+  prodCode$: Observable<any>;
   loading = false;
   view = true;
 
@@ -58,6 +59,11 @@ export class EditComponent implements OnInit {
   });
 
   public searchProdForm: FormGroup = this._fb.group({
+    cust_id: [null, Validators.required],
+    prodsearch: null
+  });
+
+  public searchProdForm2: FormGroup = this._fb.group({
     cust_id: [null, Validators.required],
     prodsearch: null
   });
@@ -108,6 +114,7 @@ export class EditComponent implements OnInit {
       tap((res) => {
         this._tempData = res;
         this.searchProdForm.controls['cust_id'].setValue(res.cust_id);
+        this.searchProdForm2.controls['cust_id'].setValue(res.cust_id);
         this.entries = res.entries;
 
         this.entries.forEach(entry => {
@@ -128,6 +135,13 @@ export class EditComponent implements OnInit {
   searchProd() {
     this.product$ = this._prod.searchAdv(this.searchProdForm.value).pipe(
       map((res: any) => res.records)
+    );
+  }
+
+  altSearchProd() {
+    this.prodCode$ = this._prod.searchOneAdv(this.searchProdForm2.value).pipe(
+      map((res: any) => res.records),
+      tap((res) => this.tempProd = res[0])
     );
   }
 
@@ -185,6 +199,12 @@ export class EditComponent implements OnInit {
     }
 
     this.tempProd = null;
+  }
+
+  addToTempEnter($event) {
+    if ($event.key === 'Enter') {
+      this.addToTemp();
+    }
   }
 
   // Utils
