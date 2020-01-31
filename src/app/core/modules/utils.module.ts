@@ -26,6 +26,7 @@ import { HideUnauthDirective } from '../../common/utils/auth/hide-unauth.directi
 import { DisableUnauthDirective } from '../../common/utils/auth/disable-unauth.directive';
 import { ClickDisableUnauthDirective } from '../../common/utils/auth/click-disable-unauth.directive';
 import { LazyLoadDirective } from '../../common/utils/lazy-load.directive';
+import { ResponsiveDIVDirective } from '../../common/utils/responsive-div.directive';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,8 @@ import { LazyLoadDirective } from '../../common/utils/lazy-load.directive';
     HideUnauthDirective,
     DisableUnauthDirective,
     ClickDisableUnauthDirective,
-    LazyLoadDirective
+    LazyLoadDirective,
+    ResponsiveDIVDirective
   ],
   imports: [
     CommonModule,
@@ -74,7 +76,9 @@ import { LazyLoadDirective } from '../../common/utils/lazy-load.directive';
     DisableUnauthDirective,
     HideUnauthDirective,
     ClickDisableUnauthDirective,
-    LazyLoadDirective
+    LazyLoadDirective,
+    ResponsiveDIVDirective,
+    DialogModule
   ],
   providers: [
     DatePipe

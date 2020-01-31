@@ -1,55 +1,308 @@
 <div class="row">
   <div class="col-12">
+      <div class="mdc-tab-bar mb-3" role="tablist" aria-label="Navigation">
+          <div class="mdc-tab-scroller">
+              <div class="mdc-tab-scroller__scroll-area">
+                  <div class="mdc-tab-scroller__scroll-content">
+                      <button (click)="selectedMode=1;get();" class="mdc-tab" [class.mdc-tab--active]="selectedMode == 1" role="tab" [attr.aria-selected]="selectedMode == 1 ? 'true' : 'false'" [attr.tabindex]="selectedMode == 1 ? '0' : '-1'">
+                          <span class="mdc-tab__content">
+                              <span class="mdc-tab__text-label">Purchase</span>
+                          </span>
+                          <span class="mdc-tab-indicator" [class.mdc-tab-indicator--active]="selectedMode == 1">
+                              <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                          </span>
+                          <span class="mdc-tab__ripple"></span>
+                      </button>
+                      <button (click)="selectedMode=2;get();" class="mdc-tab" [class.mdc-tab--active]="selectedMode == 2" role="tab" [attr.aria-selected]="selectedMode == 2 ? 'true' : 'false'" [attr.tabindex]="selectedMode == 2 ? '0' : '-1'">
+                          <span class="mdc-tab__content">
+                              <span class="mdc-tab__text-label">Transfer</span>
+                          </span>
+                          <span class="mdc-tab-indicator" [class.mdc-tab-indicator--active]="selectedMode == 2">
+                              <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                          </span>
+                          <span class="mdc-tab__ripple"></span>
+                      </button>
+                  </div>
+              </div>
+          </div>
+      </div>
     <div class="mdc-card mb-3" style="overflow: hidden;">
       <!--Card Header-->
       <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center justify-content-between">
         <div>
-          <h3 class="m-0 text-white flex-fill align-items-center">
-            Pending Products Management
-          </h3>
+          <h4 *ngIf="selectedType == 1" class="m-0 text-white flex-fill align-items-center">
+            {{mode}} Requested
+          </h4>
+          <h4 *ngIf="selectedType == 2" class="m-0 text-white flex-fill align-items-center">
+            Awaiting Goods
+          </h4>
+          <h4 *ngIf="selectedType == 4" class="m-0 text-white flex-fill align-items-center">
+            {{mode}} Received
+          </h4>
+          <h4 *ngIf="selectedType == 5" class="m-0 text-white flex-fill align-items-center">
+            {{mode}} Rejected
+          </h4>
           <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
         </div>
         <div class="d-flex flex-row align-items-center">
-          <div class="form-group my-1 mr-3" style="width: 200px;">
-            <select name="purgatory" id="purgatory" class="form-control w-100" style="height: 37px;">
-              <option [value]="1">Purchase</option>
-              <option [value]="2">Transfer</option>
-              <option [value]="3">Production</option>
+          <!-- <div class="form-group mb-0 mr-3">
+            <select (change)="get()" [(ngModel)]="selectedType" name="type" id="type" class="form-control w-100" style="height: 39px;">
+              <option [value]="1">Requested</option>
+              <option [value]="2">Awaiting</option>
+              <option [value]="4">Goods Received</option>
+              <option [value]="5">Goods Rejected</option>
             </select>
-          </div>
-          <button class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1">
-            New Entry
+          </div> -->
+          <button (click)="selectedType=1;get();" [class.transpa]="selectedType === 1" class="tgt-button-full tgt-btn-white d-flex align-items-center p-2 px-3 my-1 mr-2">
+            Requested
           </button>
+          <button (click)="selectedType=2;get();" [class.transpa]="selectedType === 2" class="tgt-button-full tgt-btn-white d-flex align-items-center p-2 px-3 my-1 mr-2">
+            Awaiting
+          </button>
+          <button (click)="selectedType=4;get();" [class.transpa]="selectedType === 4" class="tgt-button-full tgt-btn-white d-flex align-items-center p-2 px-3 my-1 mr-2">
+            Goods Received
+          </button>
+          <button (click)="selectedType=5;get();" [class.transpa]="selectedType === 5" class="tgt-button-full tgt-btn-white d-flex align-items-center p-2 px-3 my-1">
+            Goods Rejected
+          </button>
+          <!-- <button class="tgt-button-full tgt-btn-white d-flex align-items-center p-2 my-1">
+            <i class="material-icons m-0 p-0" style="width: 24px; height: 24px; line-height: 24px;margin-top: 3px;">refresh</i>
+          </button> -->
         </div>
       </div>
-      <!-- Data table -->
-      <table class="table table-hover table-bordered tgt-table tgt-scroll" respHeight>
-        <thead>
-          <tr>
-            <th>Product Code</th>
-            <th>Product Name</th>
-            <th>Product Brand</th>
-            <th>Qty</th>
-            <th>Created At</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="font-weight-bold">OA021000</td>
-            <td>Multipurpose Paper A4</td>
-            <td>JK Copier</td>
-            <td>{{1000 | number:'1.0-0'}}</td>
-            <td></td>
-          </tr>
-        </tbody>
-      </table>
+
+      <!-- Data -->
+      <ng-container *ngIf="selectedType == 1 || selectedType == 3 || selectedType == 4 || selectedType == 5">
+        <table cdk-table [dataSource]="purgatoryData$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll tgt-scroll-border" respHeight>
+          <tr cdk-header-row *cdkHeaderRowDef="columnrequest"></tr>
+          <tr cdk-row *cdkRowDef="let row; columns: columnrequest"></tr>
+  
+          <ng-container cdkColumnDef="no">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">#</th>
+            <td cdk-cell *cdkCellDef="let row" class="font-weight-bold point text-center" style="width: 5%;">
+              {{row.workflow_id}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="name">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 30%;">Customer Name</th>
+            <td cdk-cell *cdkCellDef="let row" class="font-weight-bold point" style="width: 30%;">{{row.customerCode}} - {{row.company_name}}</td>
+          </ng-container>
+          <ng-container cdkColumnDef="code">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Code</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 10%;" class="font-weight-bold text-center">{{row.p_id}}</td>
+          </ng-container>
+          <ng-container cdkColumnDef="des">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Description</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 20%;">
+              {{row.des1}}<br>
+              {{row.des2}}
+            </td>
+          </ng-container>
+          <ng-container cdkColumnDef="brand">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;">Brand</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 15%;">{{row.des3}}</td>
+          </ng-container>
+          <ng-container cdkColumnDef="qty">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Qty</th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 10%;" class="text-center">{{row.qty}}</td>
+          </ng-container>
+          <ng-container cdkColumnDef="btn">
+            <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;" [hidden]="selectedType == 3 || selectedType == 4 || selectedType == 5"></th>
+            <td cdk-cell *cdkCellDef="let row" style="width: 10%;" [hidden]="selectedType == 3 || selectedType == 4 || selectedType == 5">
+              <button
+                [disabled]="selectedType == 3 || selectedType == 4 || selectedType == 5"
+                (click)="selectedProdData = row;assignProd(selectedMode + 1)"
+                class="tgt-button-full d-flex h-100 w-100 px-3 py-2 justify-content-center text-center font-weight-bold"
+                [ngClass]="{
+                  'bg-secondary text-white': row
+                }"
+                [dialogTrigger]="'purchase'"
+              >
+                {{mode}}
+              </button>
+            </td>
+          </ng-container>
+  
+  
+        </table>
+      </ng-container>
+
+      <ng-container *ngIf="selectedType == 2">
+        <table class="table table-hover table-bordered tgt-table tgt-scroll tgt-scroll-border" respHeight>
+          <thead>
+            <tr>
+              <th style="width: 10%;"></th>
+              <th style="width: 40%;"></th>
+              <th style="width: 20%;"></th>
+              <th style="width: 10%;">Qty</th>
+              <th style="width: 20%;"></th>
+            </tr>
+          </thead>
+          <tbody style="min-height: 400px;">
+            <ng-container *ngIf="purgatoryData$ | async as data">
+              <ng-container *ngFor="let product of data?.awaiting; index as i; trackBy: trackByFn" >
+                <tr *ngIf="product?.entries?.length > 0" class="table-secondary">
+                  <td style="width: 10%;" class="text-center font-weight-bold">{{product.p_id}}</td>
+                  <td style="width: 40%;" class="font-weight-bold">{{product.des1}}<br>{{product.des2}}</td>
+                  <td style="width: 20%;" class="font-weight-bold">{{product.des3}}</td>
+                  <td style="width: 10%;"></td>
+                  <td style="width: 20%;">
+                    <button
+                      class="tgt-button-full d-flex h-100 w-100 px-0 py-2 mr-2 justify-content-center text-center font-weight-bold"
+                      [ngClass]="{
+                        'bg-success text-white': product
+                      }"
+                    >
+                      Goods Received
+                    </button>
+                    <button
+                      class="tgt-button-full d-flex h-100 w-100 px-0 py-2 justify-content-center text-center font-weight-bold"
+                      [ngClass]="{
+                        'bg-danger text-white': product
+                      }"
+                    >
+                      Rejected
+                    </button>
+                  </td>
+                </tr>
+                <ng-container *ngFor="let item of product.entries">
+                    <tr>
+                      <td style="width: 10%;" class="text-center font-weight-bold">{{item.workflow_id}}</td>
+                      <td style="width: 40%;">{{item.company_name}}</td>
+                      <td style="width: 20%;"></td>
+                      <td style="width: 10%;" class="text-center">{{item.qty}}</td>
+                      <td style="width: 20%;">
+                        <button
+                          (click)="selectedItem=item;handlePurchase2(2);"
+                          class="tgt-button-full d-flex h-100 w-100 px-0 py-2 mr-2 justify-content-center text-center font-weight-bold"
+                        >
+                          Goods Received
+                        </button>
+                        <button
+                          (click)="selectedItem=item;handlePurchase2(3);"
+                          class="tgt-button-full d-flex h-100 w-100 px-0 py-2 justify-content-center text-center font-weight-bold"
+                        >
+                          Rejected
+                        </button>
+                      </td>
+                    </tr>
+                </ng-container>
+                <!-- <tr>
+                  <td style="width: 10%;" class="text-center font-weight-bold"></td>
+                  <td style="width: 40%;">Stock</td>
+                  <td style="width: 20%;"></td>
+                  <td style="width: 10%;" class="text-center">???</td>
+                  <td style="width: 20%;">
+                    <button
+                      class="tgt-button-full d-flex h-100 w-100 px-0 py-2 mr-2 justify-content-center text-center font-weight-bold"
+                    >
+                      Goods Received
+                    </button>
+                    <button
+                      class="tgt-button-full d-flex h-100 w-100 px-0 py-2 justify-content-center text-center font-weight-bold"
+                    >
+                      Rejected
+                    </button>
+                  </td>
+                </tr> -->
+              </ng-container>
+            </ng-container>
+          </tbody>
+        </table>
+      </ng-container>
+
+      <!-- <app-dialog
+        dialogID="sendpur"
+        [title]="'Initiate Purchase'"
+        size="medium"
+        accept="Confirm"
+        cancel="Cancel"
+        (onAccept)="handlePurchase()"
+        (onCancel)="selectedItem=null"
+      >
+      </app-dialog> -->
+
+      <app-dialog
+        dialogID="purchase"
+        [title]="selectedProdData?.p_id + ' - ' + selectedProdData?.des1 + ' ' + selectedProdData?.des2"
+        size="xlarge"
+        accept="Confirm"
+        cancel="Cancel"
+      >
+        <table *ngIf="prodData$ | async as prod" id="table" class="table table-bordered w-100">
+          <thead>
+            <tr>
+              <th class="font-weight-bold" colspan="2">{{mode}} request pending for this item:</th>
+              <th class="font-weight-bold text-center">Qty</th>
+              <th style="width: 20%;">
+                <button
+                    *ngIf="!prod.stock"
+                    (click)="addStock(prod)"
+                    class="tgt-button-full d-flex h-100 w-100 px-3 py-2 justify-content-center text-center font-weight-bold bg-secondary text-white"
+                  >
+                    Add Stock
+                  </button>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container>
+              <tr *ngFor="let item of prod?.requests; index as i;">
+                <td style="width: 20%;" class="text-center">{{item.workflow_id}}</td>
+                <td>{{item.company_name}}</td>
+                <td style="width: 15%;" class="text-center">{{item.qty}}</td>
+                <td style="width: 20%;">
+                  <button
+                    (click)="selectedItem=item;handlePurchase();"
+                    *ngIf="item.completed == 0"
+                    class="tgt-button-full d-flex h-100 w-100 px-3 py-2 justify-content-center text-center font-weight-bold"
+                    [ngClass]="{
+                      'bg-secondary text-white': item.completed == 0
+                    }"
+                  >
+                    Request Goods
+                  </button>
+                  <button
+                    *ngIf="item.completed == 1"
+                    class="tgt-button-full d-flex h-100 w-100 px-3 py-2 justify-content-center text-center font-weight-bold"
+                    [ngClass]="{
+                      'bg-urgent text-white': item.completed == 1
+                    }"
+                  >
+                    Awaiting Goods
+                  </button>
+                  <button
+                    *ngIf="item.completed == 2"
+                    class="tgt-button-full d-flex h-100 w-100 px-3 py-2 justify-content-center text-center font-weight-bold"
+                    [ngClass]="{
+                      'bg-success text-white': item.completed == 2
+                    }"
+                  >
+                    <i class="material-icons">done</i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngFor="let item of prod?.stock">
+                <td style="width: 20%;" class="text-center">#</td>
+                <td>{{item.company_name}}</td>
+                <td style="width: 15%;">
+                  <input  type="number" name="qty" id="qty" [value]="item.qty" (change)="item.qty = $event.target.value" class="text-center" style="border: none;">
+                </td>
+                <td style="width: 20%;"></td>
+              </tr>
+            </ng-container>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td style="width: 20%;" class="text-center"></td>
+              <td class="font-weight-bold">TOTAL</td>
+              <td style="width: 15%;" class="text-center font-weight-bold">{{ getTotal(prod) }}</td>
+              <td style="width: 20%"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </app-dialog>
 
     </div>
   </div>
-
-  <!-- <div class="col-12">
-    <div class="mdc-card mb-3" style="overflow:hidden;">
-      
-    </div>
-  </div> -->
 </div>

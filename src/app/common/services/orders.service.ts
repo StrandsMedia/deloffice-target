@@ -61,11 +61,35 @@ export class OrdersService {
   //   return this.http.post<any>(this.url + 'orders/toBeReady.php', info);
   // }
 
+  startGP(info): Observable<any> {
+    return this.http.post(this.url + 'orders/startGP.php', info);
+  }
+
+  saveGP(info): Observable<any> {
+    return this.http.post(this.url + 'orders/saveGP.php', info);
+  }
+
+  markStatus(info): Observable<any> {
+    return this.http.post(this.url + 'orders/sendReq.php', info);
+  }
+
   markChecked(id): Observable<any> {
     return this.http.get(this.url + 'orders/markChecked.php?id=' + id);
   }
 
   markVerified(id): Observable<any> {
     return this.http.get(this.url + 'orders/markVerified.php?id=' + id);
+  }
+
+  // Pastel
+
+  sendToPastel(info): Observable<any> {
+    return this.http.post(this.url + 'orders/sendToPastel.php', info);
+  }
+
+  // Purchases
+
+  getPurchases(): Observable<any> {
+    return this.http.get(this.url + 'purchases/read_purchase.php');
   }
 }

@@ -5,98 +5,545 @@
       <div id="card-header" class="d-flex tgt-bg px-4 py-3 justify-content-between align-items-center">
         <div class="flex-fill align-items-center">
           <h3 class="m-0 text-white">
-            View Goods Preparation
+            {{data.InvStatus != 8 ? 'Goods Preparation' : 'Checkpoint'}} - {{convertNum(data?.workflow_id) + '*'}}
           </h3>
           <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
         </div>
-        <div>
-          <!-- <button (click)="toggleConfirmMode()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3">
-            Confirm Mode
-          </button>
-          <button (click)="toggleVerifyMode()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1">
-            Verify Mode
-          </button> -->
-
-          <button (click)="sendForAmendment()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1">
-            Request Amendments
-          </button>
+        <div class="d-flex">
+          <ng-container *ngIf="locked; else unlocked">
+            <ng-container *ngIf="confirm">
+              <ng-container *ngIf="tempData.tableId == 0">
+                <button (click)="getTables()" class="tgt-button-full tgt-btn-white text-center px-3 py-2 my-1" dialogTrigger="tablereserve">
+                  Start
+                </button>
+              </ng-container>
+              <ng-container *ngIf="tempData.tableId > 0">
+                <button (click)="start()" class="tgt-button-full tgt-btn-white text-center px-3 py-2 my-1">
+                  Start
+                </button>
+              </ng-container>
+            </ng-container>
+            <ng-container *ngIf="verify">
+              <button class="tgt-button-full tgt-btn-white text-center px-3 py-2 my-1" dialogTrigger="verification">
+                Start
+              </button>
+            </ng-container>
+          </ng-container>
+          <ng-template #unlocked>
+            <ng-container *ngIf="confirm">
+              <button class="tgt-button-full tgt-btn-white text-center px-3 py-2 my-1 mr-2" dialogTrigger="confirmsave">
+                Save
+              </button>
+              <!-- <button [disabled]="noAmendments" class="tgt-button-full tgt-btn-white text-center h-100 px-3 py-2 my-1 mr-2">
+                Request Amendments
+              </button>
+              <button [disabled]="noTransfer" class="tgt-button-full tgt-btn-white text-center h-100 px-3 py-2 my-1 mr-2">
+                Awaiting Purchase/Transfer
+              </button> -->
+              <button dialogTrigger="verifymode" class="tgt-button-full tgt-btn-white text-center h-100 px-3 py-2 my-1" [disabled]="!allConfirmed">
+                Completed
+              </button>
+            </ng-container>
+            <ng-container *ngIf="verify">
+                <button (click)="save();locked = true;" class="tgt-button-full tgt-btn-white text-center px-3 py-2 my-1 mr-2" style="height: 58px;">
+                  Save
+                </button>
+                <button dialogTrigger="goodsready" class="tgt-button-full tgt-btn-white text-center px-3 py-2 my-1" style="height: 58px;" [disabled]="!allConfirmed">
+                  Completed
+                </button>
+            </ng-container>
+          </ng-template>
         </div>
       </div>
       <!--Card Sub-Header-->
       <div id="card-subheader" class="py-3 px-4 d-flex justify-content-between">
-        <div class="alert alert-info position-relative mb-0" style="width: 500px;">
+        <div class="alert alert-info position-relative mb-0" style="width: 500px; font-size: 16px;">
           <span class="font-weight-bold">{{data?.customerCode}}</span> - {{data?.company_name}}
         </div>
       </div>
       <!--Data Table-->
-      <table cdk-table [dataSource]="prodEnt$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll" respHeight>
-        <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
-        <tr
-          cdk-row
-          *cdkRowDef="let row; columns: columns"
-          [ngClass]="{
-            'table-danger': row.purgatory == true
-          }"
-        ></tr>
+      <table [formGroup]="prepareForm" class="table table-hover table-bordered tgt-table tgt-scroll tgt-scroll-border" respHeight>
+        <thead>
+          <tr>
+            <th style="width: 8%;">Item Code</th>
+            <th style="width: 25%;">Description</th>
+            <th style="width: 6%;">In Stock</th>
+            <th style="width: 6%;border-left: 5px solid transparent;">Required</th>
+            <th style="width: 6%;">On Hand</th>
+            <th [hidden]="verify" style="width: 6%;border-left: 5px solid transparent;">Purchase</th>
+            <th [hidden]="verify" style="width: 6%;">Transfer</th>
+            <th [hidden]="verify" style="width: 6%;">Missing</th>
+            <th [hidden]="verify" style="width: 6%;border-left: 5px solid transparent;">Total<br>Check</th>
+            <th [hidden]="verify" style="width: 6%;">OnHand<br>Check</th>
+            <th [hidden]="verify" class="flex-fill">Status</th>
 
-        <ng-container cdkColumnDef="p_id">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;">Item Code</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center font-weight-bold" style="width: 15%; font-size: 18px;">
-            {{row.p_id}}
-          </td>
-        </ng-container>
+            <th [hidden]="!verify" class="flex-fill"></th>
+          </tr>
+        </thead>
+        <tbody formArrayName="products">
+          <ng-container *ngFor="let row of prodEnt$ | async; index as i;">
+            <tr [formGroupName]="i" [class.table-active]="(confirm && row.checked == 1) || (verify && row.verified == 1)">
+              <td (click)="selectedProd = row" class="text-center font-weight-bold point pointer" style="width: 8%; font-size: 16px;" dialogTrigger="lightbox">{{row.p_id}}</td>
+              <td class="text-left" style="width: 25%; font-size: 16px;">{{row.Description_1}}<br>{{row.Description_2}}<br>{{row.Description_3}}</td>
+              <td class="text-center font-weight-bold" style="width: 6%;">{{row.Qty_On_Hand | number:'1.0-0'}}</td>
+              <td class="text-center font-weight-bold table-active" style="width: 6%;border-left: 5px solid #bbb;">
+                <input formControlName="required" class="no-border text-center font-weight-bold" type="number" style="width: 100%;" readonly >
+              </td>
+              <td class="p-0 no-border" style="width: 6%; font-size: 16px;" [class.table-active]="row.checked == 1 || locked">
+                <input (change)="updateMissing(f[i]?.controls, 'onhand');" formControlName="onhand" class="no-border text-center" type="number" style="width: 100%;" [readonly]="row.checked == 1 || locked" [disabled]="locked" >
+              </td>
+              <td [hidden]="verify" class="p-0" style="width: 6%;border-left: 5px solid #bbb;" [class.table-active]="row.checked == 1 || locked" [class.no-touch]="row.checked == 1 || locked">
+                <input (change)="updateMissing(f[i]?.controls, 'purchase')" formControlName="purchase" class="no-border text-center" type="number" style="width: 100%;" [readonly]="row.checked == 1 || locked" [disabled]="locked" [class.no-touch]="row.checked == 1 || locked">
+              </td>
+              <td [hidden]="verify" class="p-0 no-border" style="width: 6%; font-size: 16px;" [class.table-active]="row.checked == 1 || locked" [class.no-touch]="row.checked == 1 || locked">
+                <input (change)="updateMissing(f[i]?.controls, 'transfer')" formControlName="transfer" class="no-border text-center" type="number" style="width: 100%;" [readonly]="row.checked == 1 || locked" [disabled]="locked" [class.no-touch]="row.checked == 1 || locked">
+              </td>
+              <td [hidden]="verify" class="p-0 no-border" style="width: 6%; font-size: 16px;" [class.table-active]="locked" [class.no-touch]="row.checked == 1 || locked">
+                <input formControlName="missing" class="no-border text-center" type="text" style="width: 100%;" readonly [class.no-touch]="row.checked == 1 || locked">
+              </td>
+              <td [hidden]="verify" class="text-center" style="width: 6%; font-size: 16px;border-left: 5px solid #bbb;">
+                <span
+                  class="badge badge-pill"
+                  [ngClass]="{
+                    'badge-secondary': row.checked == 0 && !totalRowTouched(f[i]?.controls),
+                    'badge-success': row.checked == 1 || (row.checked == 0 && totalRowTouched(f[i]?.controls) && (totalRow(f[i]?.controls) == f[i]?.controls.required.value)),
+                    'badge-danger': row.checked == 0 && totalRowTouched(f[i]?.controls) && (totalRow(f[i]?.controls) != f[i]?.controls.required.value)
+                  }"
+                >
+                  &nbsp;
+                </span>
+              </td>
+              <td [hidden]="verify" style="width: 6%;">
+                <ng-container *ngIf="row.checked == 1; else unChecked">
+                  <button type="button" class="tgt-button-full bg-primary bg-success d-flex h-100 w-100 justify-content-center" disabled>
+                    <i class="material-icons" style="font-size: 30px;">done</i>
+                  </button>
+                </ng-container>
+                <ng-template #unChecked>
+                  <ng-container *ngIf="totalRowTouched(f[i]?.controls); else unTouched">
+                    <ng-container *ngIf="f[i]?.controls.onhand.value == f[i]?.controls.required.value">
+                      <button type="button" class="tgt-button-full bg-primary bg-success d-flex h-100 w-100 justify-content-center" disabled>
+                        <i class="material-icons" style="font-size: 30px;">done</i>
+                      </button>
+                    </ng-container>
+                    <ng-container *ngIf="f[i]?.controls.onhand.value != f[i]?.controls.required.value">
+                      <ng-container *ngIf="f[i]?.controls.missing.value && f[i]?.controls.missing.value > 0">
+                        <button type="button" class="tgt-button-full bg-primary bg-danger d-flex h-100 w-100 justify-content-center" disabled>
+                          <i class="material-icons" style="font-size: 30px;">done</i>
+                        </button>
+                      </ng-container>
+                      <ng-container *ngIf="!f[i]?.controls.missing.value || f[i]?.controls.missing.value <= 0">
+                        <button type="button" class="tgt-button-full bg-primary d-flex h-100 w-100 justify-content-center" disabled>
+                          <i class="material-icons" style="font-size: 30px;">done</i>
+                        </button>
+                      </ng-container>
+                    </ng-container>
+                  </ng-container>
+                  <ng-template #unTouched>
+                      <button (click)="autoFill(f[i]?.controls);updateMissing(f[i].controls)" type="button" class="tgt-button-full bg-primary bg-secondary d-flex h-100 w-100 justify-content-center" [disabled]="locked">
+                        <i class="material-icons" style="font-size: 30px;">done</i>
+                      </button>
+                  </ng-template>
+                </ng-template>
+              </td>
+              <!-- <td
+                [hidden]="verify"
+                class="text-center flex-fill font-weight-bold"
+                style="font-size: 15px;"
+                [ngClass]="{
+                  'text-danger': f[i]?.controls.missing.value > 0,
+                  'text-primary': f[i]?.controls.purchase.value > 0 || f[i]?.controls.transfer.value > 0
+                }"
+              >
+                {{rowStatus(f[i]?.controls)}}
+              </td> -->
+              <td
+                *ngIf="!verify"
+                class="text-center flex-fill d-flex justify-content-center"
+                style="font-size: 15px;"
+              >
+                <!-- Amendments -->
+                <ng-container>
+                  <ng-container *ngIf="row.amendstatus == 0; else toAmend">
+                    <!-- 
+                      Blind button -- User cannot click this button
+                    -->
+                    <button
+                      *ngIf="locked || !totalRowTouched(f[i]?.controls) || (totalRowTouched(f[i]?.controls) && !f[i]?.controls.missing.value); else missingBtn"
+                      type="button"
+                      class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-secondary blind-btn"
+                    >
+                      A
+                    </button>
+                    <ng-template #missingBtn>
+                      <!-- 
+                        User can click this button to trigger an action
+                      -->
+                      <button
+                        (click)="save();markStatus(row, 1, 1, i)"
+                        type="button"
+                        class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-secondary"
+                      >
+                        A
+                      </button>
+                    </ng-template>
+                  </ng-container>
+                  <ng-template #toAmend>
+                    <!-- 
+                      Yellow button -- User cannot click this button
+                      Yellow means action was initiated and pending response
+                    -->
+                    <button
+                      
+                      *ngIf="row.amendstatus == 1"
+                      type="button"
+                      class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-warning"
+                    >
+                      A
+                    </button>
+                    <!-- 
+                      Orange button -- User cannot click this button
+                      Orange means action was initiated, response was processed, waiting for validity
+                    -->
+                    <button
+                      
+                      *ngIf="row.amendstatus == 2"
+                      type="button"
+                      class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-urgent"
+                    >
+                      A
+                    </button>
+                    <!-- 
+                      Red button -- User cannot click this button
+                      Red means action was initiated, response was processed and declined
+                    -->
+                    <button
+                      *ngIf="row.amendstatus == 3"
+                      type="button"
+                      class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-danger"
+                    >
+                      A
+                    </button>
+                    <!-- 
+                      Green button -- User cannot click this button
+                      Green means action was initiated, response was processed and approved
+                    -->
+                    <button
+                      *ngIf="row.amendstatus == 4"
+                      type="button"
+                      class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-success"
+                    >
+                      A
+                    </button>
+                  </ng-template>
+                </ng-container>
+                <!-- Transfers -->
+                <ng-container>
+                  <ng-container *ngIf="row.transferstatus == 0; else toTransfer">
+                    <!-- 
+                      Blind button -- User cannot click this button
+                    -->
+                    <button
+                      *ngIf="locked || !totalRowTouched(f[i]?.controls) || (totalRowTouched(f[i]?.controls) && !f[i]?.controls.transfer.value); else transferBtn"
+                      type="button"
+                      class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-secondary blind-btn"
+                    >
+                      T
+                    </button>
+                    <ng-template #transferBtn>
+                      <!-- 
+                        User can click this button to trigger an action
+                      -->
+                      <button
+                        (click)="save();markStatus(row, 3, 1, i)"
+                        type="button"
+                        class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-secondary"
+                      >
+                        T
+                      </button>
+                    </ng-template>
+                  </ng-container>
+                  <ng-template #toTransfer>
+                    <!-- 
+                      Yellow button -- User cannot click this button
+                      Yellow means action was initiated and pending response
+                    -->
+                    <button
+                      
+                      *ngIf="row.transferstatus == 1"
+                      type="button"
+                      class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-warning"
+                    >
+                      T
+                    </button>
+                    <!-- 
+                      Orange button -- User cannot click this button
+                      Orange means action was initiated, response was processed, waiting for validity
+                    -->
+                    <button
+                      
+                      *ngIf="row.transferstatus == 2"
+                      type="button"
+                      class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-urgent"
+                    >
+                      T
+                    </button>
+                    <!-- 
+                      Red button -- User cannot click this button
+                      Red means action was initiated, response was processed and declined
+                    -->
+                    <button
+                      *ngIf="row.transferstatus == 3"
+                      type="button"
+                      class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-danger"
+                    >
+                      T
+                    </button>
+                    <!-- 
+                      Green button -- User cannot click this button
+                      Green means action was initiated, response was processed and approved
+                    -->
+                    <button
+                      *ngIf="row.transferstatus == 4"
+                      type="button"
+                      class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-success"
+                    >
+                      T
+                    </button>
+                  </ng-template>
+                </ng-container>
+                <!-- Transfers -->
+                <ng-container>
+                  <ng-container *ngIf="row.purchasestatus == 0; else toPurchase">
+                    <!-- 
+                      Blind button -- User cannot click this button
+                    -->
+                    <button
+                      *ngIf="locked || !totalRowTouched(f[i]?.controls) || (totalRowTouched(f[i]?.controls) && !f[i]?.controls.purchase.value); else purchaseBtn"
+                      type="button"
+                      class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-secondary blind-btn"
+                    >
+                      P
+                    </button>
+                    <ng-template #purchaseBtn>
+                      <!-- 
+                        User can click this button to trigger an action
+                      -->
+                      <button
+                        (click)="save();markStatus(row, 2, 1, i)"
+                        type="button"
+                        class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-secondary"
+                      >
+                        P
+                      </button>
+                    </ng-template>
+                  </ng-container>
+                  <ng-template #toPurchase>
+                    <!-- 
+                      Yellow button -- User cannot click this button
+                      Yellow means action was initiated and pending response
+                    -->
+                    <button
+                      
+                      *ngIf="row.purchasestatus == 1"
+                      type="button"
+                      class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-warning"
+                    >
+                      P
+                    </button>
+                    <!-- 
+                      Orange button -- User cannot click this button
+                      Orange means action was initiated, response was processed, waiting for validity
+                    -->
+                    <button
+                      
+                      *ngIf="row.purchasestatus == 2"
+                      type="button"
+                      class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-urgent"
+                    >
+                      P
+                    </button>
+                    <!-- 
+                      Red button -- User cannot click this button
+                      Red means action was initiated, response was processed and declined
+                    -->
+                    <button
+                      *ngIf="row.purchasestatus == 5"
+                      type="button"
+                      class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-danger"
+                    >
+                      P
+                    </button>
+                    <!-- 
+                      Green button -- User cannot click this button
+                      Green means action was initiated, response was processed and approved
+                    -->
+                    <button
+                      *ngIf="row.purchasestatus == 4"
+                      type="button"
+                      class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-success"
+                    >
+                      P
+                    </button>
+                  </ng-template>
+                </ng-container>
 
-        <ng-container cdkColumnDef="des">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 46%;">Description</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-left" style="width: 46%; font-size: 18px;">
-            {{row.Description_1}}<br>{{row.Description_2}}
-          </td>
-        </ng-container>
+              </td>
 
-        <ng-container cdkColumnDef="brand">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Brand</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-left" style="width: 20%; font-size: 18px;">
-            {{row.Description_3}}
-          </td>
-        </ng-container>
+              <td
+                *ngIf="verify"
+                class="text-center flex-fill d-flex justify-content-center"
+                style="font-size: 15px;"
+              >
+                  <button
+                    [disabled]="locked"
+                    [ngClass]="{
+                      'blind-btn': locked
+                    }"
+                    type="button"
+                    class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-secondary"
+                  >
+                    A
+                  </button>
+                  <button
+                    [disabled]="locked"
+                    [ngClass]="{
+                      'blind-btn': locked
+                    }"
+                    type="button"
+                    class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-secondary"
+                  >
+                    T
+                  </button>
+                  <button
+                    [disabled]="locked"
+                    [ngClass]="{
+                      'blind-btn': locked
+                    }"
+                    type="button"
+                    class="tgt-button-full d-flex h-100 w-100 px-2 font-weight-bold text-white justify-content-center bg-secondary"
+                  >
+                    P
+                  </button>
+              </td>
 
-        <ng-container cdkColumnDef="qty">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 5%;">Qty</th>
-          <td cdk-cell *cdkCellDef="let row; index as i;" class="text-center" style="width: 5%; font-size: 18px;">
-            {{row.qty}}
-          </td>
-        </ng-container>
-
-        <ng-container cdkColumnDef="confirm">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;" [hidden]="!confirm">Confirm</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 7%;" class="p-0" [hidden]="!confirm">
-            <button (click)="markChecked(row.invlineid)" type="button" class="tgt-button-full bg-primary" style="margin: 5px auto;" [disabled]="amendStatus || row.checked == 1">
-              <i class="material-icons" style="line-height: 24px;margin-top: 3px;">done</i>
-            </button>
-          </td>
-        </ng-container>
-
-        <ng-container cdkColumnDef="verify">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;" [hidden]="!verify">Verify</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 7%;" class="p-0" [hidden]="!verify">
-            <button (click)="markVerified(row.invlineid)" type="button" class="tgt-button-full bg-primary" style="margin: 5px auto;" [disabled]="amendStatus || row.verified == 1">
-              <i class="material-icons" style="line-height: 24px;margin-top: 3px;">done_all</i>
-            </button>
-          </td>
-        </ng-container>
-
-        <ng-container cdkColumnDef="transfer">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;">Transfer/<br>Purchase</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 7%;" class="p-0">
-            <button (click)="tempProd = row" type="button" class="tgt-button-full bg-primary" style="margin: 5px auto;" dialogTrigger="transfer" >
-              <i class="material-icons" style="line-height: 24px;margin-top: 3px;">done</i>
-            </button>
-          </td>
-        </ng-container>
+              <td [hidden]="!verify" class="flex-fill">
+                <button
+                  (click)="markVerified(row.invlineid)"
+                  class="tgt-button-full d-flex h-100 w-100 px-2 text-white justify-content-center font-weight-bold"
+                  [ngClass]="{
+                    'blind-btn': locked,
+                    'bg-secondary': row.verified === 0,
+                    'bg-success': row.verified === 1
+                  }"
+                  [disabled]="locked"
+                >
+                  <i class="material-icons">done</i>
+                </button>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
       </table>
+
+       
     </div>
   </div>
 </div>
+
+<app-dialog
+  dialogID="lightbox"
+  title="Product Image"
+  size="medium"
+  cancel="Close"
+  (onCancel)="selectedProd = null"
+>
+  <div class="d-flex justify-content-center" *ngIf="selectedProd">
+    <img [src]="imgDirUrl + selectedProd?.p_id + '.jpg'" [alt]="selectedProd?.p_id" class="img-fluid" onError="this.src = 'assets/images/NONE.jpg'" />
+  </div>
+</app-dialog>
+
+<app-dialog
+  dialogID="confirmsave"
+  title="Confirm Save"
+  size="small"
+  accept="Save"
+  cancel="Cancel"
+  (onAccept)="save()"
+>
+</app-dialog>
+
+<app-dialog
+  dialogID="tablereserve"
+  title="Choose Tables"
+  size="medium"
+  accept="Save"
+  cancel="Cancel"
+  (onAccept)="start()"
+>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th class="font-weight-bold text-center">#</th>
+        <th class="font-weight-bold">Table ID</th>
+        <th class="font-weight-bold">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of table$ | async; index as i;">
+        <td class="text-center">
+          <div class="custom-control custom-radio">
+            <input (change)="selectedTable=item.tableId" type="radio" class="custom-control-input" name="table" id="customCheck{{item.tableId}}">
+            <label class="custom-control-label" for="customCheck{{item.tableId}}"></label>
+          </div>
+        </td>
+        <td>Table #{{item.tableId}}</td>
+        <td class="font-italic">{{item.status == 0 ? 'Available' : 'Occupied'}}</td>
+      </tr>
+    </tbody>
+  </table>
+</app-dialog>
+
+<app-dialog
+  dialogID="verifymode"
+  title="Send To Verify"
+  size="small"
+  accept="Send"
+  cancel="Cancel"
+  (onAccept)="sendToVerify()"
+>
+</app-dialog>
+
+
+<app-dialog
+  dialogID="verification"
+  title="Login before verification"
+  size="medium"
+  accept="Login"
+  cancel="Cancel"
+  (onAccept)="tempLogin()"
+>
+  <form [formGroup]="loginForm">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input formControlName="username" type="text" name="username" id="username" class="form-control w-100">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input formControlName="password" type="password" name="password" id="password" class="form-control w-100">
+    </div>
+  </form>
+</app-dialog>
+
+<app-dialog
+  dialogID="goodsready"
+  title="Confirm Goods Ready"
+  size="small"
+  accept="Send"
+  cancel="Cancel"
+  (onAccept)="goodsReady()"
+>
+</app-dialog>
 
 <app-dialog
   dialogID="transfer"

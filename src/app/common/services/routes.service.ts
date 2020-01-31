@@ -21,9 +21,22 @@ export class RoutesService {
     return this._http.post(this.url + 'routes/create.php', info);
   }
 
-  getRoute(): Observable<any>{
-    return this._http.get(this.url + 'routes/read.php').pipe(
-      map((route: any) => route.records)
+  getRoute(id?): Observable<any>{
+    let url = '';
+
+    if (id) {
+      url = this.url + 'routes/read_one.php?id=' + id;
+    } else {
+      url = this.url + 'routes/read.php';
+    }
+    return this._http.get(url).pipe(
+      map((route: any) => {
+        if (id) {
+          return route;
+        } else {
+          return route.records;
+        }
+      })
     ); 
   }
 
@@ -36,5 +49,13 @@ export class RoutesService {
     return this._http.get(this.url + 'locations/read.php').pipe(
       map((location: any) => location.records)
     ); 
+  }
+
+  addLocation(info) {
+    return this._http.post(this.url + 'locations/create_routeloc.php', info);
+  }
+
+  switchPlace(info) {
+    return this._http.post(this.url + 'locations/switch_rank.php', info);
   }
 }

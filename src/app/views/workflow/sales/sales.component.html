@@ -7,7 +7,10 @@
           Marketing Workflow
           <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
         </h3>
-        <div>
+        <div class="d-flex align-items-center">
+          <button (click)="get();mode = 2;" class="tgt-button-full tgt-btn-white h-100 my-1 mr-3" dialogTrigger="newwf">
+            <i class="material-icons" style="line-height: 24px;margin-top: 3px;">add</i>
+          </button>
           <button (click)="get()" class="tgt-button-full tgt-btn-white h-100 px-3 py-2 my-1 mr-3">
             Refresh List
           </button>
@@ -69,16 +72,33 @@
       
         <!-- Workflow Rows -->
         <ng-container cdkColumnDef="inquiry">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 14%;">Inquiry</th>
-          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row; index as i;" [ngClass]="{'bg-primary': row.status == 1}" style="width: 14%;" name="2" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10.5%;">Inquiry</th>
+          <td (click)="editWF($event, row);mode = 1;" cdk-cell *cdkCellDef="let row; index as i;" [ngClass]="{'bg-primary': row.status == 1}" style="width: 10.5%;" name="2" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
         </ng-container>
         <ng-container cdkColumnDef="quotesent">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 14%;">Quote Sent</th>
-          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 2}" style="width: 14%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10.5%;">Quote Sent</th>
+          <td (click)="editWF($event, row);mode = 1;" cdk-cell *cdkCellDef="let row" name="3" [ngClass]="{'bg-primary': row.status == 2}" style="width: 10.5%;" [dialogTrigger]="hasClass ? 'wfpopup' : null" [clickDisabled]="'update'"></td>
+        </ng-container>
+        <ng-container cdkColumnDef="creditcontrol">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10.5%;">Credit Control</th>
+          <td
+            (click)="wfItem=row"
+            cdk-cell
+            *cdkCellDef="let row"
+            class="text-center"
+            [ngClass]="{
+              'bg-primary no-click': row.creditCtrl == 1,
+              'bg-danger ': row.creditCtrl == 2
+            }"
+            style="width: 10.5%;"
+            [clickDisabled]="'update'"
+            [dialogTrigger]="row.creditCtrl == 2 ? 'cancel' : null"
+          >
+          </td>
         </ng-container>
         <ng-container cdkColumnDef="orderconfirm">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 14%;">Order Confirmed</th>
-          <td (click)="editWF($event, row)" cdk-cell *cdkCellDef="let row" class="text-center not-allowed" name="4" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 3}" style="width: 14%;" [clickDisabled]="'update'">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10.5%;">Order Confirmed</th>
+          <td (click)="editWF($event, row);mode = 1;" cdk-cell *cdkCellDef="let row" class="text-center not-allowed" name="4" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 3}" style="width: 10.5%;" [clickDisabled]="'update'">
             {{row.orderNo | uppercase}}
           </td>
         </ng-container>
@@ -116,6 +136,115 @@
   </div>
 </div>
 
-<app-dialog dialogID="wfpopup" title="Edit Workflow Entry" size="medium" accept="Submit" cancel="Close" (onAccept)="update()" (onCancel)="cancel()" [disabled]="formData?.valid && (formData?.status && formData?.status !== '') ? true : null">
-  <app-popup (update)="loadInfo($event)" [questions]="questions"></app-popup>
+<app-dialog dialogID="wfpopup" title="Edit Workflow Entry" size="medium" accept="Submit" cancel="Close" (onAccept)="update()" (onCancel)="cancel()" [disabled]="(formData?.valid && (formData?.status && formData?.status !== '')) || (formData?.status == 3 && upload) ? true : null">
+
+  
+  <ng-container *ngIf="!!(formData?.invoice_id)">
+    <p class="alert alert-primary" style="font-size: 15px;">
+      Go To Document: <span [routerLink]="'/order-entry/view/' + formData?.invoice_id" class="point pointer text-primary">Click Here</span>
+    </p>
+  </ng-container>
+
+ 
+  <ng-container *ngIf="questions && mode === 1">
+    <app-popup (update)="loadInfo($event)" [questions]="questions"></app-popup>
+  </ng-container>
+
+  <div *ngIf="formData?.status == 3" class="input-group my-2">
+    <ng-container *ngIf="upload">
+      <div class="alert alert-success w-100">
+        {{uploadname}} has been successfully uploaded. <a class="font-weight-bold point" (click)="cancelFile()">Change file ?</a>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="!upload">
+      <div class="input-group-prepend">
+        <button class="btn btn-outline-secondary" id="poScan" type="button" disabled>Purchase Order Scan</button>
+      </div>
+      <div class="custom-file">
+        <input (change)="uploadFile($event, formData?.workflow_id)" type="file" class="custom-file-input" aria-describedby="poScan">
+        <label class="custom-file-label" for="inputGroupFile03">{{uploadname ? uploadname : 'Choose file'}}</label>
+      </div>
+    </ng-container>
+  </div>
+</app-dialog>
+
+<app-dialog
+  dialogID="cancel"
+  title="Cancel Workflow Entry"
+  size="medium"
+  accept="Submit"
+  cancel="Close"
+  (onAccept)="cancelEntry()"
+  (onCancel)="wfItem=null"
+>
+
+</app-dialog>
+
+<app-dialog
+  dialogID="newwf"
+  title="New Workflow Entry"
+  size="medium"
+  accept="Submit"
+  cancel="Close"
+  (onAccept)="updateNew();"
+  (onCancel)="mode=1;cancel();lockedCust=null"
+  [disabled]="formData?.valid && (formData?.status && formData?.status !== '') ? true : null"
+>
+  <form *ngIf="!lockedCust" [formGroup]="searchCustForm" class="d-flex flex-column my-1">
+    <div class="form-group w-100 position-relative">
+      <input (keyup)="searchCust()" formControlName="searchString" type="search" name="company_name" id="company_name" class="form-control w-100" placeholder="Type in company name to search...">
+    </div>
+    <div class="d-flex justify-content-between w-100 mb-2">
+      <!-- <select formControlName="data" name="data" id="data" class="form-control w-100">
+        <option [value]="1">DelOffice Ltd</option>
+        <option [value]="2">Roll n Sheet Ltd</option>
+        <option [value]="3">Print n Pack Ltd</option>
+      </select> -->
+      <div class="custom-control custom-radio custom-control-inline">
+        <input formControlName="data" type="radio" id="data1" name="data" class="custom-control-input" [value]="1">
+        <label class="custom-control-label" for="data1">DelOffice Ltd</label>
+      </div>
+      <div class="custom-control custom-radio custom-control-inline">
+        <input formControlName="data" type="radio" id="data2" name="data" class="custom-control-input" [value]="2">
+        <label class="custom-control-label" for="data2">Roll n Sheet Ltd</label>
+      </div>
+      <div class="custom-control custom-radio custom-control-inline">
+        <input formControlName="data" type="radio" id="data3" name="data" class="custom-control-input" [value]="3">
+        <label class="custom-control-label" for="data3">Print n Pack Ltd</label>
+      </div>
+    </div>
+  </form>
+
+  <div *ngIf="!lockedCust">
+    <ul style="list-style: none;" class="p-0 m-0">
+      <li (click)="assignCust(cust)" *ngFor="let cust of customer$ | async" class="alert alert-info pointer point">
+        <strong>{{cust.customerCode}}</strong> - {{cust.company_name}}
+      </li>
+    </ul>
+  </div>
+
+  <div *ngIf="lockedCust" class="alert alert-info">
+    <strong>{{lockedCust.customerCode}}</strong> - {{lockedCust.company_name}}
+  </div>
+
+  <ng-container *ngIf="questions && mode === 2">
+    <app-popup (update)="loadInfo($event)" [questions]="questions"></app-popup>
+  </ng-container>
+
+  <div *ngIf="formData?.status == 3" class="input-group my-2">
+    <ng-container *ngIf="upload">
+      <div class="alert alert-success w-100">
+        {{uploadname}} has been successfully uploaded. <a class="font-weight-bold point" (click)="cancelFile()">Change file ?</a>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="!upload">
+      <div class="input-group-prepend">
+        <button class="btn btn-outline-secondary" id="poScan" type="button" disabled>Purchase Order Scan</button>
+      </div>
+      <div class="custom-file">
+        <input (change)="uploadFile($event, formData?.workflow_id)" type="file" class="custom-file-input" aria-describedby="poScan">
+        <label class="custom-file-label" for="inputGroupFile03">{{uploadname ? uploadname : 'Choose file'}}</label>
+      </div>
+    </ng-container>
+  </div>
 </app-dialog>

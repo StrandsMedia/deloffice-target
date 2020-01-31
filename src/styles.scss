@@ -359,6 +359,18 @@ main#main-content {
     width: calc(100% - 1.1em) !important;
 }
 
+
+table.tgt-scroll.tgt-scroll-border thead {
+    tr {
+        th {
+            height: 100%;
+            // &:not(:first-child) {
+            //     border-left: 1px solid lightgray;
+            // }
+        }
+    }
+}
+
 /* Background */
 
 .tgt-bg {
@@ -437,4 +449,20 @@ main#main-content {
 
 .img-thumbnail {
     width: 100%;
+}
+
+.cdk-drag-dragging {
+    opacity: 0.5 !important;
+}
+
+.invi {
+    opacity: 0;
+}
+
+.no-touch {
+    pointer-events: none;
+}
+
+.bg-urgent {
+    background-color: #fd7e14!important;
 }

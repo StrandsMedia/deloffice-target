@@ -1,0 +1,120 @@
+<div class="row">
+  <div class="col-12">
+    <div class="mdc-card mb-3" style="overflow: hidden;">
+      <!--Card Header-->
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+        <div class="text-white flex-fill align-items-center">
+          <h3 class="mb-1">Credit Control Gateway</h3>
+        </div>
+        <div class="align-items-center">
+          <!-- <button class="float-right tgt-button-full tgt-btn-white px-3 py-2" >
+            No Idea
+          </button> -->
+        </div>
+      </div>
+      <!--Data Table-->
+      <table cdk-table [dataSource]="creditBlocked$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+        <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+        <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+
+        <ng-container cdkColumnDef="id">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 6%;">ID</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 6%;" [routerLink]="['/workflow/event/' + row.workflow_id ]" [queryParams]="{ data: row.data }" >
+            {{row.workflow_id}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="date">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;">Date</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 7%;">
+            {{row.time | date:'dd-MM-yy'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="customerCode">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Company</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center" style="width: 10%;">
+            {{row.company}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="company_name">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 30%;">Company Name</th>
+          <td routerLink="/customers/{{row.cust_id}}" [queryParams]="{ data: row.data }" cdk-cell *cdkCellDef="let row" class="font-weight-bold point" style="width: 30%;">
+            {{row.customerCode || '-'}} - {{row.company_name}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="status">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Status on WF</th>
+          <td cdk-cell *cdkCellDef="let row" style="width: 10%;">
+            {{row.step}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="issue">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 30%;">Issue</th>
+          <td cdk-cell *cdkCellDef="let row" class="" style="width: 30%;">
+            {{row.issue || '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="amount">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Amount Due</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 10%;">
+            {{'Rs. ' + (row.amt | number:'1.2-2') || '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="edit">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;"></th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 10%;">
+            <button (click)="bindData(row)" dialogTrigger="approve" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2 float-left mr-2" [disableIfUnauth]="'update'">
+              <i class="material-icons" style="line-height: 30px;">done</i>
+            </button>
+            <button (click)="bindData(row)" dialogTrigger="decline" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2 float-left" [disableIfUnauth]="'update'">
+              <i class="material-icons" style="line-height: 30px;">close</i>
+            </button>
+          </td>
+        </ng-container>
+      </table>
+    </div>
+  </div>
+</div>
+
+<app-dialog
+  dialogID="approve"
+  title="Approve Workflow Entry"
+  size="medium"
+  accept="Submit"
+  cancel="Close"
+  (onCancel)="cancel()"
+  (onAccept)="submit('approve')"
+>
+  <form [formGroup]="creditForm">
+    <div class="form-group">
+      <label for="comment">Reason for Approval</label>
+      <input formControlName="comment" type="text" name="comment" id="comment" class="form-control w-100" placeholder="Type in reason here...">
+    </div>
+    <div class="d-flex align-items-center">
+
+      <div class="custom-control custom-checkbox w-50">
+        <input formControlName="cheque" type="checkbox" class="custom-control-input" id="cheque">
+        <label class="custom-control-label" for="cheque">Collect cheque</label>
+      </div>
+      <div *ngIf="creditForm.value.cheque" class="form-group mb-0 w-100">
+        <input formControlName="amount" type="text" name="amount" id="amount" class="form-control w-100" placeholder="Type in amount to be collected">
+      </div>
+    </div>
+  </form>
+</app-dialog>
+
+<app-dialog
+  dialogID="decline"
+  title="Decline Workflow Entry"
+  size="medium"
+  accept="Submit"
+  cancel="Close"
+  (onCancel)="cancel()"
+  (onAccept)="submit('decline')"
+>
+  <form [formGroup]="creditForm">
+    <div class="form-group">
+      <label for="comment">Reason for Decline</label>
+      <input formControlName="comment" type="text" name="comment" id="comment" class="form-control w-100" placeholder="Type in reason here...">
+    </div>
+  </form>
+</app-dialog>

@@ -30,8 +30,9 @@ export class GoodsPrepComponent implements OnInit {
     'company',
     'goodstbprep',
     'goodsinprep',
-    'goodsawaitingamend',
-    'goodsawaitingtrans',
+    'amend',
+    // 'transfer',
+    // 'purchase',
     'goodstbchecked',
     'goodsreadytbi',
     'duration'

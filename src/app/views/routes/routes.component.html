@@ -19,21 +19,21 @@
 
         <ng-container cdkColumnDef="routeId">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Route ID</th>
-          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 20%;">
+          <td routerLink="{{row.routeId}}" cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 20%;">
             {{row.routeId}}
           </td>
         </ng-container>
 
         <ng-container cdkColumnDef="routeRef">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Route Reference</th>
-          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 20%;">
+          <td routerLink="{{row.routeId}}" cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 20%;">
             {{row.routeRef}}
           </td>
         </ng-container>
 
         <ng-container cdkColumnDef="routeName">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Route Name</th>
-          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 20%;">
+          <td routerLink="{{row.routeId}}" cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 20%;">
             {{row.routeName}}
           </td>
         </ng-container>
@@ -65,14 +65,14 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-6">
+      <!-- <div class="col-6">
         <div class="form-group">
           <label for="routeRef">Route Reference</label>
           <input formControlName="routeRef" type="text" class="form-control" name="routeRef" id="routeRef">
           <small id="brandHelp" class="form-text text-muted">The route reference</small>
         </div>
-      </div>
-      <div class="col-6">
+      </div> -->
+      <div class="col-12">
         <div class="form-group">
           <label for="routeName">Route Name</label>
           <input formControlName="routeName" type="text" class="form-control" name="routeName" id="routeName">

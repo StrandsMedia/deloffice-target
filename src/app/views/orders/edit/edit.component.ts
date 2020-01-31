@@ -1,15 +1,19 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, NavigationStart } from '@angular/router';
 
 import { CustomerService } from '../../../common/services/customer.service';
 import { OrdersService } from '../../../common/services/orders.service';
-import { MaterialService } from 'src/app/common/services/material.service';
+import { MaterialService } from '../../../common/services/material.service';
+import { ProductService } from '../../../common/services/product.service';
+import { ConfirmService } from '../../../common/services/confirm.service';
+import { PurgatoryService } from 'src/app/common/services/purgatory.service';
 
-import { Observable, of, fromEvent, BehaviorSubject } from 'rxjs';
-import { tap, debounceTime, switchMap, map } from 'rxjs/operators';
-import { ProductService } from 'src/app/common/services/product.service';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { tap, switchMap, map } from 'rxjs/operators';
 import { renderInvoice, printInv } from '../orders.utils';
+
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-edit',
@@ -17,11 +21,15 @@ import { renderInvoice, printInv } from '../orders.utils';
   styleUrls: ['./edit.component.scss']
 })
 export class EditComponent implements OnInit {
+  public imgUrl = environment.imgUrl;
+
   dataSource$: Observable<any>;
   product$: Observable<any>;
   prodCode$: Observable<any>;
   loading = false;
   view = true;
+
+  public selectedIndex;
 
   entries = [];
   private _prodEntr$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
@@ -29,7 +37,21 @@ export class EditComponent implements OnInit {
   public tempProd: any;
 
   private _tempData: any;
+  public tempData: any;
   stable = [];
+  public changed: boolean = false;
+
+  public priceCategories = [
+    'PP',
+    'CP1',
+    'CP2',
+    'WP',
+    'TP',
+    'DP',
+    'OTH'
+  ]
+
+  boundProd: any;
 
   postData: any = {};
 
@@ -40,13 +62,13 @@ export class EditComponent implements OnInit {
     'brand',
     'stock',
     'qty',
-    'defprice',
     'pricecat',
     'invprice',
     'totalexcl',
     'vat',
     'totalincl',
     'edit',
+    'defprice',
     'sprice',
     'cprice',
     'uprofit',
@@ -86,21 +108,50 @@ export class EditComponent implements OnInit {
   });
 
   public editForm: FormGroup = this._fb.group({
-    option: null
+    note: null
   });
 
+  public sendMail = this._fb.group({
+    email: [null, Validators.required],
+    subject: [null, Validators.required],
+    message: [null, Validators.required],
+    attachment: null
+  });
+  type = 1;
+
   constructor(
+    private _confirm: ConfirmService,
     private _cust: CustomerService,
     private _fb: FormBuilder,
     private _mdc: MaterialService,
     private _order: OrdersService,
     private _prod: ProductService,
+    private _purgatory: PurgatoryService,
     private _route: ActivatedRoute,
     private _router: Router
   ) { }
 
   ngOnInit() {
     this.get();
+  }
+
+  public convertNum(item: string | number) {
+    const idx = ('000000' + (+(item) + 1)).slice(-6);
+    return 'No. '+idx;
+  }
+
+  canDeactivate(): Observable<boolean> | boolean {
+    if (this.changed) {
+      return this._confirm.confirm('Do you want to save before you exit?').pipe(
+        tap(v => {
+          if (v) {
+            this.savePDF()
+          }
+        })
+      )
+    } else {
+      return true;
+    }
   }
 
   get() {
@@ -113,6 +164,8 @@ export class EditComponent implements OnInit {
       map((res: any) => res.records[0]),
       tap((res) => {
         this._tempData = res;
+        this.tempData = res;
+        console.log(res)
         this.searchProdForm.controls['cust_id'].setValue(res.cust_id);
         this.searchProdForm2.controls['cust_id'].setValue(res.cust_id);
         this.entries = res.entries;
@@ -130,6 +183,40 @@ export class EditComponent implements OnInit {
 
   public trackByFn(index, item) {
     return index;
+  }
+
+  public bindProduct(row, data) {
+    const obj = {
+      workflow_id: data.workflow_id,
+      cust_id: data.cust_id,
+      data: data.data,
+      p_id: row.p_id,
+      qty: row.qty,
+      type: this.type,
+      invlineid: row.invlineid
+    }
+
+    console.log(obj)
+    this.boundProd = obj;
+  }
+
+  requestProd() {
+    this._purgatory.createPurchasing(this.boundProd)
+    .pipe(
+
+    )
+    .subscribe(
+      (data) => {
+        this._mdc.materialSnackBar(data);
+      },
+      (err) => {
+        this._mdc.materialSnackBar(err.error);
+      },
+      () => {
+        this.get();
+        this.boundProd = null;
+      }
+    )
   }
 
   searchProd() {
@@ -165,6 +252,8 @@ export class EditComponent implements OnInit {
         break;
     }
 
+    this.changed = true;
+
     this._prodEntr$.next(entries);
   }
 
@@ -178,41 +267,82 @@ export class EditComponent implements OnInit {
     const field = event.target.id;
     if (field === 'fExclPrice') {
       newval = parseFloat(newval).toFixed(2);
+
+      const priceMatch = Object.values(entries[index]['prices'])
+        .map((entry, idx) => {
+          if (+newval == entry) {
+            return idx;
+          }
+        })
+        .filter((entry) => {
+          if (entry) {
+            return entry
+          }
+        })
+
+      if (priceMatch.length > 0) {
+        entries[index]['pricecat'] = this.priceCategories[priceMatch[0]];
+      } else {
+        // Switch Pricecat to OTH
+  
+        entries[index]['pricecat'] = "OTH";
+      }
+
     }
     entries[index][field] = newval;
+
+    this.changed = true;
 
     this._prodEntr$.next(entries);
   }
 
-  addToTemp() {
+  updatePriceSelect(row, $event) {
+    const idx = $event.target.selectedIndex;
+    const val = this.priceCategories[idx]
+    row['fExclPrice'] = (+row.prices[val]).toFixed(2);
+    row['pricecat'] = val;
+  }
+
+  public disablePrice(row, item) {
+    if (row.prices[item] == null || row.prices[item] == undefined || row.prices[item] == 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  addToTemp(prod: any = this.tempProd, qty = 1) {
+    console.log(prod);
     const tempArray = this._prodEntr$.value;
 
-    if (!this._isInArr()) {
-      this.tempProd.qty = 1;
-      this.tempProd.fExclPrice2 = this.tempProd.fExclPrice;
-      this.tempProd.status = 'new';
-      tempArray.unshift(this.tempProd);
+    if (!this._isInArr(prod)) {
+      prod.qty = qty;
+      prod.fExclPrice = +prod.fExclPrice;
+      prod.fExclPrice2 = +prod.fExclPrice;
+      prod.status = 'new';
+      tempArray.push(prod);
+
+      this.changed = true;
 
       this._prodEntr$.next(tempArray);
     } else {
       alert('Product already exists in document');
     }
-
-    this.tempProd = null;
   }
 
   addToTempEnter($event) {
     if ($event.key === 'Enter') {
       this.addToTemp();
+      
     }
   }
 
   // Utils
 
-  private _isInArr(): boolean {
+  private _isInArr(prod: any = this.tempProd): boolean {
     const tempArray: any[] = this._prodEntr$.value;
     return tempArray.reduce((acc, curr) => {
-      if (curr.p_id == this.tempProd.p_id) {
+      if (curr.p_id == prod.p_id) {
         return true;
       } else {
         return false;
@@ -253,6 +383,31 @@ export class EditComponent implements OnInit {
     printInv(pdf);
   }
 
+  saveQuote() {
+    const prodArr = this._prodEntr$.value;
+    this._tempData.entries = prodArr;
+    this._tempData.TotalExcl = this.totalexcl();
+    this._tempData.TotalTax = this.totalvat();
+    this._tempData.TotalIncl = this.totalincl();
+
+    console.log(this._tempData);
+    this._order.updateInvoice(this._tempData)
+    .subscribe(
+      (data) => {
+        this._mdc.materialSnackBar(data);
+      },
+      (err) => {
+        this._mdc.materialSnackBar(err.error);
+      },
+      () => {
+        this.get();
+        this.changed = false;
+        const pdf = renderInvoice(this._tempData, 'Quotation');
+        printInv(pdf);
+      }
+    )
+  }
+
   savePDF() {
     const prodArr = this._prodEntr$.value;
     this._tempData.entries = prodArr;
@@ -271,17 +426,28 @@ export class EditComponent implements OnInit {
       },
       () => {
         this.get();
+        this.changed = false;
       }
     )
   }
 
-  processPDF() {
+  processPDF(option: string) {
     const prodArr = this._prodEntr$.value;
     this._tempData.entries = prodArr;
-    this._tempData.status = this.editForm.value.option;
+    this._tempData.status = option;
     this._tempData.TotalExcl = this.totalexcl();
     this._tempData.TotalTax = this.totalvat();
     this._tempData.TotalIncl = this.totalincl();
+
+    this._tempData.note = this.editForm.value.note;
+    if (option == 'cancel') {
+      if (this.editForm.value.note == '' || this.editForm.value.note == null) {
+        const noNote = prompt('Please type in a line note for cancellation')
+        if (noNote) {
+          this._tempData.note = noNote;
+        }
+      }
+    }
 
     this._order.processInvoice(this._tempData)
     .subscribe(
@@ -293,6 +459,7 @@ export class EditComponent implements OnInit {
       },
       () => {
         this.get();
+        this.changed = false;
         this._router.navigate(['/workflow/proforma']);
       }
     )

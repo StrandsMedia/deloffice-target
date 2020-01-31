@@ -140,7 +140,7 @@ export class AddComponent implements OnInit, AfterViewInit {
     if (!this._isInArr()) {
       this.tempProd.qty = 1;
       this.tempProd.fExclPrice2 = this.tempProd.fExclPrice;
-      tempArray.unshift(this.tempProd);
+      tempArray.push(this.tempProd);
 
       this.tempArray.next(tempArray);
     } else {

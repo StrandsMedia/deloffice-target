@@ -18,7 +18,7 @@
             Refresh List
           </button>
           <form (ngSubmit)="search()" [formGroup]="searchForm" class="form-inline float-right m-1">
-            <input formControlName="search" class="form-control p-3 mr-2" type="search" name="customersearch" id="customersearch" placeholder="Search for customers...">
+            <input (keydown)="search()" formControlName="search" class="form-control p-3 mr-2" type="search" name="customersearch" id="customersearch" placeholder="Search for customers...">
             <button type="submit" class="tgt-button-full tgt-btn-white">
               <i class="material-icons" style="line-height: 24px;margin-top: 3px;">search</i>
             </button>

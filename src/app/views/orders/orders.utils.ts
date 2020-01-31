@@ -31,7 +31,7 @@ export function printInv(inv: jsPDF) {
     printJS(url);
 }
 
-export function renderInvoice(inv): jsPDF {
+export function renderInvoice(inv, title?: string): jsPDF {
     const pdf: jsPDF = new jsPDF('p', 'pt', 'a4');
 
     const mainres = tableToJSPDFData('#maintable');
@@ -41,6 +41,22 @@ export function renderInvoice(inv): jsPDF {
     const width = pdf.internal.pageSize.getWidth() - 15;
 
     const totalPagesExp = '{total_pages_count_string}';
+
+    let comp;
+    
+    switch(inv.data) {
+        case 1:
+            comp = 'DEL';
+            break;
+        case 2:
+            comp = 'RNS';
+            break;
+        case 3:
+            comp = 'PNP';
+            break;
+    }
+
+    const status = inv.status;
 
     for (let i = 0; i < result.length; i++) {
         if (i > 0) {
@@ -111,16 +127,16 @@ export function renderInvoice(inv): jsPDF {
             },
             // pageBreak: 'always',
             didDrawPage: function(data) {
-                pdf.addImage(image('DEL'), 'JPEG', 210, 22, 215, 44);
+                pdf.addImage(image(comp), 'JPEG', 210, 22, 215, 44);
                 pdf.setFontSize(8);
                 pdf.setFontType('normal');
-                pdf.text(invoiceLH.address, 210, 82);
-                pdf.text(invoiceLH.tel, 210, 96);
-                pdf.text(invoiceLH.vat, 210, 110);
+                pdf.text(invoiceLH(comp).address, 210, 82);
+                pdf.text(invoiceLH(comp).tel, 210, 96);
+                pdf.text(invoiceLH(comp).vat, 210, 110);
                 pdf.setFontType('bold');
                 pdf.setFontSize(17.5);
                 pdf.setTextColor(23, 73, 144);
-                pdf.text(invoiceLH.title, 210, 135);
+                pdf.text(title ? title : invoiceLH(comp, inv.status).title, 210, 135);
                 pdf.setFontSize(9.7);
                 pdf.setFontType('normal');
                 pdf.setTextColor(0);
@@ -257,18 +273,20 @@ export function renderInvoice(inv): jsPDF {
                 },
                 pageBreak: 'auto',
                 didDrawPage: function(data) {
-                    pdf.setFontSize(7.8);
-                    pdf.setFontType('bold');
-                    pdf.text('Terms And Conditions', 15, 745);
-                    pdf.setFontType('normal');
-                    pdf.text('(1) Invoice is due for payment 30 days as from the date of invoice', 15, 760);
-                    pdf.text('(2) Cheques to be drawn in favour of DelOffice Ltd and Invoice Number to be quoted', 15, 772);
-                    // tslint:disable-next-line:max-line-length
-                    pdf.text('(3) Charges on this invoice should be verified and queries should be made within 10 days from date of issue else invoice will be considered as final', 15, 784);
-                    pdf.text('(4) Interest at the rate of 1.5% per month will be charged on overdue accounts', 15, 796);
-                    // tslint:disable-next-line:max-line-length
-                    pdf.text('(5) In case of recovery through a solicitor, all fees, charges and commission, not exceeding 10% of amount due, are payable by the client', 15, 808);
-                    pdf.text('(6) Only the original receipt, issued by DelOffice Ltd, will be accepted as proof of payment.', 15, 820);
+                    if (status > 3) {
+                        pdf.setFontSize(7.8);
+                        pdf.setFontType('bold');
+                        pdf.text('Terms And Conditions', 15, 745);
+                        pdf.setFontType('normal');
+                        pdf.text('(1) Invoice is due for payment 30 days as from the date of invoice', 15, 760);
+                        pdf.text('(2) Cheques to be drawn in favour of DelOffice Ltd and Invoice Number to be quoted', 15, 772);
+                        // tslint:disable-next-line:max-line-length
+                        pdf.text('(3) Charges on this invoice should be verified and queries should be made within 10 days from date of issue else invoice will be considered as final', 15, 784);
+                        pdf.text('(4) Interest at the rate of 1.5% per month will be charged on overdue accounts', 15, 796);
+                        // tslint:disable-next-line:max-line-length
+                        pdf.text('(5) In case of recovery through a solicitor, all fees, charges and commission, not exceeding 10% of amount due, are payable by the client', 15, 808);
+                        pdf.text('(6) Only the original receipt, issued by DelOffice Ltd, will be accepted as proof of payment.', 15, 820);
+                    }
                 },
                 didParseCell: function(data) {
                     const cell = data.cell;

@@ -65,25 +65,37 @@
         <!--Workflow Rows-->
         <ng-container cdkColumnDef="orderconfirm">
           <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Order Confirmed</th>
-          <td (click)="tempRow = row" [style.pointer-events]="!row.InvStatus ? 'none' : null" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 3 && !row.InvStatus}" style="width: 9%;" [clickDisabled]="'update'" dialogTrigger="createprof">
+          <td (click)="tempRow = row" [style.pointer-events]="!row.InvStatus ? 'none' : null" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 3}" style="width: 9%;" [clickDisabled]="'update'" [dialogTrigger]="row.InvStatus ? 'viewdoc' : 'createprof'"  [class.no-click]="row.creditCtrl > 0 && row.creditCtrl < 3 || row.status != 3" [class.bg-clear]="row.creditCtrl > 0 && row.status == 3 && row.creditCtrl < 3">
             {{row.orderNo | uppercase}}
           </td>
         </ng-container>
 
         <ng-container cdkColumnDef="profinprocess">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Proforma in process</th>
-          <td [routerLink]="row.InvStatus == 1 ? '/order-entry/view/' + row.invoice_id : null" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'text-white font-weight-bold bg-primary': row.status == 25 && row.InvStatus === 1 }" style="width: 9%;" [clickDisabled]="'update'">
-            {{row.invRef | uppercase}}
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Proforma in progress</th>
+          <td [routerLink]="row.status == 25 && row.InvStatus == 1 ? '/order-entry/view/' + row.invoice_id : null" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'text-white font-weight-bold bg-primary': row.status == 25 && row.InvStatus === 1 }" style="width: 9%;" [clickDisabled]="'update'">
+            <!-- {{row.invRef | uppercase}} -->
+            {{row.status == 25 && row.InvStatus == 1 ? (row.lastUser | uppercase) : null}}
           </td>
         </ng-container>
 
         <ng-container cdkColumnDef="proftobeamended">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Proforma to be amended</th>
-          <td [routerLink]="row.status == 26 && row.InvStatus === 2 ? '/order-entry/view/' + row.invoice_id : null" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 26 && row.InvStatus === 2}" style="width: 9%;" [clickDisabled]="'update'"></td>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">To be amended</th>
+          <td 
+            [routerLink]="(row.status == 26 && row.amend) || (row.status == 26 && row.purchasestatus == 5) || (row.status == 26 && row.transferstatus == 5) ? '/order-entry/view/' + row.invoice_id : null"
+            cdk-cell
+            *cdkCellDef="let row"
+            class="text-center"
+            [ngClass]="{
+              'bg-primary': (row.status == 26 && row.amend) || (row.status == 26 && row.purchasestatus == 5) || (row.status == 26 && row.transferstatus == 5)
+            }"
+            style="width: 9%;"
+            [clickDisabled]="'update'"
+          >
+          </td>
         </ng-container>
 
         <ng-container cdkColumnDef="proftobecancelled">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Proforma to be cancelled</th>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">To be cancelled</th>
           <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 25 && row.InvStatus === 3}" style="width: 9%;" [clickDisabled]="'update'"></td>
         </ng-container>
 
@@ -116,4 +128,15 @@
   (onAccept)="createDocument(tempRow)"
 >
 
+</app-dialog>
+
+<app-dialog 
+  dialogID="viewdoc"
+  title="Start Proforma Invoice?"
+  size="large"
+  accept="Confirm"
+  cancel="Cancel"
+  (onAccept)="switchStatus(tempRow)"
+>
+  <!-- <ng2-pdfjs-viewer [pdfSrc]=""></ng2-pdfjs-viewer> -->
 </app-dialog>

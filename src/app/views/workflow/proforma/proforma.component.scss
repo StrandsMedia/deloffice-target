@@ -1,0 +1,15 @@
+td.no-click {
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+
+    &:hover {
+        cursor: not-allowed !important;
+    }
+}
+
+td.bg-clear {
+    background-color: rgb(67, 183, 255) !important;
+    font-weight: bold;
+    color: white;
+    cursor: not-allowed !important;
+}

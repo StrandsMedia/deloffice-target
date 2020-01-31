@@ -12,6 +12,7 @@ export class DialogComponent implements OnInit, OnDestroy {
 
   @Input() cancel?: string;
   @Input() accept?: string;
+  @Input() extraOption?: string;
 
   @Input() disabled?: any;
   @Input() comment?: any;
@@ -21,6 +22,8 @@ export class DialogComponent implements OnInit, OnDestroy {
   @Output() onCancel?: EventEmitter<any> = new EventEmitter();
   // tslint:disable-next-line:no-output-on-prefix
   @Output() onAccept?: EventEmitter<any> = new EventEmitter();
+  // tslint:disable-next-line:no-output-on-prefix
+  @Output() onExtra?: EventEmitter<any> = new EventEmitter();
 
   constructor(private cdRef: ChangeDetectorRef) { }
 
@@ -38,6 +41,10 @@ export class DialogComponent implements OnInit, OnDestroy {
 
   acceptClicked(value: boolean) {
     this.onAccept.emit(value);
+  }
+
+  extraClicked(value: boolean) {
+    this.onExtra.emit(value);
   }
 
   get disabledStatus() {

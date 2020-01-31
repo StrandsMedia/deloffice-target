@@ -6,6 +6,7 @@ import { TextboxQuestion } from './question-textbox';
 import { SelectQuestion } from './question-select';
 import { RadioQuestion } from './question-radio';
 import { MultiboxQuestion } from './question-multibox';
+import { FileUploadQuestion } from './question-file';
 import { QuestionChoices, ProductChoices, ControlChoices } from './questions-choices';
 import { doubleChecker } from 'src/app/common/utils/unique.validator';
 import { WorkflowService } from 'src/app/common/services/workflow.service';
@@ -106,6 +107,12 @@ export class QuestionControlService {
                         order: choice.order,
                         value: ' '
                     }));
+
+                    // choices.push(new FileUploadQuestion({
+                    //     key: 'poScan',
+                    //     required: false,
+                    //     accept: '.pdf'
+                    // }));
                 }
                 if (status === 5 && choice.value === 6) {
                     choices.push(new TextboxQuestion({
@@ -148,7 +155,7 @@ export class QuestionControlService {
             label: 'Line Note',
             required: false,
             order: 1,
-            status: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+            status: [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         }));
 
         questions.push(new TextboxQuestion({
@@ -159,10 +166,31 @@ export class QuestionControlService {
         }));
 
         questions.push(new TextboxQuestion({
+            key: 'invoice_id',
+            required: true,
+            value: data.invoice_id,
+            status: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        }));
+
+        questions.push(new TextboxQuestion({
             key: 'step',
             required: true,
             value: data.step,
-            status: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+            status: [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        }));
+
+        questions.push(new TextboxQuestion({
+            key: 'customerCode',
+            required: true,
+            value: data.customerCode,
+            status: [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        }));
+
+        questions.push(new TextboxQuestion({
+            key: 'data',
+            required: true,
+            value: data.data,
+            status: [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         }));
 
         return questions.filter((el: any) => {

@@ -18,15 +18,15 @@
         <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
 
         <ng-container cdkColumnDef="companyId">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Company ID</th>
-          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 20%;">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Company ID</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 10%;">
             {{row.companyId}}
           </td>
         </ng-container>
 
         <ng-container cdkColumnDef="companyName">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Company Name</th>
-          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 20%;">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 30%;">Company Name</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 30%;">
             {{row.companyName}}
           </td>
         </ng-container>

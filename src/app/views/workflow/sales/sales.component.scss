@@ -32,3 +32,12 @@ td.bg-primary:hover {
 td.not-allowed {
     cursor: not-allowed !important;
 }
+
+td.no-click {
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+
+    &:hover {
+        cursor: not-allowed !important;
+    }
+}

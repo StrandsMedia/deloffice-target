@@ -3,10 +3,16 @@ import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CdkTableModule } from '@angular/cdk/table';
+
+import { AngularFireModule } from '@angular/fire';
+import { AngularFireDatabaseModule } from '@angular/fire/database';
 
 import { DialogModule } from '../../../common/utils/dialog/dialog.module';
 import { UtilsModule } from '../utils.module';
+
+import { PdfJsViewerModule } from 'ng2-pdfjs-viewer';
 
 import { SalesComponent } from '../../../views/workflow/sales/sales.component';
 import { DeliveryComponent } from '../../../views/workflow/delivery/delivery.component';
@@ -28,20 +34,43 @@ import { GoodsPrepComponent } from '../../../views/workflow/goods-prep/goods-pre
 import { InvoicingComponent } from '../../../views/workflow/invoicing/invoicing.component';
 import { RoutesComponent } from '../../../views/routes/routes.component';
 import { LocationsComponent } from '../../../views/locations/locations.component';
+import { TrackerComponent } from '../../../views/tracker/tracker.component';
+import { DeliveryScheduleComponent } from '../../../views/workflow/delivery-schedule/delivery-schedule.component';
+import { RouteComponent } from '../../../views/routes/route/route.component';
+import { environment } from 'src/environments/environment';
 
 const wfRoutes: Routes = [
   {
     path: 'routes',
-    component: RoutesComponent,
-    data: {
-      title: 'Routes'
-    }
+    children: [
+      {
+        path: '',
+        component: RoutesComponent,
+        data: {
+          title: 'Routes'
+        }
+      },
+      {
+        path: ':id',
+        component: RouteComponent,
+        data: {
+          title: 'Route Data'
+        }
+      }
+    ]
   },
   {
     path: 'locations',
     component: LocationsComponent,
     data: {
       title: 'Locations'
+    }
+  },
+  {
+    path: 'tracker',
+    component: TrackerComponent,
+    data: {
+      title: 'Tracker'
     }
   },
   {
@@ -81,6 +110,14 @@ const wfRoutes: Routes = [
     component: DeliveryComponent,
     data: {
       title: 'Delivery Workflow',
+      id: 4
+    }
+  },
+  {
+    path: 'delivery-schedule',
+    component: DeliveryScheduleComponent,
+    data: {
+      title: 'Delivery Schedule Workflow',
       id: 4
     }
   },
@@ -179,7 +216,10 @@ const wfRoutes: Routes = [
     GoodsPrepComponent,
     InvoicingComponent,
     RoutesComponent,
-    LocationsComponent
+    LocationsComponent,
+    TrackerComponent,
+    DeliveryScheduleComponent,
+    RouteComponent
   ],
   imports: [
     CommonModule,
@@ -188,7 +228,11 @@ const wfRoutes: Routes = [
     ReactiveFormsModule,
     DialogModule,
     CdkTableModule,
-    UtilsModule
+    DragDropModule,
+    UtilsModule,
+    PdfJsViewerModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireDatabaseModule
   ],
   entryComponents: [
     PushComponent,

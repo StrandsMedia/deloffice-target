@@ -17,6 +17,7 @@
         <button (click)="cancelClicked($event)" type="button" class="mdc-button mdc-dialog__button" [class.d-none]="!cancel" [attr.data-mdc-dialog-action]="cancel">{{cancel}}</button>
         <button *ngIf="disabled !== undefined" (click)="acceptClicked($event)" type="button" class="mdc-button mdc-dialog__button" [class.d-none]="!accept" [attr.data-mdc-dialog-action]="accept" [disabled]="!disabledStatus ? true : null">{{accept}}</button>
         <button *ngIf="disabled === undefined" (click)="acceptClicked($event)" type="button" class="mdc-button mdc-dialog__button" [class.d-none]="!accept" [attr.data-mdc-dialog-action]="accept">{{accept}}</button>
+        <button *ngIf="extraOption" (click)="extraClicked($event)" type="button" class="mdc-button mdc-dialog__button" [attr.data-mdc-dialog-action]="extraOption">{{extraOption}}</button>
 
       </footer>
     </div>

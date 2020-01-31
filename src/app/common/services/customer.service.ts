@@ -126,6 +126,7 @@ export class CustomerService {
       url = url + '&d=' + data;
     }
     return this.http.get(url).pipe(
+      debounceTime(1000),
       map((res: any) => res.records)
     );
   }

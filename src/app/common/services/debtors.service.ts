@@ -146,4 +146,14 @@ export class DebtorsService {
     return this.http.get(this.url + `debtors/readRemComments.php?id=${id}`);
   }
 
+
+  // Credit Control
+
+  getCreditControl(): Observable<any> {
+    return this.http.get(this.url + 'debtors/creditControl.php');
+  }
+
+  handleCreditCtrl(info): Observable<any> {
+    return this.http.post(this.url + 'debtors/creditApproval.php', info);
+  }
 }

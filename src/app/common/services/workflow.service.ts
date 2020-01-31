@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEventType } from '@angular/common/http';
 
 import { environment } from '../../../environments/environment';
 
 import { of, timer, Observable } from 'rxjs';
-import { delay, switchMap, map } from 'rxjs/operators';
+import { delay, switchMap, map, tap } from 'rxjs/operators';
+import { MaterialService } from './material.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,10 @@ export class WorkflowService {
 
   private url = environment.apiUrl;
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private mdc: MaterialService
+  ) { }
 
   getWorkflow(number): Observable<any> {
     let data;
@@ -179,6 +183,19 @@ export class WorkflowService {
     .pipe(
       switchMap(t => {
         return this.http.get(this.url + 'workflow/getCompletionReport.php');
+      })
+    );
+  }
+
+  uploadFile(info) {
+    return this.http.post(this.url + 'utils/upload_poscan.php', info, {
+      reportProgress: true,
+      observe: 'events'
+    }).pipe(
+      tap((event) => {
+        if (event.type === HttpEventType.UploadProgress) {
+          this.mdc.materialSnackBar({ message: `Upload Progress: ${Math.round(event.loaded / event.total * 100)}%` });
+        }
       })
     );
   }

@@ -60,7 +60,7 @@ export class CustomerComponent implements OnInit, AfterViewInit {
     '180 days'
   ];
 
-  public editContactForm = this.fb.group({
+  public editContactForm = this._fb.group({
     data: null,
     contact_person: null,
     email: null,
@@ -71,7 +71,7 @@ export class CustomerComponent implements OnInit, AfterViewInit {
     cust_id: null
   });
 
-  public editCustomerForm: FormGroup = this.fb.group({
+  public editCustomerForm: FormGroup = this._fb.group({
     data: null,
     cust_id: [null, Validators.required],
     customerCode: null,
@@ -87,32 +87,32 @@ export class CustomerComponent implements OnInit, AfterViewInit {
     subsector: ['']
   });
 
-  public changeTermForm: FormGroup = this.fb.group({
+  public changeTermForm: FormGroup = this._fb.group({
     term: ['', Validators.required],
     DCLink: [null, Validators.required],
     data: null
   });
 
   constructor(
-    private auth: AuthService,
-    private cat: CategoryService,
-    private cust: CustomerService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private mdc: MaterialService,
-    private fb: FormBuilder,
-    private title: TitleService,
-    private routes: RoutesService
+    private _auth: AuthService,
+    private _cat: CategoryService,
+    private _cust: CustomerService,
+    private _route: ActivatedRoute,
+    private _router: Router,
+    private _mdc: MaterialService,
+    private _fb: FormBuilder,
+    private _title: TitleService,
+    private _routes: RoutesService
   ) {
-    auth.currentUser.subscribe(data => this.user = data);
+    _auth.currentUser.subscribe(data => this.user = data);
   }
 
   ngOnInit(): void {
     this.get();
-    this.categories = this.cat.getCategory();
-    this.sectors = this.cat.getSector();
-    this.subsectors = this.cat.getSubsector();
-    this.locations = this.routes.getLocation();
+    this.categories = this._cat.getCategory();
+    this.sectors = this._cat.getSector();
+    this.subsectors = this._cat.getSubsector();
+    this.locations = this._routes.getLocation();
   }
 
   ngAfterViewInit() {
@@ -120,30 +120,30 @@ export class CustomerComponent implements OnInit, AfterViewInit {
   }
 
   get() {
-    this.customer = combineLatest(this.route.params, this.route.queryParams).pipe(
+    this.customer = combineLatest(this._route.params, this._route.queryParams).pipe(
       switchMap(([params, queryParams]) => {
         if (queryParams['data']) {
-          return this.cust.getCustomer(+params['id'], +queryParams['data']);
+          return this._cust.getCustomer(+params['id'], +queryParams['data']);
         } else {
-          return this.cust.getCustomer(+params['id'], 1);
+          return this._cust.getCustomer(+params['id'], 1);
         }
       }),
       tap((data: any) => {
-        this.title.swapTitle(data.company_name);
+        this._title.swapTitle(data.company_name);
         this.changeTermForm.controls['data'].setValue(data.data);
         this.editCustomerForm.controls['data'].setValue(data.data);
         this.editContactForm.controls['data'].setValue(data.data);
       }),
       map((data: any) => {
         if (data.customerCode) {
-          this.balance = this.cust.getBalance(data.customerCode, data.data).pipe(
+          this.balance = this._cust.getBalance(data.customerCode, data.data).pipe(
             map((bal) => {
               this.total = bal['records'].reduce((acc, curr) => acc + +curr.Outstanding, 0);
               return bal;
             })
           );
 
-          this.statement = this.cust.getStatement(data.customerCode, data.data).pipe(
+          this.statement = this._cust.getStatement(data.customerCode, data.data).pipe(
             map((allocs: any) => {
               if (allocs) {
                 return allocs.records;
@@ -162,7 +162,7 @@ export class CustomerComponent implements OnInit, AfterViewInit {
   }
 
   initTab() {
-    this.tabbar = this.mdc.materialTabBar('.mdc-tab-bar');
+    this.tabbar = this._mdc.materialTabBar('.mdc-tab-bar');
   }
 
   trackByFn(index, item) {
@@ -212,12 +212,12 @@ export class CustomerComponent implements OnInit, AfterViewInit {
   }
 
   submit() {
-    this.cust.updateDetails(this.editContactForm.value).subscribe(
+    this._cust.updateDetails(this.editContactForm.value).subscribe(
       (data) => {
-        this.mdc.materialSnackBar(data);
+        this._mdc.materialSnackBar(data);
       },
       (err) => {
-        this.mdc.materialSnackBar(err.error);
+        this._mdc.materialSnackBar(err.error);
       },
       () => {
         this.get();
@@ -226,13 +226,13 @@ export class CustomerComponent implements OnInit, AfterViewInit {
   }
 
   updateProfile() {
-    this.cust.updateProfile(this.editCustomerForm.value).subscribe(
+    this._cust.updateProfile(this.editCustomerForm.value).subscribe(
       (data) => {
-        this.mdc.materialSnackBar(data);
+        this._mdc.materialSnackBar(data);
         console.log(data);
       },
       (err) => {
-        this.mdc.materialSnackBar(err.error);
+        this._mdc.materialSnackBar(err.error);
         console.log(err);
       },
       () => {
@@ -248,12 +248,12 @@ export class CustomerComponent implements OnInit, AfterViewInit {
 
   updateTerm() {
     console.log(this.changeTermForm.value);
-    this.cust.updateTerm(this.changeTermForm.value).subscribe(
+    this._cust.updateTerm(this.changeTermForm.value).subscribe(
       (data) => {
-        this.mdc.materialSnackBar(data);
+        this._mdc.materialSnackBar(data);
       },
       (err) => {
-        this.mdc.materialSnackBar(err.error);
+        this._mdc.materialSnackBar(err.error);
       },
       () => {
         this.get();

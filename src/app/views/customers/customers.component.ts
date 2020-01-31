@@ -40,7 +40,7 @@ export class CustomersComponent implements OnInit {
   public addForm = this.fb.group({
     customerCode: [''],
     company_name: ['', Validators.required],
-    data: [''],
+    data: ['1'],
     address: [''],
     location: [null],
     category: [''],

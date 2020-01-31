@@ -16,6 +16,7 @@ import { PopupComponent } from '../../../views/debtors/control/popup/popup.compo
 import { PopquesComponent } from '../../../views/debtors/control/popques/popques.component';
 import { RemPipe } from '../../../views/debtors/control/rem.pipe';
 import { ReviewComponent } from '../../../views/debtors/review/review.component';
+import { CreditComponent } from '../../../views/debtors/credit/credit.component';
 
 const debtroutes: Routes = [
   {
@@ -78,6 +79,15 @@ const debtroutes: Routes = [
       expectedRole: ['Accounting'],
       id: 17
     }
+  },
+  {
+    path: 'credit-control',
+    component: CreditComponent,
+    data: {
+      title: 'Credit Control Gateway',
+      expectedRole: ['Accounting'],
+      id: 15
+    }
   }
 ];
 
@@ -92,6 +102,7 @@ const debtroutes: Routes = [
     PopquesComponent,
     RemPipe,
     ReviewComponent,
+    CreditComponent,
   ],
   imports: [
     CommonModule,

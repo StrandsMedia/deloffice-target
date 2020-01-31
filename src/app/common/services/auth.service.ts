@@ -24,7 +24,7 @@ interface User {
 export class AuthService {
 
   private url = environment.apiUrl;
-  private _localStorage = new LocalStorage<User>();
+  private _localStorage = new LocalStorage<User>('currentUser');
 
   constructor(
     private _auth: AuthorizationService,
@@ -68,6 +68,15 @@ export class AuthService {
         }
       })
     );
+  }
+
+  tempLogin(info): Observable<User> {
+    return this._http.post<User>(this.url + 'user/login.php', info).pipe(
+      delay(1000),
+      map((res: User) => {
+        return res;
+      })
+    )
   }
 
   logout(): Observable<void> {

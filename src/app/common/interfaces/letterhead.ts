@@ -11,12 +11,44 @@ export function chunkArray(myArray: Array<any>, chunk_size: number) {
     return tempArray;
 }
 
-export const invoiceLH = {
-    title: 'Proforma Invoice',
+export function invoiceLH(company: string, status?: number) {
+  let title;
+  if (status && status < 3) {
+    title = 'Sales Quotation';
+  } else {
+    title = 'Proforma Invoice';
+  }
+  let compname;
+  let num;
+  let vat;
+  let brn;
+  switch (company) {
+    case 'DEL':
+      compname = 'DelOffice Ltd';
+      num = '249 3200';
+      vat = '27014165';
+      brn = 'C10095690';
+      break;
+    case 'RNS':
+      compname = 'Roll n Sheet Ltd';
+      num = '249 3003';
+      vat = '20242187';
+      brn = 'C07043696';
+      break;
+    case 'PNP':
+      compname = 'Print n Pack Ltd';
+      num = '249 2900';
+      vat = '27127774';
+      brn = 'C12107153';
+      break;
+  }
+  return {
+    title: `${title}`,
     address: 'Ave des Kerries Morc Raffray, Le Hochet, Mauritius',
-    tel: 'Tel: (230) 249 3200    Fax: (230) 249 2055 - 248 0306',
-    vat: 'VAT No. VAT 27014165   B.R.No.   C10095690'
-};
+    tel: `Tel: (230) ${num}    Fax: (230) 249 2055 - 248 0306`,
+    vat: `VAT No. VAT ${vat}   B.R.No.   ${brn}`
+  };
+}
 
 export function statementLH(company: string) {
   let compname;

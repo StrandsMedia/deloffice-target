@@ -1,0 +1,87 @@
+<div *ngIf="dataSource$ | async as data" class="row">
+  <div class="col-12">
+    <div class="mdc-card mb-3" style="overflow: hidden;">
+      <!--Card Header-->
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+        <div class="text-white flex-fill align-items-center">
+          <h3 class="mb-1">Route Info: {{data.routeRef}} - {{data.routeName}}</h3>
+          <p class="mb-0">Created on: {{data.createdAt | date}}</p>
+        </div>
+        <div class="align-items-center">
+          <button (click)="fetchLocations()" class="float-right tgt-button-full tgt-btn-white px-3 py-2 mr-3" dialogTrigger="addLocation">
+            Add Location To Route
+          </button>
+        </div>
+      </div>
+      <!--Data Table-->
+      <table cdk-table respHeight [dataSource]="data.locations" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+        <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+        <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+
+        <ng-container cdkColumnDef="locationId">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Location ID</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 10%;">
+            {{row.locationId}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="locationRef">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;">Location Reference</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 15%;">
+            {{row.locationRef}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="locationName">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 35%;">Location Name</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 35%;">
+            {{row.locationName}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="rank">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Rank/Order</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 20%;">
+           {{row.rank}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="buttons">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;"></th>
+          <td cdk-cell *cdkCellDef="let row; index as i;" class="text-center" style="width: 20%;">
+              <button [disabled]="i == data.locations?.length - 1" (click)="switchRankDown(data.locations, i)" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2 mr-2">
+                  <i class="material-icons" style="line-height: 30px;">arrow_downward</i>
+              </button>
+              <button [disabled]="i == 0" (click)="switchRankUp(data.locations, i)" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2">
+                  <i class="material-icons" style="line-height: 30px;">arrow_upward</i>
+              </button>
+          </td>
+        </ng-container>
+      </table>
+
+    </div>
+  </div>
+</div>
+
+<!--newLocation-->
+<app-dialog dialogID="addLocation" size="large" title="Add Location To Route" accept="Ok">
+  <table class="table table-bordered table-hover w-100" respHeight>
+    <thead>
+      <tr>
+        <th colspan="2">
+          <input [(ngModel)]="searchString" type="text" name="search" id="search" class="form-control w-100">
+        </th>
+      </tr>
+      <tr>
+        <th class="font-weight-bold">Ref</th>
+        <th class="font-weight-bold">Location Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr (click)="addToRoute(loc)" *ngFor="let loc of location$ | async | filter: searchString: 'locationName'; index as i;" class="pointer point">
+        <td>{{loc.locationRef}}</td>
+        <td>{{loc.locationName}}</td>
+      </tr>
+    </tbody>
+  </table>
+</app-dialog>

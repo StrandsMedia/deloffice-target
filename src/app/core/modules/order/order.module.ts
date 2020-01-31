@@ -9,10 +9,11 @@ import { CdkTableModule } from '@angular/cdk/table';
 import { AddComponent } from '../../../views/orders/add/add.component';
 import { EditComponent } from '../../../views/orders/edit/edit.component';
 import { ViewComponent } from '../../../views/orders/view/view.component';
-import { DialogModule } from 'src/app/common/utils/dialog/dialog.module';
+import { DialogModule } from '../../../common/utils/dialog/dialog.module';
 import { UtilsModule } from '../utils.module';
 import { ViewGPComponent } from '../../../views/orders/view-gp/view-gp.component';
 import { PurgatoryComponent } from '../../../views/purgatory/purgatory.component';
+import { RedirectGuard } from '../../../common/guards/redirect.guard';
 
 const orderroutes: Routes = [
   {
@@ -40,7 +41,8 @@ const orderroutes: Routes = [
         data: {
           title: 'Edit Invoice',
           id: 3
-        }
+        },
+        canDeactivate: [RedirectGuard]
       },     
     ],
     data: {
@@ -83,6 +85,9 @@ const orderroutes: Routes = [
     ViewComponent,
     ViewGPComponent,
     PurgatoryComponent
+  ],
+  providers: [
+    RedirectGuard
   ]
 })
 export class OrderModule { }

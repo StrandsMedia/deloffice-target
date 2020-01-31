@@ -13,27 +13,27 @@
         </div>
       </div>
       <!--Data Table-->
-      <table cdk-table [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+      <table cdk-table respHeight [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
         <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
         <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
 
         <ng-container cdkColumnDef="locationId">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Location ID</th>
-          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 20%;">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Location ID</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 10%;">
             {{row.locationId}}
           </td>
         </ng-container>
 
         <ng-container cdkColumnDef="locationRef">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Location Reference</th>
-          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 20%;">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;">Location Reference</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 15%;">
             {{row.locationRef}}
           </td>
         </ng-container>
 
         <ng-container cdkColumnDef="locationName">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 20%;">Location Name</th>
-          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 20%;">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 35%;">Location Name</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 35%;">
             {{row.locationName}}
           </td>
         </ng-container>
@@ -65,14 +65,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-6">
-        <div class="form-group">
-          <label for="locationRef">Location Reference</label>
-          <input formControlName="locationRef" type="text" class="form-control" name="locationRef" id="locationRef">
-          <small id="brandHelp" class="form-text text-muted">The location reference</small>
-        </div>
-      </div>
-      <div class="col-6">
+      <div class="col-12">
         <div class="form-group">
           <label for="locationName">Location Name</label>
           <input formControlName="locationName" type="text" class="form-control" name="locationName" id="locationName">

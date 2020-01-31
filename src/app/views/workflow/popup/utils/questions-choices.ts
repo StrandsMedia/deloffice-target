@@ -8,7 +8,7 @@ export const QuestionChoices = [
     {
         value: 1,
         name: 'Inquiry',
-        status: [0],
+        status: [0, -1],
         order: 1
     },
     {

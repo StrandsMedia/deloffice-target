@@ -70,6 +70,10 @@ const routes: Routes = [
         loadChildren: () => import('./core/modules/product/product.module').then(m => m.ProductModule)
       },
       {
+        path: 'marketing',
+        loadChildren: () => import('./core/modules/marketing/marketing.module').then(m => m.MarketingModule)
+      },
+      {
         path: 'tenders',
         component: TendersComponent,
         data: {

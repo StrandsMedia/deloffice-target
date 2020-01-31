@@ -99,6 +99,10 @@ export const Navigation: Nav = [
             {
                 name: 'Locations',
                 path: '/locations'
+            },
+            {
+                name: 'Tracker',
+                path: '/tracker'
             }
         ]
     },
@@ -107,6 +111,10 @@ export const Navigation: Nav = [
         path: '/debtors',
         icon: 'local_atm',
         children: [
+            {
+                name: 'Credit Control Gateway',
+                path: '/credit-control'
+            },
             {
                 name: 'Allocations',
                 path: '/allocations'

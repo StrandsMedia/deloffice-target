@@ -9,9 +9,10 @@ import { TendersService } from 'src/app/common/services/tenders.service';
 import { AuthService } from 'src/app/common/services/auth.service';
 import { QuestionControlService } from 'src/app/views/workflow/popup/utils/question-control.service';
 
-import { Observable, combineLatest } from 'rxjs';
-import { map, tap, switchMap } from 'rxjs/operators';
+import { Observable, combineLatest, of } from 'rxjs';
+import { map, tap, switchMap, take } from 'rxjs/operators';
 import { MaterialService } from 'src/app/common/services/material.service';
+import { OrdersService } from 'src/app/common/services/orders.service';
 
 @Component({
   selector: 'app-news',
@@ -128,6 +129,7 @@ export class NewsComponent implements OnInit, DoCheck {
     private cust: CustomerService,
     private fb: FormBuilder,
     private mdc: MaterialService,
+    private order: OrdersService,
     private print: PrintingService,
     private tender: TendersService,
     private route: ActivatedRoute,
@@ -220,7 +222,9 @@ export class NewsComponent implements OnInit, DoCheck {
 
   newWF() {
     const object = {
-      step: 1
+      step: 1,
+      customerCode: this.data.customerCode,
+      data: this.data.data
     };
     this.questions = this.qcs.getQuestions(Number(0), object);
 
@@ -230,21 +234,33 @@ export class NewsComponent implements OnInit, DoCheck {
     this.formData.user = this.user.user_id;
     this.formData.status = +this.formData.status;
     this.formData.cust_id = this.data.cust_id;
-    this.formData.data = this.data.data;
-    console.log(this.formData);
-    this.wf.changeStatus(this.formData).subscribe(
-      (data) => {
-        this.mdc.materialSnackBar(data);
-        console.log(data);
+    let data = {...this.formData, ...this.data};
+    console.log(data);
+
+    let status = false;
+
+    this.wf.changeStatus(data)
+    .pipe(
+      switchMap(dt => {
+        // if (confirm('Do you want to create a quotation ?')) {
+        //   status = true;
+          return this.order.changeStatus(data);
+        // } else {
+          // return of(dt);
+        // }
+      })
+    )
+    .subscribe(
+      (dt) => {
+        this.mdc.materialSnackBar({message: 'Entry successful'});
       },
       (err) => {
         this.mdc.materialSnackBar(err.error);
-        console.log(err);
       },
       () => {
         this.get();
         setTimeout(() => this.formData.status = 0, 500);
-        this.router.navigate(['/workflow/sales']);
+        this.router.navigate(['/workflow/marketing']);
       }
     );
   }

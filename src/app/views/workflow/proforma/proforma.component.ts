@@ -9,7 +9,7 @@ import { WorkflowService } from '../../../common/services/workflow.service';
 import { QuestionControlService } from '../popup/utils/question-control.service';
 
 import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map, tap, filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-proforma',
@@ -32,7 +32,7 @@ export class ProformaComponent implements OnInit {
     'profinprocess',
     'proftobeamended',
     'proftobecancelled',
-    'creditcontrol',
+    // 'creditcontrol',
     'profprocessed',
     'duration'
   ];
@@ -71,6 +71,11 @@ export class ProformaComponent implements OnInit {
     return this.dataSource$ = this.wf.getWorkflow(2).pipe(
       map((data: any) => {
         return data.records;
+      }),
+      map((data) => {
+        return data.filter(item => {
+          return item.status === 3 || (item.status === 25) || (item.status === 26 && item.amend) || (item.status === 26 && item.InvStatus === 5) || (item.status == 26 && item.purchasestatus === 5) || (item.status == 26 && item.transferstatus === 5)
+        })
       }),
       tap((data) => {
         this.loading = false;
@@ -149,6 +154,28 @@ export class ProformaComponent implements OnInit {
           })
         ).subscribe();
     }
+  }
+
+  public switchStatus(row) {
+    const object = {
+      company_name: row.company_name,
+      customerCode: row.customerCode,
+      workflow_id: row.workflow_id,
+      invoice_id: row.invoice_id,
+      user: this.user.user_id,
+      step: 5
+    };
+    console.log(object);
+    this.order.changeStatus(object)
+      .pipe(
+        tap(id => {
+          this._router.navigate(['/order-entry/view/' + row.invoice_id]);
+        })
+      ).subscribe();
+  }
+
+  public goToDoc(row) {
+    this._router.navigate(['/order-entry/view/' + row.invoice_id]);
   }
 
 }

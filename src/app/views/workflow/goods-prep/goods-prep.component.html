@@ -64,34 +64,69 @@
 
         <!--Workflow Rows-->
         <ng-container cdkColumnDef="goodstbprep">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Goods to be prepared</th>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">To be prepared</th>
           <td [routerLink]="row.status == 26 && row.InvStatus === 5 ? '/order-entry/view/' + row.invoice_id + '/gp' : null" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 26 && row.InvStatus === 5}" style="width: 9%;" [clickDisabled]="'update'">
-            {{row.invRef | uppercase}}
+          
           </td>
         </ng-container>
 
         <ng-container cdkColumnDef="goodsinprep">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Goods in preparation</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 26 && row.InvStatus === 6}" style="width: 9%;" [clickDisabled]="'update'"></td>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">In Progress</th>
+          <td [routerLink]="row.status == 26 && row.InvStatus === 6 ? '/order-entry/view/' + row.invoice_id + '/gp' : null" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary text-white font-weight-bold': row.status == 26 && row.InvStatus === 6}" style="width: 9%;" [clickDisabled]="'update'">
+            {{row.status == 26 && row.InvStatus == 6 ? (row.lastUser | uppercase) : null}}
+          </td>
         </ng-container>
 
-        <ng-container cdkColumnDef="goodsawaitingamend">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Goods awaiting amendments</th>
-          <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 26 && row.InvStatus === 2}" style="width: 9%;" [clickDisabled]="'update'"></td>
-        </ng-container>
-
-        <ng-container cdkColumnDef="goodsawaitingtrans">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Goods awaiting transfer/purchase</th>
-          <td [routerLink]="row.status == 26 && row.InvStatus === 7 ? '/order-entry/purgatory' : null" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 26 && row.InvStatus === 7}" style="width: 9%;" [clickDisabled]="'update'"></td>
+        <ng-container cdkColumnDef="amend">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 18%;">Pending</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center d-flex justify-content-between p-0" style="width: 18%;" [clickDisabled]="'update'">
+            <div
+              [class.text-white]="row.status == 26 && row.amend == 1 || row.status == 26 && row.amending > 0"
+              [ngClass]="{
+                'bg-primary': (row.status == 26 && row.amend == 1 && row.amendstatus == 0),
+                'bg-warning': (row.status == 26 && row.amend == 1 && row.amendstatus == 1 && row.amending == 1),
+                'bg-urgent': row.status == 26 && row.amend == 1 && row.amendstatus == 2,
+                'bg-danger': row.status == 26 && row.amend == 1 && row.amendstatus == 3,
+                'bg-success': row.status == 26 && row.amending == 2
+              }"
+              class="flex-fill font-weight-bold h-100 d-flex align-items-center justify-content-center"
+            >
+              A
+            </div>
+            <div 
+              [class.text-white]="row.status == 26 && row.transferstatus > 0"
+              [ngClass]="{
+                'bg-warning': ((row.status == 26 && row.transferstatus == 1 && row.InvStatus < 8)),
+                'bg-urgent': ((row.status == 26 && row.transferstatus == 2 && row.InvStatus < 8)),
+                'bg-danger': ((row.status == 26 && row.transferstatus == 5 && row.InvStatus < 8)),
+                'bg-success': ((row.status == 26 && row.transferstatus == 4 && row.InvStatus < 8))
+              }"
+              class="flex-fill font-weight-bold h-100 d-flex align-items-center justify-content-center"
+            >
+              T
+            </div>
+            <div
+              [class.text-white]="(row.status == 26 && row.purchasestatus > 0 && row.InvStatus < 8)"
+              [ngClass]="{
+                'bg-warning': ((row.status == 26 && row.purchasestatus == 1 && row.InvStatus < 8)),
+                'bg-urgent': ((row.status == 26 && row.purchasestatus == 2 && row.InvStatus < 8)),
+                'bg-danger': ((row.status == 26 && row.purchasestatus == 5 && row.InvStatus < 8)),
+                'bg-success': ((row.status == 26 && row.purchasestatus == 4 && row.InvStatus < 8))
+              }"
+              class="flex-fill font-weight-bold h-100 d-flex align-items-center justify-content-center"
+            >
+              P
+            </div>
+          </td>
         </ng-container>
 
         <ng-container cdkColumnDef="goodstbchecked">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Goods to be checked</th>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Checkpoint</th>
           <td [routerLink]="row.status == 26 && row.InvStatus === 8 ? '/order-entry/view/' + row.invoice_id + '/gp' : null" cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 26 && row.InvStatus === 8}" style="width: 9%;" [clickDisabled]="'update'"></td>
         </ng-container>
 
         <ng-container cdkColumnDef="goodsreadytbi">
-          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Goods ready to be invoiced</th>
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 9%;">Ready to be invoiced</th>
           <td cdk-cell *cdkCellDef="let row" class="text-center" [ngClass]="{'bg-primary': row.status == 7}" style="width: 9%;" [clickDisabled]="'update'"></td>
         </ng-container>
 

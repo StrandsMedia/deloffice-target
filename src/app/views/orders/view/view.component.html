@@ -124,7 +124,11 @@
             <ng-container cdkColumnDef="edit">
                 <th cdk-header-cell *cdkHeaderCellDef style="width: 10%;"></th>
                 <td cdk-cell *cdkCellDef="let row" class="" style="width: 10%;">
-                    <button (click)="loadInfo(row)" class="tgt-button-full d-flex h-100 py-1 px-2 mr-2 float-left" dialogTrigger="save">
+                    <button
+                        (click)="loadInfo(row)"
+                        class="tgt-button-full d-flex h-100 py-1 px-2 mr-2 float-left"
+                        dialogTrigger="save"
+                    >
                         <i class="material-icons" style="line-height: 30px;">save</i>
                     </button>
                 </td>

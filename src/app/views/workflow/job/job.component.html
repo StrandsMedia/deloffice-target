@@ -174,9 +174,9 @@
         <th>#</th>
         <th>Customer</th>
         <th>Invoice No.</th>
-        <th>Product</th>
-        <th>Remarks</th>
         <th>Region</th>
+        <th>Packing List</th>
+        <th>Remarks</th>
       </tr>
     </thead>
     <tbody>
@@ -184,11 +184,14 @@
         <td>{{i + 1}}</td>
         <td>{{wf.company_name}}</td>
         <td>{{wf.invoice_no}}</td>
-        <td>{{breakLine(wf.product)}}</td>
+        <!-- <td>{{breakLine(wf.product)}}</td> -->
+        <td>PORT LOUIS</td>
+      <td>{{breakLine('1 Box, 1 Loose, 4 Reams')}}</td>
         <td>
-          {{breakLine2(wf.address, wf.tel, wf.comments)}}
+          <!-- {{breakLine2(wf.address, wf.tel, wf.comments)}} -->
+          {{wf.comments || '-'}}
         </td>
-        <td></td>
+       
       </tr>
     </tbody>
   </table>
@@ -220,21 +223,56 @@
           <td></td>
           <td></td>
           <td class="bolder">
-            {{sum.brand}} Total: {{sum.total}}<br>
-            Box Total: {{sum.total | paper}}
+            {{sum.brand}} Total: {{sum.total}} ream(s)
           </td>
         </tr>
-        <tr *ngIf="!job?.papersumm[i+1]">
+        <tr *ngIf="sum.records?.length > 0">
           <td></td>
           <td></td>
           <td></td>
           <td></td>
           <td class="bolder">
-            Van Total: {{job?.total}}<br>
-            Van Box Total: {{job?.total | paper}}
+            Box Total: {{sum.total | paper}}
           </td>
         </tr>
+        <ng-container *ngIf="!job?.papersumm[i+1]">
+          <tr >
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="bolder">
+              Van Total: {{job?.total}} ream(s)
+            </td>
+          </tr>
+          <tr >
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="bolder">
+              Van Box Total: {{job?.total | paper}}
+            </td>
+          </tr>
+        </ng-container>
       </ng-container>
+    </tbody>
+  </table>
+
+  <table id="tablecheck" style="opacity:0;">
+    <thead>
+      <tr>
+        <th>Delivered by</th>
+        <th>Received by</th>
+        <th>Controlled by</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
     </tbody>
   </table>
 

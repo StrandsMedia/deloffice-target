@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 
 import { RoutesService } from 'src/app/common/services/routes.service';
 
@@ -28,7 +28,7 @@ export class RoutesComponent implements OnInit {
 
   public addForm = this.fb.group({
     routeRef: null,
-    routeName: null
+    routeName: [null, Validators.required]
   });
 
   constructor(
@@ -49,6 +49,8 @@ export class RoutesComponent implements OnInit {
   }
 
   addNew() {
+    const route: string = this.addForm.value.routeName;
+    this.addForm.value.routeRef = route.replace(' ', '').toUpperCase().slice(0,3);
     this.routes.createRoute(this.addForm.value).subscribe(
       (data) => {
         console.log(data);

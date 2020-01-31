@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectorRef, DoCheck } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
@@ -16,7 +16,7 @@ import { map, switchMap, tap } from 'rxjs/operators';
   templateUrl: './comments.component.html',
   styleUrls: ['./comments.component.scss']
 })
-export class CommsComponent implements OnInit {
+export class CommsComponent implements OnInit, DoCheck {
   @Input() data: any;
   comments: Observable<any>;
   status: 1 | 2 = 1;
@@ -30,7 +30,9 @@ export class CommsComponent implements OnInit {
     comment: [null, Validators.required],
     step: [this.status, Validators.required],
     cust_id: [null, Validators.required],
-    data: 1
+    data: 1,
+    interactionType: null,
+    interactionOutcome: null
   });
 
   constructor(
@@ -50,6 +52,16 @@ export class CommsComponent implements OnInit {
     this.newCmtForm.controls['user_id'].setValue(this.user.user_id);
     this.newCmtForm.controls['username'].setValue(this.user.username);
     this.newCmtForm.controls['cust_id'].setValue(this.data.cust_id);
+  }
+
+  ngDoCheck() {
+    if (this.status == 1) {
+      this.newCmtForm.controls['interactionType'].setValidators(Validators.required)
+      this.newCmtForm.controls['interactionOutcome'].setValidators(Validators.required)
+    } else {
+      this.newCmtForm.controls['interactionType'].setValidators(null)
+      this.newCmtForm.controls['interactionOutcome'].setValidators(null)
+    }
   }
 
   get() {

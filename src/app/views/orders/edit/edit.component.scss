@@ -1,6 +1,10 @@
-input.no-border {
+input.no-border, select.no-border {
     border: 0px solid transparent;
     background-color: transparent;
+}
+
+select.no-border {
+    font-size: 11px;
 }
 
 #search-ddown {

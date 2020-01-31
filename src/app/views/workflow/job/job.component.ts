@@ -121,6 +121,11 @@ export class JobComponent implements OnInit {
     // const mainres = (pdf as any).autoTableHtmlToJson(maintable, true);
     // const paperres = (pdf as any).autoTableHtmlToJson(papersum, true);
 
+    // const checktbl: HTMLTableElement = <HTMLTableElement>document.getElementById('tablecheck');
+    // const checkres = pdf.autoTableHtmlToJson(checktbl, true);
+
+    const checkres = tableToJSPDFData('#tablecheck');
+
     const mainres = tableToJSPDFData('#maintable');
     const result = chunkArray(mainres.body, 8);
 
@@ -175,9 +180,9 @@ export class JobComponent implements OnInit {
     const img = image('DEL');
 
     for (let i = 0; i < result.length; i++) {
-      if (i > 0) {
-        pdf.addPage();
-      }
+      // if (i > 0) {
+      //   pdf.addPage();
+      // }
       (pdf as any).autoTable({
           head: mainres.head,
           body: result[i],
@@ -194,9 +199,10 @@ export class JobComponent implements OnInit {
           columnStyles: {
             0: { cellWidth: 25 },
             1: { cellWidth: 150 },
-            2: { cellWidth: 75 },
-            3: { cellWidth: 100 },
-            4: { cellWidth: 260 }
+            2: { cellWidth: 60 },
+            3: { cellWidth: 60 },
+            4: { cellWidth: 100 },
+            5: { cellWidth: 200 },
           },
           headStyles: {
             fillColor: false,
@@ -207,10 +213,10 @@ export class JobComponent implements OnInit {
           margin: {
             top: 100,
             left: 15,
-            bottom: 25,
+            bottom: 100,
             right: 15,
           },
-          pageBreak: 'always',
+          // pageBreak: 'always',
           didDrawPage: function(dt) {
             pdf.addImage(img, 'JPEG', 16, 18, 160, 33);
             pdf.text(title, 15, 65);
@@ -220,15 +226,44 @@ export class JobComponent implements OnInit {
             pdf.text('Job No.: #' + job, 300, 82);
             pdf.text('Date: ' + date, 480, 65);
             pdf.text('Status: ' + status, 480, 82);
-            if (i === 0) {
-              pdf.text('Sign (Delivery) : ', 15, 550);
-              pdf.line(100, 550, 230, 550);
-              pdf.text('Sign (Account.) : ', 250, 550);
-              pdf.line(335, 550, 465, 550);
-            }
+            // if (i === 0) {
+            //   pdf.text('Sign (Delivery) : ', 15, 550);
+            //   pdf.line(100, 550, 230, 550);
+            //   pdf.text('Sign (Account.) : ', 250, 550);
+            //   pdf.line(335, 550, 465, 550);
+            // }
           }
+      });
+      (pdf as any).autoTable({
+        head: checkres.head,
+        body: checkres.body,
+        didParseCell: function(data: CellHookData) {
+          const cell = data.cell;
+          cell.styles.cellPadding = 10;
+        },
+        theme: 'grid',
+        styles: {
+          fontSize: 10,
+          overflow: 'linebreak',
+          lineColor: 100,
+          lineWidth: 0.2,
+          textColor: 0,
+          valign: 'top',
+          halign: 'left'
+        },
+        tableWidth: 'auto',
+        tableLineColor: 0,
+        margin: {
+          top: 500,
+          left: 15,
+          bottom: 0,
+          right: 15,
+        },
+        headerStyles: {
+          fillColor: false,
+          textColor: 0,
         }
-      );
+      });   
     }
     if (check) {
       pdf.addPage();
@@ -272,7 +307,7 @@ export class JobComponent implements OnInit {
           tableWidth: 'auto',
           tableLineColor: 0,
           margin: {
-            top: 80,
+            top: 100,
             left: 15,
             bottom: 85,
             right: 15,
@@ -281,12 +316,19 @@ export class JobComponent implements OnInit {
             pdf.addImage(img, 'JPEG', 16, 18, 160, 33);
             pdf.setFontSize(11.4);
             pdf.text('PAPER SUMMARY', 15, 64);
+
+            pdf.text('Driver: ' + driver, 15, 82);
+            pdf.text('Vehicle: ' + vehicle, 300, 65);
+            pdf.text('Job No.: #' + job, 300, 82);
+            pdf.text('Date: ' + date, 480, 65);
+            pdf.text('Status: ' + status, 480, 82);
           }
         }
       );
     }
 
-    pdf.save(`delivery_job_${job}.pdf`);
+    // pdf.save(`delivery_job_${job}.pdf`);
+    pdf.output('dataurlnewwindow');
   }
 
   closeSession(data) {

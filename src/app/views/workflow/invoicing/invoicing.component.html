@@ -67,8 +67,8 @@
 
           <ng-container cdkColumnDef="goodsready">
             <th cdk-header-cell *cdkHeaderCellDef style="width: 14%;">Goods Ready<br>to be Invoiced</th>
-            <td (click)="editWF($event)" cdk-cell *cdkCellDef="let row; index as i;" [ngClass]="{'bg-primary': row.status == 7}" style="width: 14%;" name="2" [dialogTrigger]="hasClass ? 'pastel' : null" [class.disabled]="row.status != 7" [clickDisabled]="'update'">
-              {{row.invRef | uppercase}}
+            <td (click)="editWF($event);loadInfo(row)" cdk-cell *cdkCellDef="let row; index as i;" [ngClass]="{'bg-primary font-weight-bold text-white text-center': row.status == 7}" style="width: 14%;" name="2" [dialogTrigger]="hasClass ? 'pastel' : null" [class.disabled]="row.status != 7" [clickDisabled]="'update'">
+              
             </td>
           </ng-container>
           <ng-container cdkColumnDef="invoicing">
@@ -95,6 +95,30 @@
   </div>
 </div>
 
-<app-dialog dialogID="pastel" title="Send To Pastel" size="medium" accept="Submit" cancel="Close">
+<app-dialog dialogID="pastel" title="Confirm Send To Pastel" size="medium" accept="Submit" cancel="Close" (onCancel)="tempData = null;err=false" (onAccept)="sendToPastel()" [disabled]="(tempData && !err)">
+  <div class="alert alert-info" [class.alert-danger]="err || !tempData">
+    <strong>Load Data Status: </strong>{{tempData ? 'OK': 'Not Ready'}}<br>
+    <strong>Stock Check: </strong>{{err ? 'There are quantity errors with Pastel Inventory. Please make necessary adjustments to proceed.': 'OK'}}<br>
 
+  </div>
+  <span *ngIf="invoice$ | async as invoice">
+    <table class="table table-bordered mt-2">
+      <thead>
+        <tr>
+          <th class="font-weight-bold">Product Code</th>
+          <th class="font-weight-bold">Qty Available</th>
+          <th class="font-weight-bold">Qty Required</th>
+          <th class="font-weight-bold">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of invoice.entries; index as i;" [class.table-danger]="+item.Qty_On_Hand < +item.qty">
+          <td>{{item.p_id}}</td>
+          <td>{{item.Qty_On_Hand | number:'1.0-0'}}</td>
+          <td>{{item.qty| number:'1.0-0'}}</td>
+          <td class="font-italic">{{+item.Qty_On_Hand >= +item.qty ? 'OK': '!ERR#'}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </span>
 </app-dialog>

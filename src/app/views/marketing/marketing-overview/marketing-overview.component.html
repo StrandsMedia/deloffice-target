@@ -1,0 +1,140 @@
+<div class="row">
+  <div class="col-12">
+    <div class="mdc-card mb-3" style="overflow: hidden;">
+      <!--Card Header-->
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 justify-content-between align-items-center">
+        <div class="flex-fill align-items-center">
+          <h3 class="m-0 text-white">
+            Marketing Overview
+            <img *ngIf="loading" width="23px" src="assets/icons/rolling_white.svg" alt="Rolling White">
+          </h3>
+        </div>
+      </div>
+
+      <!--Card Sub-Header-->
+      <div id="card-subheader" class="py-3 px-4 d-flex justify-content-between">
+        <div class="form-group d-flex justify-content-between w-50 mb-0 mr-4">
+          <select [(ngModel)]="sector" (change)="get();loadSubsectors();subsector=null" name="sector" id="sector" class="form-control w-100">
+            <ng-container *ngFor="let cat of category$ | async">
+              <option [value]="cat.cat_id">{{cat.category_name}}</option>
+            </ng-container>
+          </select>
+          <select *ngIf="sector" [(ngModel)]="subsector" (change)="get()" name="subsector" id="subsector" class="form-control w-100">
+            <option value="" selected>Select a subsector</option>
+            <ng-container *ngFor="let subcat of subcategory$ | async">
+              <option [value]="subcat.cat_id">{{subcat.category_name}}</option>
+            </ng-container>
+          </select>
+        </div>
+        <div *ngIf="productcat$ | async as cat" class="form-group d-flex justify-content-between w-50 mb-0">
+          <select [(ngModel)]="prod_category" (change)="get();prod_subcategory=null"  name="category" id="category" class="form-control w-100">
+            <option *ngFor="let cat of cat.category" value="{{cat.id}}">{{cat.description}}</option>
+          </select>
+          <select [(ngModel)]="prod_subcategory" (change)="get()" name="subcategory" id="subcategory" class="form-control w-100">
+            <ng-container *ngFor="let cat of cat.category2">
+              <option *ngIf="cat.upcat == prod_category" value="{{cat.id}}">{{cat.description}}</option>
+            </ng-container>
+          </select>
+        </div>
+      </div>
+
+      <!--Data Table-->
+      <table cdk-table respHeight [dataSource]="dataSource$" [trackBy]="trackByFn" class="table table-hover table-bordered tgt-table tgt-scroll">
+        <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+        <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+
+        <ng-container cdkColumnDef="customerCode">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 7%;">Code</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 7%;">
+            {{row.Account}}
+          </td>
+        </ng-container>
+
+        <ng-container cdkColumnDef="company_name">
+          <th (click)="sortObs('Name')" class="point" cdk-header-cell *cdkHeaderCellDef style="width: 23%;">Company Name</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 23%;">
+            {{row.Name}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="30days">
+          <th (click)="sortObs('thirty')" class="point" cdk-header-cell *cdkHeaderCellDef style="width: 10%;">30 Days</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 10%;">
+            {{(row.thirty | number:'1.2-2') || '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="60days">
+          <th (click)="sortObs('sixty')" class="point" cdk-header-cell *cdkHeaderCellDef style="width: 10%;">60 Days</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 10%;">
+            {{(row.sixty | number:'1.2-2') || '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="current">
+          <th (click)="sortObs('current')" class="point" cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Current</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center" style="width: 10%;">
+            {{(row.current | number:'1.2-2') || '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="lastorder">
+          <th (click)="sortObs('lastorderdate')" class="point" cdk-header-cell *cdkHeaderCellDef style="width: 10%;">Last Order Date</th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 10%;">
+            {{row.lastorderdate | date:'yyyy-MM-dd'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="comment">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 25%;">Comment</th>
+          <td cdk-cell *cdkCellDef="let row" class="text-center point" style="width: 25%;">
+            {{row.comment || '-'}}
+          </td>
+        </ng-container>
+        <ng-container cdkColumnDef="commbox">
+          <th cdk-header-cell *cdkHeaderCellDef style="width: 15%;"></th>
+          <td cdk-cell *cdkCellDef="let row" class="font-weight-bold text-center point" style="width: 15%;">
+            <button (click)="getComment(row.cust_id)" title="View Comments" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2 mr-2" dialogTrigger="comment">
+              <i class="material-icons" style="line-height: 30px;">comment</i>
+            </button>
+            <button title="Add Task or Reminder" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2 mr-2">
+              <i class="material-icons" style="line-height: 30px;">calendar_today</i>
+            </button>
+            <button title="Flag" class="tgt-button-full bg-primary d-flex h-100 py-1 px-2">
+              <i class="material-icons" style="line-height: 30px;">flag</i>
+            </button>
+          </td>
+        </ng-container>
+      </table>
+
+      
+    </div>
+  </div>
+</div>
+
+<app-dialog dialogID="comment" title="Comment Box" size="medium" cancel="Close" comment="true">
+  <ng-container *ngIf="selected$ | async as selected">
+      <ul class="list-group list-group-flush" #scrollMe [scrollTop]="scrollMe.scrollHeight">
+        <ng-container *ngIf="selected?.length > 0; else nocomment;">
+            <li *ngFor="let cmt of selected | reverse; index as i;" class="list-group-item py-3">
+              <div class="media">
+                <span class="align-self-start mr-3 round-image bg-normal" style="width: 45px; height: 45px; overflow: hidden;">
+                  <h2 class="text-white text-center w-100 h-100" style="font-weight:400; font-size: 1.2rem; vertical-align: middle; line-height: 45px;">{{getInitials(cmt.sales_rep) | uppercase}}</h2>
+                </span>
+                <div class="media-body">
+                  <div class="span float-left">
+                      <h5 class="mt-0" style="font-size: 1rem;">{{cmt.sales_rep}}</h5>
+                      <p class="mb-0" style="font-weight: 14px;">{{cmt.comment}}</p>
+                  </div>
+                  <small class="d-block float-right font-italic" style="font-weight: 13px;">{{cmt.createdAt | date:'medium'}}</small>
+                </div>
+              </div>
+            </li>
+        </ng-container>
+        <ng-template #nocomment>
+          <li class="list-group-item py-3">
+            <div class="media">
+              <div class="media-body">
+                <p class="mb-0 text-italic" style="font-weight: 14px;">Sorry, there are no comments to display.</p>
+              </div>
+            </div>
+          </li>
+        </ng-template>
+      </ul>
+  </ng-container>
+</app-dialog>

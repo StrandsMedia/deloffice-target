@@ -1,0 +1,57 @@
+<div class="row">
+  <div class="col-12">
+    <div class="mdc-card mb-3" style="overflow: hidden;">
+      <!--Card Header-->
+      <div id="card-header" class="d-flex tgt-bg px-4 py-3 align-items-center">
+        <div class="text-white flex-fill align-items-center">
+          <h3 class="mb-1">Vehicle Tracker</h3>
+        </div>
+        <div class="align-items-center">
+          <!-- <button class="float-right tgt-button-full tgt-btn-white px-3 py-2" dialogTrigger="active">
+            View Active Trackers
+          </button> -->
+        </div>
+      </div>
+      <!-- Map Body -->
+      <div class="p-3 d-flex">
+
+          <div class="w-75 mr-3" #gmap responsive >
+    
+          </div>
+
+          <div class="w-25 alert alert-info" responsive>
+            <ng-container *ngFor="let key of markerKeys">
+              <div class="alert alert-secondary">
+                <h5>Tracker Name: {{key}}</h5>
+                Location: <a target="_blank" href="{{convertLatLng(markerData[key][0].lat, markerData[key][0].lng)}}">Click Here</a><br>
+                Last Updated on: {{convertTime(markerData[key][0].time) | date:'EEEE, MMMM d, y, HH:mm:ss'}}<br>
+                Distance from HQ: {{getTrackingDistance(markerData[key][0]) | number:'1.2-2'}}m<br>
+                <button (click)="viewHistory(markerData[key], key)" class="btn btn-sm btn-info my-2">View History</button>
+              </div>
+            </ng-container>
+          </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<app-dialog dialogID="active" title="Active Trackers" size="medium" accept="Ok">
+  <table class="table table-hover table-bordered w-100">
+    <thead>
+      <tr>
+        <th>Tracker Name</th>
+        <th>Location</th>
+        <th>Last Updated on</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</app-dialog>

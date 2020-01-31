@@ -41,4 +41,11 @@ export class PopupQuestionComponent implements OnInit {
     );
   }
 
+  bindVal(item, $event) {
+    const fd = new FormData()
+    fd.append('file', <File>$event.target.files[0], 'file');
+    console.log(item)
+    item.value = fd;
+  }
+
 }
