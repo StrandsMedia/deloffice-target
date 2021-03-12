@@ -40,7 +40,7 @@
     "core-js": "^2.6.2",
     "firebase": "^7.5.2",
     "jquery": "^3.4.1",
-    "jspdf": "^1.5.3",
+    "jspdf": "^2.3.1",
     "jspdf-autotable": "^3.1.1",
     "ng2-dragula": "^2.1.1",
     "ng2-pdfjs-viewer": "^5.0.1",
